@@ -705,10 +705,10 @@
         <div class="sb-status completed">7-5, 6-2 &mdash; 80 minutes</div>
       </div>
       <div class="sb-card matchday">
-        <div class="sb-tour">&#128308; TONIGHT &middot; Women's SF2 &middot; Arthur Ashe Stadium</div>
-        <div class="sb-name"><span>&#127472;&#127487; Rybakina [2] &mdash; World No.1</span></div>
-        <div class="sb-name"><span>&#127482;&#127480; Gauff [4]</span></div>
-        <div class="sb-status tonight">&#9679; NEXT &middot; ~9:30 PM ET &middot; Sat Sep 11, ~5:30 AM UAE</div>
+        <div class="sb-tour">&#128308; LIVE NOW &middot; Women's SF2 &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span>&#127472;&#127487; Rybakina [2] &mdash; World No.1 &nbsp; <strong id="rybakina-live-score">—</strong></span></div>
+        <div class="sb-name"><span>&#127482;&#127480; Gauff [4] &nbsp; <strong id="gauff-live-score">—</strong></span></div>
+        <div class="sb-status live">&#9679; LIVE &middot; <span id="live-set-status">Loading live score…</span></div>
       </div>
       <!-- Men's SFs: Upcoming -->
       <div class="sb-card upcoming-sf">
@@ -749,7 +749,7 @@
   </div>
   <div class="md-times">
     <span>&#10003; FINAL &bull; Sabalenka 7-5, 6-2 Pegula</span>
-    <span>SF2 &bull; ~9:30 PM ET &bull; ~5:30 AM UAE</span>
+    <span><strong style="color:var(--live-red);">LIVE SF2</strong> &bull; Rybakina <span id="ticker-rybakina-score">—</span>-<span id="ticker-gauff-score">—</span> Gauff &bull; <span id="ticker-set-status">LIVE</span></span>
   </div>
 </div>
 
@@ -768,7 +768,7 @@
     </svg>
     <p class="dateline">Friday, September 11, 2026 &mdash; Dubai &middot; Women's Finalist confirmed. Men's Semis Friday.</p>
     <h1 class="headline">Sabalenka Is Through. One Finalist Is Set. Friday, the Men Take Center Stage.</h1>
-    <p class="dek">Aryna Sabalenka defeated Jessica Pegula 7-5, 6-2 to book her fourth consecutive US Open final. Coco Gauff vs. new World No. 1 Elena Rybakina is LIVE NOW, while Friday brings the all-American Tiafoe vs. Shelton semifinal.</p>
+    <p class="dek">Aryna Sabalenka defeated Jessica Pegula 7-5, 6-2 to book her fourth consecutive US Open final. Coco Gauff vs. new World No. 1 Elena Rybakina is LIVE at Arthur Ashe, with Rybakina leading 1-0 in the first set. Friday brings the all-American Tiafoe vs. Shelton semifinal.</p>
   </section>
 
   <div class="stage-bar" aria-label="Tournament progress">
@@ -824,8 +824,8 @@
         <div class="sf-note">Beat Andreeva [5] in QF: 2-6, 7-6(7), 6-2</div>
       </div>
       <div class="sf-meta">
-        <span>Women's Semifinal 2 &middot; Arthur Ashe Stadium &middot; Night Session (not before 9:00 PM ET)</span>
-        <span><span class="tonight">TONIGHT ~9:30 PM ET</span> &nbsp;|&nbsp; <span class="uae">Sat Sep 11, ~5:30 AM UAE</span></span>
+        <span>Women's Semifinal 2 &middot; Arthur Ashe Stadium &middot; LIVE &middot; Arthur Ashe Stadium</span>
+        <span><span class="live">Rybakina 1-0 Gauff</span> &nbsp;|&nbsp; 1st Set</span>
       </div>
     </div>
   </div>
@@ -1007,7 +1007,7 @@
       <div class="matchup-col">
         <h4>Women's Singles &mdash; TONIGHT Thu Sep 10 (NY)</h4>
         <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF1</span><span>Sabalenka [1] def. Pegula [3] &mdash; 7-5, 6-2</span></div>
-        <div class="sf-item"><span class="sf-tag tonight-tag">TONIGHT SF2</span><span>Rybakina [2] vs. Gauff [4] &mdash; ~9:30 PM ET &bull; ~5:30 AM UAE</span></div>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--live-red);color:#fff;">LIVE SF2</span><span>Rybakina [2] <span id="draw-rybakina-score">—</span> Gauff [4] <span id="draw-gauff-score">—</span> &mdash; <span id="draw-set-status">Live score loading</span> &middot; Arthur Ashe Stadium</span></div>
         <div class="sf-item"><span class="sf-tag tbd">FINAL</span><span>TBD &mdash; Sat Sep 12 (UAE)</span></div>
       </div>
       <div class="matchup-col">
@@ -1025,7 +1025,7 @@
       <thead><tr><th>UAE Date / Time</th><th>New York (ET)</th><th>Event</th></tr></thead>
       <tbody>
         <tr class="done-row"><td>Sat, Sep 11 &middot; 3:00 AM</td><td>Thu 7:00 PM</td><td>&#10003; Women's SF1: Sabalenka [1] def. Pegula [3] &mdash; 7-5, 6-2</td></tr>
-        <tr class="sf-row"><td>Sat, Sep 11 &middot; ~5:30 AM</td><td>Thu ~9:30 PM</td><td>Women's SF2: Rybakina [2] vs. Gauff [4] &mdash; NEXT</td></tr>
+        <tr class="sf-row"><td>Sat, Sep 11 &middot; LIVE</td><td>Thu 9:00 PM+</td><td>&#128308; Women's SF2: Rybakina [2] <span id="schedule-rybakina-score">—</span> Gauff [4] <span id="schedule-gauff-score">—</span> &mdash; <span id="schedule-live-status">LIVE</span></td></tr>
         <tr class="sf-row"><td>Fri, Sep 12 &middot; 11:00 PM</td><td>Fri 3:00 PM</td><td>&#127482;&#127480; Men's SF1 ALL-AMERICAN: Tiafoe [11] vs. Shelton [8]</td></tr>
         <tr class="sf-row"><td>Sat, Sep 13 &middot; ~3:00 AM</td><td>Fri 7:00 PM</td><td>Men's SF2: Zverev [1] vs. Khachanov</td></tr>
         <tr class="final-row"><td>Sat, Sep 13 &middot; TBD</td><td>Sat TBD</td><td>&#127942; Women's Final (TBD)</td></tr>
@@ -1043,9 +1043,9 @@
       <p>Frances Tiafoe has reached three US Open semifinals. Ben Shelton just beat the defending champion at 3:33 a.m. One of them will play Sunday's men's final &mdash; the first American man in a Grand Slam final since Andy Roddick won right here in 2003. The crowd will be split. The atmosphere will be extraordinary.</p>
     </div>
     <div class="watch-item">
-      <span class="badge badge-tonight">TONIGHT &middot; WOMEN'S SF2</span>
-      <h3>Gauff vs. Rybakina: Rising Champion vs. New World No. 1</h3>
-      <p>Coco Gauff won the US Open in 2023. Elena Rybakina just claimed the world No. 1 ranking. Their semifinal is the match within the match: Rybakina's powerful baseline game against Gauff's defensive speed and clutch play under pressure. Rybakina leads the head-to-head but Gauff has shown this week she is far from a pushover.</p>
+      <span class="badge badge-live">LIVE NOW &middot; WOMEN'S SF2</span>
+      <h3>Gauff vs. Rybakina: LIVE from Arthur Ashe</h3>
+      <p>Coco Gauff won the US Open in 2023. Elena Rybakina just claimed the world No. 1 ranking. They are now live at Arthur Ashe. The score below updates automatically from the live-score feed. The match within the match is: Rybakina's powerful baseline game against Gauff's defensive speed and clutch play under pressure. Rybakina leads the head-to-head but Gauff has shown this week she is far from a pushover.</p>
     </div>
     <div class="watch-item">
       <span class="badge badge-story">FINAL &middot; WOMEN'S SF1</span>
@@ -1065,11 +1065,44 @@
 <footer>
   <div class="wrap">
     <p class="byline">US Open 2026 &mdash; Road to the Finals &middot; Semifinals Week</p>
-    <p>Updated: Friday, 11 September 2026 &middot; Latest verified result &middot; Sabalenka def. Pegula 7-5, 6-2</p>
+    <p>Updated: Friday, 11 September 2026 &middot; LIVE update &middot; Rybakina <span id="footer-rybakina-score">—</span>-<span id="footer-gauff-score">—</span> Gauff, <span id="footer-live-status">live</span></p>
     <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
     <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the USTA or the US Open.</p>
   </div>
 </footer>
+
+
+<script>
+(function () {
+  const ids = {
+    r: ['rybakina-live-score','draw-rybakina-score','ticker-rybakina-score','schedule-rybakina-score','footer-rybakina-score','story-rybakina-score'],
+    g: ['gauff-live-score','draw-gauff-score','ticker-gauff-score','schedule-gauff-score','footer-gauff-score','story-gauff-score'],
+    status: ['live-set-status','draw-set-status','ticker-set-status','schedule-live-status','footer-live-status','story-set-status']
+  };
+  function setAll(list, value) { list.forEach(id => { const el=document.getElementById(id); if(el) el.textContent=value; }); }
+  function render(match) {
+    if (!match) return;
+    setAll(ids.r, match.rybakina?.score ?? '—');
+    setAll(ids.g, match.gauff?.score ?? '—');
+    const label = match.statusLabel || (match.status === 'ended' ? 'FINAL' : 'LIVE');
+    setAll(ids.status, label);
+  }
+  async function refresh() {
+    try {
+      const res = await fetch('/api/live-score?match=gauff-rybakina', { cache: 'no-store' });
+      if (!res.ok) throw new Error('Live score API returned ' + res.status);
+      const data = await res.json();
+      render(data.match);
+      document.documentElement.dataset.liveScoreUpdated = data.updatedAt || '';
+    } catch (err) {
+      // Keep the page usable if the provider is temporarily unavailable.
+      setAll(ids.status, 'LIVE SCORE UNAVAILABLE');
+    }
+  }
+  refresh();
+  setInterval(refresh, 5000);
+})();
+</script>
 
 </body>
 </html>
