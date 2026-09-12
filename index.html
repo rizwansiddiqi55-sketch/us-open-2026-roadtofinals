@@ -686,75 +686,84 @@
 
 <!-- MATCH DAY ALERT -->
 <div class="alert-band">
-  &#10003; FINAL &mdash; SABALENKA def. PEGULA &middot; 7-5, 6-2
+  &#10003; FINAL &mdash; ZVEREV def. KHACHANOV &middot; 6-3, 7-6(7), 7-6(6)
   <span class="sep">&nbsp;|&nbsp;</span>
-  &#10003; RYBAKINA def. GAUFF &middot; 3-6, 6-4, 6-4
+  &#10003; FINAL &mdash; SHELTON def. TIAFOE &middot; 4-6, 6-3, 6-3, 7-5
   <span class="sep">&nbsp;|&nbsp;</span>
-  &#127465;&#127466; MEN'S SF1: ZVEREV DEFEATS KHACHANOV &mdash; LIVE 6-3, 7-6, 7-6
+  &#127942; MEN'S FINAL SET: ZVEREV vs SHELTON &middot; SUNDAY &nbsp;|&nbsp; WOMEN'S FINAL TONIGHT: SABALENKA vs RYBAKINA
 </div>
 
 <div class="ticker-band">
   <div class="wrap">
-    <div class="ticker-head"><span class="live-dot"></span> MEN'S SEMIFINAL &mdash; ZVEREV DEFEATS KHACHANOV</div>
+    <div class="ticker-head"><span class="live-dot" style="background:var(--green-result);animation:none;"></span> BOTH MEN'S SEMIFINALS COMPLETE &bull; ZVEREV vs SHELTON SET FOR SUNDAY'S FINAL &bull; ARTHUR ASHE STADIUM</div>
     <div class="ticker-row">
-      <!-- Latest/current matches first -->
+      <!-- Latest match first: Men's SF2 (most recently completed) -->
       <div class="sb-card matchday">
-        <div class="sb-tour">US Open &middot; Men's SF1 &middot; Arthur Ashe Stadium &middot; LIVE</div>
-        <div class="sb-name"><span class="sb-winner">&#127465;&#127466; Zverev [1]</span></div>
-        <div class="sb-name"><span>&#127479;&#127482; Khachanov</span></div>
-        <div class="sb-status" style="color:var(--green-result);font-weight:800;">LIVE &middot; Zverev defeated Khachanov 6-3, 7-6, 7-6 (3 sets to 0) &middot; SET 3</div>
+        <div class="sb-tour">&#10003; FINAL &middot; Men's SF2 &middot; ALL-AMERICAN &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span class="sb-winner">&#127482;&#127480; Shelton [8] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Tiafoe [11] OUT</span></div>
+        <div class="sb-status completed">4-6, 6-3, 6-3, 7-5 &mdash; into his first major final</div>
       </div>
-
+      <div class="sb-card matchday">
+        <div class="sb-tour">&#10003; FINAL &middot; Men's SF1 &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span class="sb-winner">&#127465;&#127466; Zverev [1] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127479;&#127482; Khachanov OUT</span></div>
+        <div class="sb-status completed">6-3, 7-6(7), 7-6(6) &mdash; third straight Slam final</div>
+      </div>
+      <!-- Men's Final upcoming -->
       <div class="sb-card upcoming-sf">
-        <div class="sb-tour">US Open &middot; Men's SF2 &middot; Arthur Ashe Stadium</div>
-        <div class="sb-name"><span>&#127482;&#127480; Tiafoe [11]</span></div>
+        <div class="sb-tour">US Open &middot; MEN'S FINAL &middot; Sunday</div>
+        <div class="sb-name"><span>&#127465;&#127466; Zverev [1]</span></div>
         <div class="sb-name"><span>&#127482;&#127480; Shelton [8]</span></div>
-        <div class="sb-status upcoming">&#128336; Sat Sep 12, 3:00 AM UAE &middot; Fri 7:00 PM ET</div>
+        <div class="sb-status upcoming">&#128336; Sun Sep 13, 10:00 PM UAE &middot; Sun 2:00 PM ET</div>
       </div>
-
-      <!-- Latest completed matches -->
-      <div class="sb-card matchday">
-        <div class="sb-tour">&#10003; FINAL &middot; Women's SF2 &middot; Arthur Ashe Stadium</div>
-        <div class="sb-name"><span class="sb-winner">&#127472;&#127487; Rybakina [2] &#10003;</span></div>
-        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Gauff [4] OUT</span></div>
-        <div class="sb-status completed">3-6, 6-4, 6-4 &mdash; FINAL</div>
-      </div>
-
+      <!-- Women's SFs: FINAL -->
       <div class="sb-card matchday">
         <div class="sb-tour">&#10003; FINAL &middot; Women's SF1 &middot; Arthur Ashe Stadium</div>
         <div class="sb-name"><span class="sb-winner">&#127463;&#127486; Sabalenka [1] &#10003;</span></div>
         <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Pegula [3] OUT</span></div>
         <div class="sb-status completed">7-5, 6-2 &mdash; 80 minutes</div>
       </div>
-
-      <!-- Earlier completed men's quarterfinals -->
-      <div class="sb-card result">
-        <div class="sb-tour">QF Epic &middot; Men's QF &middot; FINISHED</div>
-        <div class="sb-name"><span class="sb-winner">&#127482;&#127480; Tiafoe [11] &#10003;</span></div>
-        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Michelsen OUT</span></div>
-        <div class="sb-status completed">5-7, 3-6, 7-5, 6-3, 7-6, 7-6(10-6) &mdash; Down 0-2</div>
+      <div class="sb-card matchday">
+        <div class="sb-tour">&#10003; FINAL &middot; Women's SF2 &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span>&#127472;&#127487; Rybakina [2] &nbsp; <strong id="rybakina-live-score">6-4</strong></span></div>
+        <div class="sb-name"><span>&#127482;&#127480; Gauff [4] &nbsp; <strong id="gauff-live-score">6-4</strong></span></div>
+        <div class="sb-status completed">FINAL &middot; Rybakina wins 3-6, 6-4, 6-4</div>
       </div>
-
+      <!-- Women's Final upcoming -->
+      <div class="sb-card upcoming-sf">
+        <div class="sb-tour">US Open &middot; WOMEN'S FINAL &middot; Tonight</div>
+        <div class="sb-name"><span>&#127463;&#127486; Sabalenka [1]</span></div>
+        <div class="sb-name"><span>&#127472;&#127487; Rybakina [2]</span></div>
+        <div class="sb-status upcoming">&#128336; Sun Sep 13, 12:00 AM UAE &middot; Sat 4:00 PM ET</div>
+      </div>
+      <!-- QF Highlights -->
       <div class="sb-card result">
         <div class="sb-tour">QF Upset &middot; Men's QF &middot; FINISHED</div>
         <div class="sb-name"><span class="sb-winner">&#127482;&#127480; Shelton [8] &#10003;</span></div>
         <div class="sb-name"><span style="opacity:0.6;">&#127466;&#127480; Alcaraz [2] OUT</span></div>
         <div class="sb-status completed">6-7(5), 6-1, 6-3, 1-6, 7-6(7) &mdash; 3:33 AM finish!</div>
       </div>
+      <div class="sb-card result">
+        <div class="sb-tour">QF Epic &middot; Men's QF &middot; FINISHED</div>
+        <div class="sb-name"><span class="sb-winner">&#127482;&#127480; Tiafoe [11] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Michelsen OUT</span></div>
+        <div class="sb-status completed">5-7, 3-6, 7-5, 6-3, 7-6(10-6) &mdash; Down 0-2</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MATCH DAY BANNER for Men's SF -->
+<!-- MATCH DAY BANNER for Men's Final / Women's Final -->
 <div class="matchday-banner">
   <div class="md-icon">&#127942;</div>
   <div class="md-body">
-    <h2>MEN'S SEMIFINAL &mdash; ZVEREV DEFEATS KHACHANOV</h2>
-    <p>Alexander Zverev defeated Karen Khachanov 6-3, 7-6, 7-6 in a dramatic straight-set semifinal at Arthur Ashe Stadium, advancing to the US Open final.</p>
+    <h2>MEN'S FINAL SET &mdash; ZVEREV vs SHELTON</h2>
+    <p>Alexander Zverev outlasted Karen Khachanov 6-3, 7-6(7), 7-6(6) and Ben Shelton battled past Frances Tiafoe 4-6, 6-3, 6-3, 7-5 to book Sunday's US Open final at Arthur Ashe Stadium.</p>
   </div>
   <div class="md-times">
-    <span>LIVE &bull; Zverev 6-3, 7-6, 7-6 Khachanov</span>
-    <span><strong style="color:var(--green-result);">UP NEXT</strong> &bull; Tiafoe vs Shelton &middot; Men's SF2</span>
+    <span>FINAL &bull; Zverev def. Khachanov 6-3, 7-6(7), 7-6(6)</span>
+    <span><strong style="color:var(--green-result);">TONIGHT</strong> &bull; Sabalenka vs Rybakina &middot; Women's Final</span>
   </div>
 </div>
 
@@ -771,9 +780,9 @@
       <line x1="145" y1="10" x2="155" y2="10" stroke="currentColor" stroke-width="4"/>
       <line x1="145" y1="590" x2="155" y2="590" stroke="currentColor" stroke-width="4"/>
     </svg>
-    <p class="dateline">Saturday, September 12, 2026 &mdash; Dubai &middot; Men's Semifinal LIVE</p>
-    <h1 class="headline">Zverev Defeats Khachanov 6-3, 7-6, 7-6. Men's Semifinal FINAL at Arthur Ashe.</h1>
-    <p class="dek">Alexander Zverev defeated Karen Khachanov 6-3, 7-6, 7-6 to reach the US Open final. The top seed held his nerve through three tight sets and two tiebreaks to complete a straight-set victory at Arthur Ashe Stadium. He now awaits the winner of Frances Tiafoe vs. Ben Shelton.</p>
+    <p class="dateline">Saturday, September 12, 2026 &mdash; Dubai &middot; Men's Semifinals Complete</p>
+    <h1 class="headline">Zverev and Shelton Book Their Spots in Sunday's US Open Final</h1>
+    <p class="dek">Alexander Zverev survived two tiebreaks to beat Karen Khachanov 6-3, 7-6(7), 7-6(6), and Ben Shelton came back from a set down to beat Frances Tiafoe 4-6, 6-3, 6-3, 7-5 to reach his first major final. The two meet Sunday at Arthur Ashe Stadium. First, though: Aryna Sabalenka faces Elena Rybakina in tonight's women's final.</p>
   </section>
 
   <div class="stage-bar" aria-label="Tournament progress">
@@ -782,17 +791,17 @@
     <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 32</span></div>
     <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 16</span></div>
     <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Quarterfinals</span></div>
-    <div class="stage-item"><span class="stage-dot now" style="background:var(--green-result);box-shadow:0 0 0 3px rgba(26,107,58,0.25);animation:none;"></span><span class="stage-name">&#10003; Semifinals</span></div>
-    <div class="stage-item"><span class="stage-dot next"></span><span class="stage-name">Finals</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">&#10003; Semifinals</span></div>
+    <div class="stage-item"><span class="stage-dot now" style="background:var(--green-result);box-shadow:0 0 0 3px rgba(26,107,58,0.25);animation:none;"></span><span class="stage-name">Finals</span></div>
   </div>
 
-  <!-- MEN'S SEMIFINALS: LIVE -->
-  <div class="sf-preview-panel live-panel">
-    <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127934; MEN'S SEMIFINAL &mdash; ZVEREV DEFEATS KHACHANOV</h2>
-    <p class="panel-sub">Arthur Ashe Stadium &middot; LIVE &mdash; Zverev defeated Khachanov 6-3, 7-6, 7-6 (straight sets)</p>
-    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Alexander Zverev 6-3, 7-6, 7-6 Karen Khachanov">
+  <!-- MEN'S SEMIFINALS: BOTH FINAL -->
+  <div class="sf-preview-panel">
+    <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127934; MEN'S SEMIFINALS &mdash; BOTH RESULTS FINAL</h2>
+    <p class="panel-sub">Arthur Ashe Stadium &middot; Zverev and Shelton advance to Sunday's final</p>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Alexander Zverev 6-3, 7-6(7), 7-6(6) Karen Khachanov — FINAL">
       <div class="live-score-player">🇩🇪 Alexander Zverev [1]</div>
-      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">6-3, 7-6, 7-6</div><div class="live-score-caption" style="color:var(--green-result);">FINAL</div></div>
+      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">6-3, 7-6(7), 7-6(6)</div><div class="live-score-caption" style="color:var(--green-result);">FINAL</div></div>
       <div class="live-score-player right">🇷🇺 Karen Khachanov</div>
     </div>
     <div class="sf-matchup-row">
@@ -808,15 +817,20 @@
         <div class="sf-note">Beat Blockx [28] (QF) 6-2, 7-5, 3-2 ret.</div>
       </div>
       <div class="sf-meta">
-        <span>Men's Semifinal 1 &middot; Arthur Ashe Stadium &middot; LIVE</span>
-        <span><span style="color:var(--green-result);font-weight:700;">FINAL</span> &nbsp;|&nbsp; Zverev def. Khachanov 6-3, 7-6, 7-6</span>
+        <span>Men's Semifinal 1 &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">FINAL 6-3, 7-6(7), 7-6(6)</span> &nbsp;|&nbsp; <span class="uae">Fri Sep 11, 11:00 PM UAE</span></span>
       </div>
+    </div>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Frances Tiafoe 4-6, 6-3, 6-3, 7-5 Ben Shelton — FINAL, Shelton wins">
+      <div class="live-score-player">🇺🇸 Frances Tiafoe [11]</div>
+      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">4-6, 6-3, 6-3, 7-5</div><div class="live-score-caption" style="color:var(--green-result);">FINAL</div></div>
+      <div class="live-score-player right">🇺🇸 Ben Shelton [8]</div>
     </div>
     <div class="sf-matchup-row">
       <div class="sf-side">
         <div><span class="sf-flag">&#127482;&#127480;</span><span class="sf-seed">[11] Seed &middot; COMEBACK KID OF THE TOURNAMENT</span></div>
         <div class="sf-player">Frances Tiafoe</div>
-        <div class="sf-note">Beat Michelsen (QF) 5-7, 3-6, 7-5, 6-3, 7-6, 7-6(10-6) &mdash; came back 0-2</div>
+        <div class="sf-note">Beat Michelsen (QF) 5-7, 3-6, 7-5, 6-3, 7-6(10-6) &mdash; came back 0-2</div>
       </div>
       <div class="sf-vs">VS</div>
       <div class="sf-side" style="text-align:right;">
@@ -825,8 +839,8 @@
         <div class="sf-note">Beat Alcaraz [2] (QF) 6-7(5), 6-1, 6-3, 1-6, 7-6(7) &mdash; 3:33 AM</div>
       </div>
       <div class="sf-meta">
-        <span>Men's Semifinal 2 &middot; ALL-AMERICAN &middot; Arthur Ashe Stadium</span>
-        <span><span class="uae">Sat Sep 12, 3:00 AM UAE</span> &nbsp;|&nbsp; Fri 7:00 PM ET</span>
+        <span>Men's Semifinal 2 &middot; ALL-AMERICAN &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">Shelton wins 4-6, 6-3, 6-3, 7-5</span> &nbsp;|&nbsp; <span class="uae">Sat Sep 12, 3:00 AM UAE</span></span>
       </div>
     </div>
   </div>
@@ -835,7 +849,7 @@
   <!-- WOMEN'S SEMIFINALS: MATCH DAY -->
   <div class="sf-preview-panel">
     <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127942; WOMEN'S SEMIFINALS &mdash; BOTH RESULTS FINAL</h2>
-    <p class="panel-sub">Alexander Zverev defeated Karen Khachanov 6-3, 7-6, 7-6 in a dramatic straight-set semifinal at Arthur Ashe Stadium, advancing to the US Open final.</p>
+    <p class="panel-sub">Sabalenka and Rybakina booked their spots in Saturday's final at Arthur Ashe Stadium.</p>
     <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Sabalenka 7-5, 6-2 Pegula — FINAL">
       <div class="live-score-player">🇧🇾 Aryna Sabalenka</div>
       <div class="live-score-sets">
@@ -907,7 +921,29 @@
       </div>
       <div class="sf-meta">
         <span>Women's Final &middot; Arthur Ashe Stadium</span>
-        <span><span class="uae">Sat Sep 12 UAE</span> &nbsp;|&nbsp; Sabalenka vs Rybakina</span>
+        <span><span class="uae">Sun Sep 13, 12:00 AM UAE</span> &nbsp;|&nbsp; Sat 4:00 PM ET</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sf-preview-panel" style="border-left-color:var(--green-result);">
+    <h2 style="color:var(--green-result);">&#127942; MEN'S FINAL — FINALISTS CONFIRMED</h2>
+    <p class="panel-sub">Alexander Zverev and Ben Shelton are set for the men's final on Sunday, September 13.</p>
+    <div class="sf-matchup-row" style="border-color:rgba(26,107,58,0.35);">
+      <div class="sf-side">
+        <div><span class="sf-flag">&#127465;&#127466;</span><span class="sf-seed">[1] Seed &middot; Reached third straight Grand Slam final</span></div>
+        <div class="sf-player">Alexander Zverev</div>
+        <div class="sf-note" style="background:rgba(26,107,58,0.12);color:var(--green-result);">FINALIST &middot; def. Khachanov 6-3, 7-6(7), 7-6(6)</div>
+      </div>
+      <div class="sf-vs">VS</div>
+      <div class="sf-side" style="text-align:right;">
+        <div><span class="sf-seed">[8] Seed &middot; First career major final</span><span class="sf-flag"> &#127482;&#127480;</span></div>
+        <div class="sf-player">Ben Shelton</div>
+        <div class="sf-note" style="background:rgba(26,107,58,0.12);color:var(--green-result);">FINALIST &middot; def. Tiafoe 4-6, 6-3, 6-3, 7-5</div>
+      </div>
+      <div class="sf-meta">
+        <span>Men's Final &middot; Arthur Ashe Stadium</span>
+        <span><span class="uae">Sun Sep 13, 10:00 PM UAE</span> &nbsp;|&nbsp; Sun 2:00 PM ET</span>
       </div>
     </div>
   </div>
@@ -926,7 +962,7 @@
       <div class="result-side"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">[11] Seed &middot; COMEBACK</span><span class="result-player winner">Frances Tiafoe</span></div>
       <div class="result-vs"><span>DEF.</span></div>
       <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">Unseeded</span><span class="result-player">Alex Michelsen</span></div>
-      <div class="result-score-bar"><span class="final-tag">FINAL</span><span class="score-val">5-7, 3-6, 7-5, 6-3, 7-6, 7-6(10-6)</span><span style="font-size:11px; color:var(--ink-soft);">Down 0-2 in sets &mdash; Tiafoe wins three straight</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span class="score-val">5-7, 3-6, 7-5, 6-3, 7-6(10-6)</span><span style="font-size:11px; color:var(--ink-soft);">Down 0-2 in sets &mdash; Tiafoe wins three straight</span></div>
     </div>
     <div class="result-matchup">
       <div class="result-side"><span class="result-flag">&#127465;&#127466;</span><span class="result-seed">[1] Seed</span><span class="result-player winner">Alexander Zverev</span></div>
@@ -973,19 +1009,21 @@
   </div>
 
   <section>
-    <h2 class="section-title">Latest Match Story</h2>
+    <h2 class="section-title">The Stories So Far</h2>
 
     <div class="story-new">
-      <h3>Zverev Holds His Nerve to Reach the US Open Final</h3>
-      <p class="score-line result-line">ZVEREV [1] def. KHACHANOV &mdash; 6-3, 7-6, 7-6 (Men's SF1)</p>
-      <p>Alexander Zverev is through to the US Open final after defeating Karen Khachanov in straight sets at Arthur Ashe Stadium. The top seed took control early with a 6-3 opening set before edging a tense second-set tiebreak 7-6.</p>
-      <p>The third set was another test of composure, with neither player able to create separation through the regular games. Zverev again prevailed in the tiebreak to close out a hard-fought victory and book his place in the championship match.</p>
-      <p>Zverev now awaits the winner of the all-American semifinal between Frances Tiafoe and Ben Shelton. His victory also continues his remarkable 2026 Grand Slam run after winning Roland Garros and reaching the Wimbledon final.</p>
+      <h3>Shelton Outlasts Tiafoe in an All-American Classic to Reach His First Major Final</h3>
+      <p class="score-line result-line">SHELTON [8] def. TIAFOE [11] &mdash; 4-6, 6-3, 6-3, 7-5 (Men's SF2)</p>
+      <p>Frances Tiafoe took the opening set, but Ben Shelton settled in and took the next two 6-3, 6-3 to turn the match around. Tiafoe pushed back in the fourth, but Shelton closed it out 7-5 to reach his first career Grand Slam final. It guarantees an American finalist regardless of what happens Sunday's a first for the men's game since Andy Roddick won the title here in 2003.</p>
+      <p>Shelton now meets top seed Alexander Zverev in Sunday's final at Arthur Ashe Stadium.</p>
     </div>
-  </section>
 
-  <section>
-    <h2 class="section-title">The Stories So Far</h2>
+    <div class="story-new">
+      <h3>Zverev Survives Two Tiebreaks to Reach a Third Straight Grand Slam Final</h3>
+      <p class="score-line result-line">ZVEREV [1] def. KHACHANOV &mdash; 6-3, 7-6(7), 7-6(6) (Men's SF1)</p>
+      <p>Alexander Zverev won in straight sets, but the scoreline flatters him. He took the opening set 6-3 with ease, but unseeded Karen Khachanov pushed him to the limit from there, forcing back-to-back tiebreaks. Khachanov even erased two match points in the second-set breaker before Zverev finally closed it out, and led the deciding tiebreak 4-1 with two set points of his own before Zverev reeled off the last points to seal it.</p>
+      <p>It is Zverev's third consecutive Grand Slam final of 2026, following his Roland Garros title and his Wimbledon final defeat. He will play Ben Shelton on Sunday, looking to avenge his 2020 US Open final loss.</p>
+    </div>
 
     <div class="story-new">
       <h3>Sabalenka Breaks Through Pegula in a High-Power Semifinal</h3>
@@ -1006,25 +1044,25 @@
       <h3>Shelton Stuns Alcaraz in a Match That Ended at 3:33 a.m. &mdash; the Latest in US Open History</h3>
       <p class="score-line result-line">SHELTON [8] def. ALCARAZ [2] &mdash; 6-7(5), 6-1, 6-3, 1-6, 7-6(7) (Men's QF)</p>
       <p>Ben Shelton had never beaten Carlos Alcaraz in three previous meetings. Wednesday night at Arthur Ashe he beat him in five sets, in a match that finished at 3:33 a.m. ET &mdash; the latest finish in US Open history. Alcaraz won the first set in a tiebreak, Shelton owned the second and third, Alcaraz took the fourth convincingly. The fifth set went to 7-6(7). When the match point landed, Shelton let out the roar Flushing Meadows had been waiting for.</p>
-      <p>This ended Alcaraz's 18-match Grand Slam winning streak. Shelton now plays Tiafoe in the all-American men's semifinal on Friday. An American man is guaranteed in the final &mdash; the first since Andy Roddick won here in 2003.</p>
+      <p>This ended Alcaraz's 18-match Grand Slam winning streak. Shelton would go on to beat Tiafoe in the all-American men's semifinal to reach his first major final.</p>
     </div>
 
     <div class="story-new">
       <h3>Tiafoe Comes Back from 0-2 in Sets to Beat Michelsen in Five</h3>
-      <p class="score-line result-line">TIAFOE [11] def. MICHELSEN &mdash; 5-7, 3-6, 7-5, 6-3, 7-6, 7-6(10-6) (Men's QF)</p>
-      <p>Two sets down against Alex Michelsen, Frances Tiafoe looked like he was heading out. Instead he won three consecutive sets, taking the decisive fifth-set tiebreak 7-6(6). He meets Ben Shelton in what is the most anticipated match of the tournament: two Americans, one guaranteed finalist, and Arthur Ashe roaring behind both of them.</p>
+      <p class="score-line result-line">TIAFOE [11] def. MICHELSEN &mdash; 5-7, 3-6, 7-5, 6-3, 7-6(10-6) (Men's QF)</p>
+      <p>Two sets down against Alex Michelsen, Frances Tiafoe looked like he was heading out. Instead he won three consecutive sets, taking the decisive fifth-set tiebreak 7-6(6). He went on to meet Ben Shelton in the most anticipated match of the tournament: two Americans, one guaranteed finalist, and Arthur Ashe roaring behind both of them.</p>
     </div>
 
     <div class="story-new">
       <h3>Historic: Four Americans in Grand Slam Semis &mdash; All Top-4 Women Seeds Through</h3>
       <p class="score-line">HISTORIC &mdash; Gauff [4], Pegula [3], Tiafoe [11], Shelton [8] all in the last four</p>
-      <p>Four Americans in four Grand Slam semifinals. The men's draw guarantees a first American Grand Slam finalist since Roddick in 2003. On the women's side: Gauff and Pegula, and all four top seeds made the semis &mdash; the first time that has happened at the US Open since 1975. Either an American or the newly-crowned World No. 1 will win the women's title.</p>
+      <p>Four Americans in four Grand Slam semifinals. The men's draw guaranteed a first American Grand Slam finalist since Roddick in 2003. On the women's side: Gauff and Pegula, and all four top seeds made the semis &mdash; the first time that has happened at the US Open since 1975. Either an American or the newly-crowned World No. 1 will win the women's title.</p>
     </div>
 
     <div class="story">
       <h3>Zverev Yet to Drop a Set &mdash; Is He Unbeatable?</h3>
       <p class="score-line result-line">ZVEREV [1] def. VAN DE ZANDSCHULP &mdash; 6-2, 7-5, 6-1 (Men's QF)</p>
-      <p>Alexander Zverev has not dropped a single set all tournament. He dispatched van de Zandschulp without being tested and faces Karen Khachanov in the men's semifinal Friday. Zverev has been in two Grand Slam finals and lost both. He has never looked more ready to close one out.</p>
+      <p>Alexander Zverev had not dropped a single set all tournament. He dispatched van de Zandschulp without being tested ahead of his semifinal against Karen Khachanov. Zverev had been in two Grand Slam finals and lost both. He had never looked more ready to close one out &mdash; and three days later, he did.</p>
     </div>
 
     <div class="story">
@@ -1044,10 +1082,10 @@
         <div class="sf-item"><span class="sf-tag tbd">FINAL</span><span>Sabalenka [1] vs. Rybakina [2] &mdash; Sat Sep 12 (New York)</span></div>
       </div>
       <div class="matchup-col">
-        <h4>Men's Singles &mdash; Fri Sep 11 (NY) / Sat UAE</h4>
-        <div class="sf-item"><span class="sf-tag">SF1</span><span>Zverev [1] vs. Khachanov &mdash; 3:00 PM ET &bull; 11 PM UAE &bull; LIVE: leads 6-3, 7-6, 7-6</span></div>
-        <div class="sf-item"><span class="sf-tag">SF2 &#127482;&#127480;</span><span>Tiafoe [11] vs. Shelton [8] &mdash; 7:00 PM ET &bull; 3 AM UAE Sat</span></div>
-        <div class="sf-item"><span class="sf-tag tbd">FINAL</span><span>TBD &mdash; Sun Sep 13 (UAE)</span></div>
+        <h4>Men's Singles &mdash; SEMIFINALS COMPLETE</h4>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF1</span><span>Zverev [1] def. Khachanov &mdash; 6-3, 7-6(7), 7-6(6)</span></div>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF2</span><span>Shelton [8] def. Tiafoe [11] &mdash; 4-6, 6-3, 6-3, 7-5 &middot; Arthur Ashe Stadium</span></div>
+        <div class="sf-item"><span class="sf-tag tbd">FINAL</span><span>Zverev [1] vs. Shelton [8] &mdash; Sun Sep 13 (New York)</span></div>
       </div>
     </div>
   </section>
@@ -1059,26 +1097,26 @@
       <tbody>
         <tr class="done-row"><td>Fri, Sep 11 &middot; 3:00 AM</td><td>Thu 7:00 PM</td><td>&#10003; Women's SF1: Sabalenka [1] def. Pegula [3] &mdash; 7-5, 6-2</td></tr>
         <tr class="done-row"><td>Fri, Sep 11 &middot; 5:00 AM</td><td>Thu 9:00 PM</td><td>&#10003; Women's SF2: Rybakina [2] def. Gauff [4] &mdash; 3-6, 6-4, 6-4</td></tr>
-        <tr class="live-row"><td>Fri, Sep 11 &middot; 11:00 PM</td><td>Fri 3:00 PM</td><td>&#128308; Men's SF1 LIVE: Zverev [1] leads Khachanov 6-3, 7-6, 7-6</td></tr>
-        <tr class="sf-row"><td>Sat, Sep 12 &middot; 3:00 AM</td><td>Fri 7:00 PM</td><td>&#127482;&#127480; Men's SF2 ALL-AMERICAN: Tiafoe [11] vs. Shelton [8]</td></tr>
-        <tr class="final-row"><td>Sun, Sep 13 &middot; 12:00 AM</td><td>Sat 4:00 PM</td><td>&#127942; Women's Final: Sabalenka [1] vs. Rybakina [2]</td></tr>
-        <tr class="final-row"><td>Sun, Sep 13 &middot; 10:00 PM</td><td>Sun 2:00 PM</td><td>&#127942; Men's Final (TBD)</td></tr>
+        <tr class="done-row"><td>Fri, Sep 11 &middot; 11:00 PM</td><td>Fri 3:00 PM</td><td>&#10003; Men's SF1: Zverev [1] def. Khachanov &mdash; 6-3, 7-6(7), 7-6(6)</td></tr>
+        <tr class="done-row"><td>Sat, Sep 12 &middot; 3:00 AM</td><td>Fri 7:00 PM</td><td>&#10003; Men's SF2 ALL-AMERICAN: Shelton [8] def. Tiafoe [11] &mdash; 4-6, 6-3, 6-3, 7-5</td></tr>
+        <tr class="sf-row"><td>Sun, Sep 13 &middot; 12:00 AM</td><td>Sat 4:00 PM</td><td>&#127942; Women's Final: Sabalenka [1] vs. Rybakina [2]</td></tr>
+        <tr class="final-row"><td>Sun, Sep 13 &middot; 10:00 PM</td><td>Sun 2:00 PM</td><td>&#127942; Men's Final: Zverev [1] vs. Shelton [8]</td></tr>
       </tbody>
     </table>
     <p style="font-size:12.5px; color:var(--ink-soft); margin-top:12px; font-style:italic; font-family:'Source Serif 4',serif;">UAE = Gulf Standard Time (UTC+4). Night sessions start 7:00 PM ET = 3:00 AM UAE. All times subject to official order of play.</p>
   </section>
 
   <section>
-    <h2 class="section-title">Four Storylines Heading Into Semis</h2>
+    <h2 class="section-title">Storylines Heading Into the Finals</h2>
     <div class="watch-item">
-      <span class="badge badge-us">ALL-AMERICAN CLASH</span>
-      <h3>Tiafoe vs. Shelton: One of Them Makes the First US Men's Major Final Since Roddick</h3>
-      <p>Frances Tiafoe has reached three US Open semifinals. Ben Shelton just beat the defending champion at 3:33 a.m. One of them will play Sunday's men's final &mdash; the first American man in a Grand Slam final since Andy Roddick won right here in 2003. The crowd will be split. The atmosphere will be extraordinary.</p>
+      <span class="badge badge-us">FINAL &middot; MEN'S SF2</span>
+      <h3>Shelton Beats Tiafoe: First US Men's Major Finalist Since Roddick</h3>
+      <p>Frances Tiafoe took the opening set, but Ben Shelton won three of the next four to reach his first Grand Slam final, 4-6, 6-3, 6-3, 7-5. It guarantees an American finalist &mdash; the first for the men's game since Andy Roddick won right here in 2003. Shelton now plays top seed Alexander Zverev on Sunday.</p>
     </div>
     <div class="watch-item">
       <span class="badge badge-story">FINAL &middot; WOMEN'S SF2</span>
       <h3>Rybakina Comes Back to Beat Gauff in Three Sets</h3>
-      <p>Coco Gauff took the opening set 6-3, but Elena Rybakina responded by winning the second and third sets 6-4, 6-4. The new World No. 1 held her nerve in the closing stages to reach the US Open final, where she will face defending champion Aryna Sabalenka.</p>
+      <p>Coco Gauff took the opening set 6-3, but Elena Rybakina responded by winning the second and third sets 6-4, 6-4. The new World No. 1 held her nerve in the closing stages to reach the US Open final, where she will face defending champion Aryna Sabalenka tonight.</p>
     </div>
     <div class="watch-item">
       <span class="badge badge-story">FINAL &middot; WOMEN'S SF1</span>
@@ -1086,9 +1124,9 @@
       <p>Aryna Sabalenka converted her pre-match edge into a straight-sets victory over Jessica Pegula. She won 7-5, 6-2 in 80 minutes, breaking Pegula three times and advancing to her fourth consecutive US Open final.</p>
     </div>
     <div class="watch-item">
-      <span class="badge badge-men">MEN'S SF2 &middot; FRI</span>
-      <h3>Zverev def. Khachanov: Can Anyone Stop the Top Seed?</h3>
-      <p>Alexander Zverev has not dropped a set all tournament. He faces Karen Khachanov, who has had an unexpected run. Zverev is the heavy favourite but has twice been to Grand Slam finals and walked away without the trophy. Friday is the next test.</p>
+      <span class="badge badge-men">FINAL &middot; MEN'S SF1</span>
+      <h3>Zverev Escapes Two Tiebreaks to Beat Khachanov</h3>
+      <p>Alexander Zverev hadn't dropped a set all tournament and still didn't &mdash; but Karen Khachanov made him work for every point, taking both the second and third sets to tiebreaks. Zverev prevailed 6-3, 7-6(7), 7-6(6) to reach his third straight Grand Slam final, and will play Ben Shelton on Sunday.</p>
     </div>
   </section>
 
@@ -1097,8 +1135,8 @@
 
 <footer>
   <div class="wrap">
-    <p class="byline">US Open 2026 &mdash; Road to the Finals &middot; Semifinals Week</p>
-    <p>Updated: Saturday, 12 September 2026 &middot; LIVE update &middot; Zverev leads Khachanov 6-3, 7-6, 7-6</p>
+    <p class="byline">US Open 2026 &mdash; Road to the Finals &middot; Finals Set</p>
+    <p>Updated: Saturday, 12 September 2026 &middot; Men's final set: Zverev [1] def. Khachanov 6-3, 7-6(7), 7-6(6); Shelton [8] def. Tiafoe [11] 4-6, 6-3, 6-3, 7-5. Women's final tonight: Sabalenka [1] vs. Rybakina [2].</p>
     <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
     <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the USTA or the US Open.</p>
   </div>
@@ -1107,8 +1145,9 @@
 
 <script>
   // Scores are manually updated on this fan recap page.
-  // Women's semifinal result: Rybakina def. Gauff 3-6, 6-4, 6-4.
-  // Men's semifinal (ZVEREV DEFEATS KHACHANOV) was live/in progress, Zverev leading 2 sets to 0, as of last update; check for the latest result.
+  // Women's semifinals final: Sabalenka def. Pegula 7-5, 6-2; Rybakina def. Gauff 3-6, 6-4, 6-4.
+  // Men's semifinals final: Zverev def. Khachanov 6-3, 7-6(7), 7-6(6); Shelton def. Tiafoe 4-6, 6-3, 6-3, 7-5.
+  // Men's final: Zverev [1] vs. Shelton [8], Sunday. Women's final: Sabalenka [1] vs. Rybakina [2], tonight.
 </script>
 
 </body>
