@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>US Open 2026 — Road to the Finals</title>
-<meta name="description" content="US Open 2026 — Men's Final LIVE: Zverev leads Shelton 2-1 in sets (6-3, 7-6, Shelton wins Set 3) at Arthur Ashe Stadium. Rybakina won the Women's title Saturday.">
+<meta name="description" content="US Open 2026 complete: Alexander Zverev beats Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win the men's title at Arthur Ashe Stadium. Elena Rybakina won the women's title Saturday, beating Aryna Sabalenka.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
@@ -673,6 +673,94 @@
     .ai-legend{grid-template-columns:1fr;}
   }
 
+  /* GALLERY */
+  .gallery-note{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-style:italic;
+    margin:-10px 0 22px;
+    font-family:'Source Serif 4',serif;
+  }
+  .gallery-note code{
+    font-style:normal;
+    font-family:'Oswald',sans-serif;
+    background:var(--line);
+    padding:1px 6px;
+    border-radius:2px;
+    font-size:12px;
+  }
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:18px;
+  }
+  @media (max-width:760px){
+    .gallery-grid{grid-template-columns:repeat(2, 1fr);}
+  }
+  @media (max-width:520px){
+    .gallery-grid{grid-template-columns:1fr;}
+  }
+  .gallery-item{margin:0;}
+  .gallery-frame{
+    position:relative;
+    aspect-ratio:4/3;
+    overflow:hidden;
+    background:var(--court-blue-dark);
+    border:1px solid var(--line);
+  }
+  .gallery-frame img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .35s ease;
+  }
+  .gallery-frame:hover img{transform:scale(1.05);}
+  .gallery-placeholder{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    padding:14px;
+    background:linear-gradient(160deg, var(--court-blue-dark) 0%, var(--court-blue) 100%);
+    color:#C7D1E8;
+  }
+  .gallery-placeholder svg{width:34px;height:34px;color:var(--ball);opacity:0.9;}
+  .gallery-placeholder .ph-label{
+    font-family:'Oswald',sans-serif;
+    font-size:10.5px;
+    letter-spacing:0.3px;
+    color:#9AA8CC;
+  }
+  .gallery-placeholder code{
+    font-family:'Oswald',sans-serif;
+    font-size:10.5px;
+    background:rgba(255,255,255,0.12);
+    color:var(--ball);
+    padding:2px 6px;
+    border-radius:2px;
+    word-break:break-all;
+  }
+  .gallery-item figcaption{
+    margin-top:9px;
+    font-family:'Oswald',sans-serif;
+    font-size:13.5px;
+    color:var(--ink);
+  }
+  .gallery-item figcaption .role{
+    display:block;
+    font-family:'Source Serif 4',serif;
+    font-style:italic;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:1px;
+  }
 </style>
 </head>
 <body>
@@ -686,7 +774,7 @@
 
 <!-- MATCH DAY ALERT -->
 <div class="alert-band">
-  &#127942; MEN'S FINAL LIVE: ZVEREV vs SHELTON &middot; Zverev leads 2 sets to 1 (6-3, 7-6, 5-7), 4th set 3-2
+  &#127942; FINAL &mdash; ZVEREV def. SHELTON &middot; 6-3, 7-6(2), 5-7, 6-2 &mdash; ZVEREV WINS THE US OPEN
   <span class="sep">&nbsp;|&nbsp;</span>
   &#10003; FINAL &mdash; RYBAKINA def. SABALENKA &middot; 6-4, 5-7, 6-2 &mdash; RYBAKINA WINS THE US OPEN
   <span class="sep">&nbsp;|&nbsp;</span>
@@ -697,14 +785,14 @@
 
 <div class="ticker-band">
   <div class="wrap">
-    <div class="ticker-head"><span class="live-dot"></span> MEN'S FINAL LIVE &mdash; ZVEREV vs SHELTON &bull; ARTHUR ASHE STADIUM</div>
+    <div class="ticker-head">TOURNAMENT COMPLETE &mdash; ZVEREV WINS THE US OPEN &bull; ARTHUR ASHE STADIUM</div>
     <div class="ticker-row">
-      <!-- Latest event first: Men's Final LIVE -->
+      <!-- Latest event first: Men's Final FINAL -->
       <div class="sb-card matchday">
-        <div class="sb-tour">US Open &middot; MEN'S FINAL &middot; Arthur Ashe Stadium &middot; LIVE</div>
-        <div class="sb-name"><span class="sb-winner">&#127465;&#127466; Zverev [1]</span></div>
-        <div class="sb-name"><span>&#127482;&#127480; Shelton [8]</span></div>
-        <div class="sb-status" style="color:var(--red-live);font-weight:800;">LIVE &middot; Zverev leads 2 sets to 1 &middot; 6-3, 7-6, 5-7 &middot; 4th set 3-2 Zverev</div>
+        <div class="sb-tour">US Open &middot; MEN'S FINAL &middot; Arthur Ashe Stadium &middot; FINAL</div>
+        <div class="sb-name"><span class="sb-winner">&#127465;&#127466; Zverev [1] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Shelton [8] OUT</span></div>
+        <div class="sb-status completed">6-3, 7-6(2), 5-7, 6-2 &mdash; Zverev wins his second major of 2026</div>
       </div>
       <!-- Women's Final: FINAL -->
       <div class="sb-card matchday">
@@ -725,13 +813,6 @@
         <div class="sb-name"><span class="sb-winner">&#127465;&#127466; Zverev [1] &#10003;</span></div>
         <div class="sb-name"><span style="opacity:0.6;">&#127479;&#127482; Khachanov OUT</span></div>
         <div class="sb-status completed">6-3, 7-6(7), 7-6(6) &mdash; third straight Slam final</div>
-      </div>
-      <!-- Men's Final upcoming -->
-      <div class="sb-card upcoming-sf">
-        <div class="sb-tour">US Open &middot; MEN'S FINAL &middot; Sunday</div>
-        <div class="sb-name"><span>&#127465;&#127466; Zverev [1]</span></div>
-        <div class="sb-name"><span>&#127482;&#127480; Shelton [8]</span></div>
-        <div class="sb-status upcoming">&#128336; Sun Sep 13, 10:00 PM UAE &middot; Sun 2:00 PM ET</div>
       </div>
       <!-- Women's SFs: FINAL -->
       <div class="sb-card matchday">
@@ -763,15 +844,15 @@
   </div>
 </div>
 
-<!-- MATCH DAY BANNER for Men's Final LIVE -->
-<div class="matchday-banner">
+<!-- MATCH DAY BANNER: Tournament complete -->
+<div class="matchday-banner" style="background:var(--green-result);">
   <div class="md-icon">&#127942;</div>
   <div class="md-body">
-    <h2>MEN'S FINAL LIVE &mdash; ZVEREV LEADS 3-2 IN THE FOURTH</h2>
-    <p>Alexander Zverev took the first two sets from Ben Shelton, but Shelton fought back to win the third 7-5. Zverev leads 3-2 in sets and now leads 3-2 in the fourth set.</p>
+    <h2>ZVEREV WINS THE US OPEN</h2>
+    <p>Alexander Zverev has beaten Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win the men's title, denying the American a shot at ending the 23-year US Grand Slam drought. The 2026 US Open is complete.</p>
   </div>
   <div class="md-times">
-    <span><strong style="color:var(--red-live);">LIVE</strong> &bull; Zverev leads 2 sets to 1 &middot; 6-3, 7-6, 5-7 &middot; 4th set 3-2 Zverev</span>
+    <span><strong>FINAL</strong> &bull; Zverev def. Shelton &middot; 6-3, 7-6(2), 5-7, 6-2</span>
     <span>YESTERDAY &bull; Rybakina def. Sabalenka &middot; Women's Champion</span>
   </div>
 </div>
@@ -789,9 +870,9 @@
       <line x1="145" y1="10" x2="155" y2="10" stroke="currentColor" stroke-width="4"/>
       <line x1="145" y1="590" x2="155" y2="590" stroke="currentColor" stroke-width="4"/>
     </svg>
-    <p class="dateline">Sunday, September 13, 2026 &mdash; Dubai &middot; Men's Final LIVE</p>
-    <h1 class="headline">Zverev Leads 3-2 in the Fourth Set Against Shelton in the US Open Final</h1>
-    <p class="dek">Alexander Zverev took the first two sets 6-3, 7-6 before Ben Shelton responded by winning the third set 7-5. Zverev leads 3-2 in sets and 3-2 in the fourth set of the US Open men's final at Arthur Ashe Stadium. Elena Rybakina claimed the women's title Saturday, beating Aryna Sabalenka 6-4, 5-7, 6-2.</p>
+    <p class="dateline">Sunday, September 13, 2026 &mdash; Dubai &middot; Tournament Complete</p>
+    <h1 class="headline">Zverev Wins the US Open, Denying Shelton's Bid for History</h1>
+    <p class="dek">Alexander Zverev has beaten Ben Shelton 6-3, 7-6(2), 5-7, 6-2 at Arthur Ashe Stadium to win his second Grand Slam title of 2026 and complete a hat-trick of major finals this season. Shelton, who took the third set to keep his hopes alive, falls short in his bid to become the first American man to win a major since Andy Roddick in 2003. Elena Rybakina won the women's title Saturday, beating Aryna Sabalenka 6-4, 5-7, 6-2 — closing the book on the 2026 US Open.</p>
   </section>
 
   <div class="stage-bar" aria-label="Tournament progress">
@@ -800,41 +881,38 @@
     <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 32</span></div>
     <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 16</span></div>
     <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Quarterfinals</span></div>
-    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">&#10003; Semifinals</span></div>
-    <div class="stage-item"><span class="stage-dot now"></span><span class="stage-name">Finals</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Semifinals</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">&#10003; Finals</span></div>
   </div>
 
-  <!-- MEN'S FINAL: LIVE -->
-  <div class="sf-preview-panel live-panel">
-    <h2><span class="live-badge">LIVE</span> &#127942; MEN'S FINAL &mdash; ZVEREV vs SHELTON</h2>
-    <p class="panel-sub">Arthur Ashe Stadium &middot; LIVE &mdash; Zverev leads 2 sets to 1; 4th set 3-2 Zverev</p>
-    <div class="live-score-strip" style="background:rgba(214,69,69,0.08);border-color:rgba(214,69,69,0.4);" aria-label="Live: Alexander Zverev vs Ben Shelton, Zverev leads 2 sets to 1; 4th set 3-2 Zverev">
+  <!-- MEN'S FINAL: FINAL -->
+  <div class="sf-preview-panel" style="border-left-color:var(--green-result);">
+    <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127942; MEN'S FINAL &mdash; ZVEREV WINS THE US OPEN</h2>
+    <p class="panel-sub">Arthur Ashe Stadium &middot; Alexander Zverev denies Ben Shelton's bid to end the American men's major drought</p>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final: Alexander Zverev defeats Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win the US Open">
       <div class="live-score-player">🇩🇪 Alexander Zverev [1]</div>
-      <div class="live-score-sets"><div class="live-score-main" style="color:var(--red-live);">6-3, 7-6, 5-7, 2-1</div><div class="live-score-caption" style="color:var(--red-live);">LIVE · SET 4: ZVEREV 2-1</div></div>
+      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">6-3, 7-6(2), 5-7, 6-2</div><div class="live-score-caption" style="color:var(--green-result);">FINAL &middot; ZVEREV WINS</div></div>
       <div class="live-score-player right">🇺🇸 Ben Shelton [8]</div>
     </div>
-    <div class="sf-matchup-row" style="border-color:rgba(214,69,69,0.35);">
+    <div class="sf-matchup-row">
       <div class="sf-side">
-        <div><span class="sf-flag">&#127465;&#127466;</span><span class="sf-seed">[1] Seed &middot; Reached third straight Grand Slam final</span></div>
+        <div><span class="sf-flag">&#127465;&#127466;</span><span class="sf-seed">[1] Seed &middot; US OPEN CHAMPION</span></div>
         <div class="sf-player">Alexander Zverev</div>
-        <div class="sf-note">Beat Khachanov (SF) 6-3, 7-6(7), 7-6(6)</div>
+        <div class="sf-note" style="background:rgba(26,107,58,0.12);color:var(--green-result);">CHAMPION &middot; Beat Khachanov (SF) 6-3, 7-6(7), 7-6(6)</div>
       </div>
       <div class="sf-vs">VS</div>
       <div class="sf-side" style="text-align:right;">
-        <div><span class="sf-seed">[8] Seed &middot; First career major final</span><span class="sf-flag"> &#127482;&#127480;</span></div>
+        <div><span class="sf-seed">[8] Seed &middot; Runner-up</span><span class="sf-flag"> &#127482;&#127480;</span></div>
         <div class="sf-player">Ben Shelton</div>
         <div class="sf-note">Beat Tiafoe (SF) 4-6, 6-3, 6-3, 7-5</div>
       </div>
       <div class="sf-meta">
-        <span>Men's Final &middot; Arthur Ashe Stadium &middot; LIVE</span>
-        <span><span class="uae">LIVE NOW</span> &nbsp;|&nbsp; Started 2:00 PM ET / 10:00 PM UAE &middot; Zverev leads 3-2 in sets &middot; Shelton wins Set 3, 7-5</span>
+        <span>Men's Final &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">Zverev wins 6-3, 7-6(2), 5-7, 6-2</span> &nbsp;|&nbsp; FINAL</span>
       </div>
     </div>
-    <div style="margin-top:16px;padding:14px 16px;background:rgba(255,255,255,0.06);border-left:3px solid var(--ball);font-size:13px;line-height:1.6;color:#D8DFF2;">
-      <strong style="color:var(--ball);font-family:'Oswald',sans-serif;letter-spacing:0.5px;">EXPERT PREDICTION</strong> &mdash; Zverev enters as the narrow favorite, having beaten Shelton in all five of their previous meetings without dropping a set. But most experts favor Shelton on sentiment and home support: a partisan, sold-out Arthur Ashe crowd is fully behind the American as he bids to end the 23-year US drought for a men's Grand Slam champion. Consensus is split, with several picking Shelton in four or five sets on the strength of the crowd and his red-hot serve, while others back Zverev's dominant head-to-head record to hold.
-    </div>
     <div style="margin-top:10px;font-size:13px;color:#9AA8CC;">
-      <strong style="color:#D8DFF2;">In the stands:</strong> Today's men's final has drawn Brad Pitt, Katie Holmes, New York Knicks star Jalen Brunson, and Anna Wintour among the celebrity sightings so far. Unlike last year, Donald Trump isn't expected &mdash; he's on a trip to Ireland during this final. Ben Shelton's girlfriend, USWNT star Trinity Rodman, is missing it too, as her club side has a match of its own today. Saturday's women's final drew its own stacked crowd &mdash; Maria Sharapova (marking 20 years since her 2006 US Open title), Paris Hilton, Billie Jean King, Amy Adams, Elizabeth Banks and Fran Drescher were all courtside.
+      <strong style="color:#D8DFF2;">In the stands:</strong> Today's men's final drew Brad Pitt, Katie Holmes, New York Knicks star Jalen Brunson, and Anna Wintour among the celebrity sightings. Saturday's women's final drew its own stacked crowd &mdash; Maria Sharapova (marking 20 years since her 2006 US Open title), Paris Hilton, Billie Jean King, Amy Adams, Elizabeth Banks and Fran Drescher were all courtside.
     </div>
   </div>
 
@@ -1039,6 +1117,13 @@
     <h2 class="section-title">The Stories So Far</h2>
 
     <div class="story-new">
+      <h3>Zverev Wins the US Open, Denying Shelton's Bid for History</h3>
+      <p class="score-line result-line">ZVEREV [1] def. SHELTON [8] &mdash; 6-3, 7-6(2), 5-7, 6-2 (Men's Final)</p>
+      <p>Alexander Zverev completed a career-defining season, beating Ben Shelton to win his second Grand Slam title of 2026 after his triumph at Roland Garros in the spring. Zverev took the first two sets, closing out the second in a tiebreak, before Shelton found his range and clawed back to win the third 7-5, giving the sold-out Arthur Ashe crowd hope of a first American men's major champion since Andy Roddick in 2003. Zverev regrouped and closed out the fourth set 6-2 to seal the title.</p>
+      <p>It's Zverev's third straight Grand Slam final of the year &mdash; following his Roland Garros title and Wimbledon runner-up finish &mdash; and his second career major, to go with his 2020 US Open final loss to Dominic Thiem. He extends his head-to-head record over Shelton to 6-0. For Shelton, it's a heartbreaking near-miss after a fortnight that included a record-late win over Carlos Alcaraz and a four-set win over close friend Frances Tiafoe in the semifinal &mdash; but the 23-year-old leaves New York as the first American man to reach a Grand Slam final since Taylor Fritz at the 2024 US Open.</p>
+    </div>
+
+    <div class="story-new">
       <h3>Rybakina Denies Sabalenka's Three-Peat, Wins First US Open Title</h3>
       <p class="score-line result-line">RYBAKINA [2] def. SABALENKA [1] &mdash; 6-4, 5-7, 6-2 (Women's Final)</p>
       <p>Elena Rybakina completed a remarkable season by beating Aryna Sabalenka to win the US Open, coming back from a set down to deny the two-time defending champion a shot at joining Chris Evert and Serena Williams as the only three-peat winners at Flushing Meadows. Rybakina took the opening set 6-4, but Sabalenka fought back to level the match at 7-5 in the second, setting up a decider at Arthur Ashe Stadium.</p>
@@ -1048,37 +1133,37 @@
     <div class="story-new">
       <h3>Shelton Outlasts Tiafoe in an All-American Classic to Reach His First Major Final</h3>
       <p class="score-line result-line">SHELTON [8] def. TIAFOE [11] &mdash; 4-6, 6-3, 6-3, 7-5 (Men's SF2)</p>
-      <p>Frances Tiafoe took the opening set, but Ben Shelton settled in and took the next two 6-3, 6-3 to turn the match around. Tiafoe pushed back in the fourth, but Shelton closed it out 7-5 to reach his first career Grand Slam final. It guarantees an American finalist regardless of what happens Sunday's a first for the men's game since Andy Roddick won the title here in 2003.</p>
-      <p>Shelton now meets top seed Alexander Zverev in Sunday's final at Arthur Ashe Stadium.</p>
+      <p>Frances Tiafoe took the opening set, but Ben Shelton settled in and took the next two 6-3, 6-3 to turn the match around. Tiafoe pushed back in the fourth, but Shelton closed it out 7-5 to reach his first career Grand Slam final. It guaranteed an American finalist for the first time since Andy Roddick won the title here in 2003.</p>
+      <p>Shelton went on to meet top seed Alexander Zverev in Sunday's final at Arthur Ashe Stadium, a match Zverev won in four sets (see above).</p>
     </div>
 
     <div class="story-new">
       <h3>Zverev Survives Two Tiebreaks to Reach a Third Straight Grand Slam Final</h3>
       <p class="score-line result-line">ZVEREV [1] def. KHACHANOV &mdash; 6-3, 7-6(7), 7-6(6) (Men's SF1)</p>
       <p>Alexander Zverev won in straight sets, but the scoreline flatters him. He took the opening set 6-3 with ease, but unseeded Karen Khachanov pushed him to the limit from there, forcing back-to-back tiebreaks. Khachanov even erased two match points in the second-set breaker before Zverev finally closed it out, and led the deciding tiebreak 4-1 with two set points of his own before Zverev reeled off the last points to seal it.</p>
-      <p>It is Zverev's third consecutive Grand Slam final of 2026, following his Roland Garros title and his Wimbledon final defeat. He will play Ben Shelton on Sunday, looking to avenge his 2020 US Open final loss.</p>
+      <p>It was Zverev's third consecutive Grand Slam final of 2026, following his Roland Garros title and his Wimbledon final defeat. He went on to beat Ben Shelton in Sunday's final to win the title (see above).</p>
     </div>
 
     <div class="story-new">
       <h3>Sabalenka Breaks Through Pegula in a High-Power Semifinal</h3>
       <p class="score-line result-line">SABALENKA [1] def. PEGULA [3] &mdash; 7-5, 6-2 (Women's SF1)</p>
-      <p>Aryna Sabalenka is back in the US Open final for a fourth consecutive year. Jessica Pegula stayed with the defending champion through most of the opening set, using accurate first serves and quick, flat exchanges to keep the match level. Sabalenka finally turned the pressure into a breakthrough at 5-5, winning the last two games to take the first set 7-5.</p>
-      <p>The second set was a different story. Sabalenka increased the pressure on Pegula's second serve and repeatedly attacked from the baseline. She broke in the fourth game to move ahead 3-2, then added another break at 5-2 before closing out the match in 80 minutes. She finished with seven aces and 29 winners against 20 unforced errors, while Pegula could not find another break-point chance after her lone opportunity late in the first set.</p>
-      <p>The victory sends Sabalenka into a fourth consecutive US Open final and leaves her one win away from a three-peat. She will face Elena Rybakina in Saturday's final.</p>
+      <p>Aryna Sabalenka reached the US Open final for a fourth consecutive year. Jessica Pegula stayed with the defending champion through most of the opening set, using accurate first serves and quick, flat exchanges to keep the match level. Sabalenka finally turned the pressure into a breakthrough at 5-5, winning the last two games to take the first set 7-5.</p>
+      <p>The second set was a different story. Sabalenka increased the pressure on Pegula's second serve and repeatedly attacked from the baseline. She broke in the fourth game to move ahead 3-1, then added another break at 5-2 before closing out the match in 80 minutes. She finished with seven aces and 29 winners against 20 unforced errors, while Pegula could not find another break-point chance after her lone opportunity late in the first set.</p>
+      <p>The victory sent Sabalenka into a fourth consecutive US Open final, where she lost to Elena Rybakina (see above).</p>
     </div>
 
     <div class="story-new">
       <h3>Rybakina Comes Back to Beat Gauff and Reach the US Open Final</h3>
       <p class="score-line result-line">RYBAKINA [2] def. GAUFF [4] &mdash; 3-6, 6-4, 6-4 (Women's SF2)</p>
       <p>Coco Gauff made the stronger start and took the opening set 6-3, using aggressive returns and a much-improved serve to put Elena Rybakina under pressure. The new world No. 1 responded in the second set, finding more success against Gauff's forehand and leveling the match 6-4, as Gauff's error count began to climb.</p>
-      <p>The deciding set stayed close, but Gauff's serve and forehand continued to break down under the pressure. Rybakina steadied herself, capitalized on the mistakes, and closed out the third set 6-4 to complete the comeback. Rybakina now advances to her first US Open final, where she will face defending champion Aryna Sabalenka on Saturday.</p>
+      <p>The deciding set stayed close, but Gauff's serve and forehand continued to break down under the pressure. Rybakina steadied herself, capitalized on the mistakes, and closed out the third set 6-4 to complete the comeback. Rybakina advanced to her first US Open final, where she beat defending champion Aryna Sabalenka for the title (see above).</p>
     </div>
 
     <div class="story-new">
       <h3>Shelton Stuns Alcaraz in a Match That Ended at 3:33 a.m. &mdash; the Latest in US Open History</h3>
       <p class="score-line result-line">SHELTON [8] def. ALCARAZ [2] (Men's QF)</p>
       <p>Ben Shelton had never beaten Carlos Alcaraz in three previous meetings. Wednesday night at Arthur Ashe he beat him in five sets, in a match that finished at 3:33 a.m. ET &mdash; the latest finish in US Open history. Alcaraz won the first set in a tiebreak, Shelton owned the second and third, and Alcaraz took the fourth convincingly before Shelton closed it out in a deciding-set tiebreak. When the match point landed, Shelton let out the roar Flushing Meadows had been waiting for.</p>
-      <p>This ended Alcaraz's 18-match Grand Slam winning streak. Shelton would go on to beat Tiafoe in the all-American men's semifinal to reach his first major final.</p>
+      <p>This ended Alcaraz's 18-match Grand Slam winning streak. Shelton would go on to beat Tiafoe in the all-American men's semifinal to reach his first major final, where he fell to Alexander Zverev (see above).</p>
     </div>
 
     <div class="story-new">
@@ -1090,19 +1175,19 @@
     <div class="story-new">
       <h3>Historic: Four Americans in Grand Slam Semis &mdash; All Top-4 Women Seeds Through</h3>
       <p class="score-line">HISTORIC &mdash; Gauff [4], Pegula [3], Tiafoe [11], Shelton [8] all in the last four</p>
-      <p>Four Americans in four Grand Slam semifinals. The men's draw guaranteed a first American Grand Slam finalist since Roddick in 2003. On the women's side: Gauff and Pegula, and all four top seeds made the semis &mdash; the first time that has happened at the US Open since 1975. Either an American or the newly-crowned World No. 1 will win the women's title.</p>
+      <p>Four Americans in four Grand Slam semifinals. The men's draw guaranteed a first American Grand Slam finalist since Roddick in 2003. On the women's side: Gauff and Pegula, and all four top seeds made the semis &mdash; the first time that has happened at the US Open since 1975. In the end, it was Rybakina's title and Zverev's, but the American depth at this tournament was historic.</p>
     </div>
 
     <div class="story">
       <h3>Zverev Yet to Drop a Set &mdash; Is He Unbeatable?</h3>
       <p class="score-line result-line">ZVEREV [1] def. VAN DE ZANDSCHULP (Men's QF)</p>
-      <p>Alexander Zverev had not dropped a single set all tournament. He dispatched van de Zandschulp without being tested ahead of his semifinal against Karen Khachanov. Zverev had been in two Grand Slam finals and lost both. He had never looked more ready to close one out &mdash; and three days later, he did.</p>
+      <p>Alexander Zverev had not dropped a single set all tournament. He dispatched van de Zandschulp without being tested ahead of his semifinal against Karen Khachanov. Zverev had been in two Grand Slam finals and lost both. He had never looked more ready to close one out &mdash; and he ultimately did, winning the title (see above).</p>
     </div>
 
     <div class="story">
       <h3>Sinner Out Before It Started &mdash; Djokovic Falls in Round 1</h3>
       <p class="score-line">EARLY EXITS &mdash; No. 1 Sinner (knee), Djokovic R1 loss to Navone</p>
-      <p>World No. 1 Jannik Sinner withdrew before the tournament with a right knee injury. Novak Djokovic was eliminated in the first round by Mariano Navone &mdash; only his third career first-round loss in a major, and the first time none of the Big Three reached Round 2 since the 2003 French Open. Both exits opened the draw wide, and the Americans walked through it.</p>
+      <p>World No. 1 Jannik Sinner withdrew before the tournament with a right knee injury. Novak Djokovic was eliminated in the first round by Mariano Navone &mdash; only his third career first-round loss in a major, and the first time none of the Big Three reached Round 2 since the 2003 French Open. Both exits opened the draw wide, and Zverev made the most of it, winning the title.</p>
     </div>
   </section>
 
@@ -1116,10 +1201,10 @@
         <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL</span><span>Rybakina [2] def. Sabalenka [1] &mdash; 6-4, 5-7, 6-2 (New York)</span></div>
       </div>
       <div class="matchup-col">
-        <h4>Men's Singles &mdash; FINAL LIVE</h4>
+        <h4>Men's Singles &mdash; CHAMPION CROWNED</h4>
         <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF1</span><span>Zverev [1] def. Khachanov &mdash; 6-3, 7-6(7), 7-6(6)</span></div>
         <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF2</span><span>Shelton [8] def. Tiafoe [11] &mdash; 4-6, 6-3, 6-3, 7-5 &middot; Arthur Ashe Stadium</span></div>
-        <div class="sf-item"><span class="sf-tag" style="background:var(--red-live);color:#fff;">LIVE</span><span>Zverev [1] vs. Shelton [8] &mdash; Zverev leads 2 sets to 0 (6-3, 7-6), Set 3 underway (New York)</span></div>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL</span><span>Zverev [1] def. Shelton [8] &mdash; 6-3, 7-6(2), 5-7, 6-2 (New York)</span></div>
       </div>
     </div>
   </section>
@@ -1134,38 +1219,118 @@
         <tr class="done-row"><td>Fri, Sep 11 &middot; 11:00 PM</td><td>Fri 3:00 PM</td><td>&#10003; Men's SF1: Zverev [1] def. Khachanov &mdash; 6-3, 7-6(7), 7-6(6)</td></tr>
         <tr class="done-row"><td>Sat, Sep 12 &middot; 3:00 AM</td><td>Fri 7:00 PM</td><td>&#10003; Men's SF2 ALL-AMERICAN: Shelton [8] def. Tiafoe [11] &mdash; 4-6, 6-3, 6-3, 7-5</td></tr>
         <tr class="done-row"><td>Sun, Sep 13 &middot; 12:00 AM</td><td>Sat 4:00 PM</td><td>&#10003; Women's Final: Rybakina [2] def. Sabalenka [1] &mdash; 6-4, 5-7, 6-2</td></tr>
-        <tr class="live-row"><td>Sun, Sep 13 &middot; 10:00 PM</td><td>Sun 2:00 PM</td><td>&#128308; Men's Final LIVE: Zverev [1] leads Shelton [8] 2 sets to 0 (6-3, 7-6)</td></tr>
+        <tr class="done-row"><td>Sun, Sep 13 &middot; 10:00 PM</td><td>Sun 2:00 PM</td><td>&#10003; Men's Final: Zverev [1] def. Shelton [8] &mdash; 6-3, 7-6(2), 5-7, 6-2</td></tr>
       </tbody>
     </table>
-    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:12px; font-style:italic; font-family:'Source Serif 4',serif;">UAE = Gulf Standard Time (UTC+4). Night sessions start 7:00 PM ET = 3:00 AM UAE. All times subject to official order of play.</p>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:12px; font-style:italic; font-family:'Source Serif 4',serif;">UAE = Gulf Standard Time (UTC+4). The 2026 US Open is complete.</p>
   </section>
 
   <section>
-    <h2 class="section-title">Storylines Heading Into the Finals</h2>
+    <h2 class="section-title">Storylines From the Finals</h2>
+    <div class="watch-item">
+      <span class="badge badge-story" style="background:var(--green-result);">FINAL &middot; MEN'S FINAL</span>
+      <h3>Zverev Wins the US Open, Ending Shelton's Bid for History</h3>
+      <p>Alexander Zverev beat Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win his second Grand Slam title of the year, completing a run of three straight major finals. Shelton fell short in his bid to become the first American man to win a major since Andy Roddick in 2003.</p>
+    </div>
     <div class="watch-item">
       <span class="badge badge-story" style="background:var(--green-result);">FINAL &middot; WOMEN'S FINAL</span>
       <h3>Rybakina Beats Sabalenka to Win the US Open</h3>
-      <p>Elena Rybakina came back from a set down to beat Aryna Sabalenka 6-4, 5-7, 6-2, denying the two-time defending champion a three-peat and claiming her third career Grand Slam title. She'll officially take over the World No. 1 ranking on Monday.</p>
+      <p>Elena Rybakina came back from a set down to beat Aryna Sabalenka 6-4, 5-7, 6-2, denying the two-time defending champion a three-peat and claiming her third career Grand Slam title. She takes over the World No. 1 ranking on Monday.</p>
     </div>
     <div class="watch-item">
       <span class="badge badge-us">FINAL &middot; MEN'S SF2</span>
       <h3>Shelton Beats Tiafoe: First US Men's Major Finalist Since Roddick</h3>
-      <p>Frances Tiafoe took the opening set, but Ben Shelton won three of the next four to reach his first Grand Slam final, 4-6, 6-3, 6-3, 7-5. It guarantees an American finalist &mdash; the first for the men's game since Andy Roddick won right here in 2003. Shelton now plays top seed Alexander Zverev on Sunday.</p>
+      <p>Frances Tiafoe took the opening set, but Ben Shelton won three of the next four to reach his first Grand Slam final, 4-6, 6-3, 6-3, 7-5 &mdash; the first American men's finalist since Andy Roddick won right here in 2003.</p>
     </div>
     <div class="watch-item">
       <span class="badge badge-story">FINAL &middot; WOMEN'S SF2</span>
       <h3>Rybakina Comes Back to Beat Gauff in Three Sets</h3>
-      <p>Coco Gauff took the opening set 6-3, but Elena Rybakina responded by winning the second and third sets 6-4, 6-4. The new World No. 1 held her nerve in the closing stages to reach the US Open final, where she went on to beat defending champion Aryna Sabalenka for the title.</p>
-    </div>
-    <div class="watch-item">
-      <span class="badge badge-story">FINAL &middot; WOMEN'S SF1</span>
-      <h3>Sabalenka Defeats Pegula 7-5, 6-2 to Reach Fourth Straight US Open Final</h3>
-      <p>Aryna Sabalenka converted her pre-match edge into a straight-sets victory over Jessica Pegula. She won 7-5, 6-2 in 80 minutes, breaking Pegula three times and advancing to her fourth consecutive US Open final.</p>
+      <p>Coco Gauff took the opening set 6-3, but Elena Rybakina responded by winning the second and third sets 6-4, 6-4 to reach the US Open final, where she went on to beat defending champion Aryna Sabalenka for the title.</p>
     </div>
     <div class="watch-item">
       <span class="badge badge-men">FINAL &middot; MEN'S SF1</span>
       <h3>Zverev Escapes Two Tiebreaks to Beat Khachanov</h3>
-      <p>Alexander Zverev hadn't dropped a set all tournament and still didn't &mdash; but Karen Khachanov made him work for every point, taking both the second and third sets to tiebreaks. Zverev prevailed 6-3, 7-6(7), 7-6(6) to reach his third straight Grand Slam final, and will play Ben Shelton on Sunday.</p>
+      <p>Alexander Zverev hadn't dropped a set all tournament and still didn't &mdash; but Karen Khachanov made him work for every point, taking both the second and third sets to tiebreaks. Zverev prevailed 6-3, 7-6(7), 7-6(6) to reach, and ultimately win, his third straight Grand Slam final.</p>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <h2 class="section-title">Championship Gallery</h2>
+    <p class="gallery-note">Drop your own photos into a <code>photos/</code> folder next to this file, using the exact filenames shown below &mdash; each frame will pick them up automatically. Until then, a placeholder is shown.</p>
+    <div class="gallery-grid">
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 5H3v2a4 4 0 0 0 4 4M17 5h4v2a4 4 0 0 1-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>photos/zverev-champion.jpg</code>
+          </div>
+          <img src="photos/zverev-champion.jpg" alt="Alexander Zverev holding the US Open men's singles trophy" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Alexander Zverev<span class="role">Men's Singles Champion</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 5H3v2a4 4 0 0 0 4 4M17 5h4v2a4 4 0 0 1-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>photos/rybakina-champion.jpg</code>
+          </div>
+          <img src="photos/rybakina-champion.jpg" alt="Elena Rybakina holding the US Open women's singles trophy" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Elena Rybakina<span class="role">Women's Singles Champion</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 3v18M4 9h4M4 15h4" stroke-linecap="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>photos/trophy-ceremony.jpg</code>
+          </div>
+          <img src="photos/trophy-ceremony.jpg" alt="US Open trophy presentation ceremony at Arthur Ashe Stadium" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Trophy Ceremony<span class="role">Arthur Ashe Stadium</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4a12 12 0 0 1 0 16M12 4a12 12 0 0 0 0 16" /></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>photos/shelton-final.jpg</code>
+          </div>
+          <img src="photos/shelton-final.jpg" alt="Ben Shelton during the men's singles final" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Ben Shelton<span class="role">Men's Runner-up</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4a12 12 0 0 1 0 16M12 4a12 12 0 0 0 0 16" /></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>photos/sabalenka-final.jpg</code>
+          </div>
+          <img src="photos/sabalenka-final.jpg" alt="Aryna Sabalenka during the women's singles final" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Aryna Sabalenka<span class="role">Women's Runner-up</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 20h18M5 20V10l7-6 7 6v10M9 20v-6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>photos/arthur-ashe-stadium.jpg</code>
+          </div>
+          <img src="photos/arthur-ashe-stadium.jpg" alt="Arthur Ashe Stadium during the 2026 US Open" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Arthur Ashe Stadium<span class="role">Flushing Meadows, New York</span></figcaption>
+      </figure>
+
     </div>
   </section>
 
@@ -1174,8 +1339,8 @@
 
 <footer>
   <div class="wrap">
-    <p class="byline">US Open 2026 &mdash; Road to the Finals &middot; Men's Final Live</p>
-    <p>Updated: Sunday, 13 September 2026 &middot; LIVE: Zverev [1] leads Shelton [8] two sets to one (6-3, 7-6, 5-7), 4th set Zverev leads 1-0. Rybakina [2] def. Sabalenka [1] 6-4, 5-7, 6-2 to win the women's title Saturday.</p>
+    <p class="byline">US Open 2026 &mdash; Road to the Finals &middot; Tournament Complete</p>
+    <p>Final: Zverev [1] def. Shelton [8] 6-3, 7-6(2), 5-7, 6-2 to win the men's title Sunday. Rybakina [2] def. Sabalenka [1] 6-4, 5-7, 6-2 to win the women's title Saturday. The 2026 US Open is complete.</p>
     <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
     <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the USTA or the US Open.</p>
   </div>
@@ -1187,7 +1352,7 @@
   // Women's semifinals final: Sabalenka def. Pegula 7-5, 6-2; Rybakina def. Gauff 3-6, 6-4, 6-4.
   // Men's semifinals final: Zverev def. Khachanov 6-3, 7-6(7), 7-6(6); Shelton def. Tiafoe 4-6, 6-3, 6-3, 7-5.
   // Women's final result: Rybakina def. Sabalenka 6-4, 5-7, 6-2 to win the 2026 US Open (her 3rd career major).
-  // Men's final: Zverev [1] vs. Shelton [8] is LIVE — Zverev leads 6-3, 7-6 (two sets to none), Set 3 underway as of last update; check for the latest score.
+  // Men's final result: Zverev def. Shelton 6-3, 7-6(2), 5-7, 6-2 to win the 2026 US Open (his 2nd major of the year). Tournament complete.
 </script>
 
 </body>
