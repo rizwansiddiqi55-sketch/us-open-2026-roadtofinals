@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>US Open 2026 — Road to the Finals</title>
+<meta name="description" content="US Open 2026 complete: Alexander Zverev beats Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win the men's title at Arthur Ashe Stadium. Elena Rybakina won the women's title Saturday, beating Aryna Sabalenka.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --court-blue-dark:#0F2350;
+    --court-blue:#1B3E82;
+    --court-blue-mid:#2F5DA8;
+    --chalk:#F5F6F3;
+    --chalk-card:#FFFFFF;
+    --ink:#12141A;
+    --ink-soft:#4A4F5A;
+    --line:#DCE0E6;
+    --ball:#C9DE3A;
+    --ball-deep:#9DB018;
+    --red-live:#D64545;
+    --gold:#E8B923;
+    --green-result:#1A6B3A;
+    --green-result-bg:#E8F5EE;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --chalk:#111519;
+      --chalk-card:#1A1F28;
+      --ink:#E8EAF0;
+      --ink-soft:#8A90A0;
+      --line:#2A3040;
+      --court-blue-dark:#0A1830;
+      --green-result-bg:#0D2E1A;
+      --green-result:#4ACA7A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --chalk:#111519;
+    --chalk-card:#1A1F28;
+    --ink:#E8EAF0;
+    --ink-soft:#8A90A0;
+    --line:#2A3040;
+    --court-blue-dark:#0A1830;
+    --green-result-bg:#0D2E1A;
+    --green-result:#4ACA7A;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--chalk);
+    color:var(--ink);
+    font-family:'Source Serif 4', Georgia, serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display,.sb-name,.tag,.masthead-title,.live-label,.card-title{
+    font-family:'Oswald', 'Arial Narrow', sans-serif;
+  }
+  a{color:var(--court-blue);}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+
+  .masthead{
+    background:var(--court-blue-dark);
+    color:#fff;
+    border-bottom:3px solid var(--ball);
+  }
+  .masthead .wrap{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding-top:22px;
+    padding-bottom:18px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .masthead-title{
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    margin:0;
+  }
+  .masthead-title span{color:var(--ball);}
+  .masthead-sub{
+    font-family:'Source Serif 4', serif;
+    font-size:14px;
+    color:#C7D1E8;
+    margin:0;
+  }
+
+  /* LIVE / MATCH-DAY alert band */
+  .alert-band{
+    background:var(--red-live);
+    color:#fff;
+    padding:10px 0;
+    text-align:center;
+    font-family:'Oswald',sans-serif;
+    font-size:13.5px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    animation:pulse-bg 2.4s infinite;
+  }
+  @keyframes pulse-bg{0%,100%{background:var(--red-live);}50%{background:#B53535;}}
+  .alert-band .sep{opacity:0.5; margin:0 6px;}
+
+  .ticker-band{
+    background:var(--court-blue);
+    color:#fff;
+    padding:14px 0;
+  }
+  .ticker-head{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    letter-spacing:0.5px;
+    color:var(--ball);
+    margin-bottom:10px;
+    font-weight:600;
+    font-family:'Oswald',sans-serif;
+  }
+  .live-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--red-live);
+    display:inline-block;
+    animation:blink 1.2s infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  .ticker-row{
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    scrollbar-width:thin;
+  }
+  .sb-card{
+    flex:0 0 auto;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.18);
+    border-radius:2px;
+    padding:10px 14px;
+    min-width:240px;
+  }
+  .sb-card.result{
+    border-color:rgba(201,222,58,0.4);
+    background:rgba(201,222,58,0.06);
+  }
+  .sb-card.upcoming-sf{
+    border-color:rgba(232,185,35,0.5);
+    background:rgba(232,185,35,0.06);
+  }
+  .sb-card.matchday{
+    border-color:rgba(214,69,69,0.7);
+    background:rgba(214,69,69,0.12);
+    box-shadow:0 0 0 2px rgba(214,69,69,0.3);
+  }
+  .sb-tour{
+    font-size:10.5px;
+    color:#AEC0E6;
+    letter-spacing:0.4px;
+    margin-bottom:6px;
+    font-family:'Oswald',sans-serif;
+  }
+  .sb-card.matchday .sb-tour{color:#F4AAAA;}
+  .sb-name{font-size:14px; font-weight:500; display:flex; justify-content:space-between; gap:10px; font-family:'Oswald',sans-serif;}
+  .sb-winner{color:var(--ball); font-weight:600;}
+  .sb-status{
+    font-size:11px;
+    color:var(--ball);
+    margin-top:6px;
+    font-family:'Oswald',sans-serif;
+    letter-spacing:0.3px;
+  }
+  .sb-status.tonight{color:#F4AAAA; font-weight:700; font-size:12px;}
+  .sb-status.upcoming{color:var(--gold);}
+  .sb-status.completed{color:#9DB018;}
+
+  .hero{padding:52px 0 36px; position:relative; overflow:hidden;}
+  .hero .dateline, .hero .headline, .hero .dek{position:relative; z-index:1;}
+  .court-graphic{
+    position:absolute;
+    top:-30px;
+    right:-30px;
+    width:260px;
+    height:auto;
+    color:var(--court-blue-mid);
+    opacity:0.16;
+    z-index:0;
+    pointer-events:none;
+  }
+  @media (max-width:680px){
+    .court-graphic{width:150px; opacity:0.13; top:-10px; right:-16px;}
+  }
+  .dateline{
+    font-family:'Oswald',sans-serif;
+    font-size:13px;
+    letter-spacing:0.4px;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  h1.headline{
+    font-size:44px;
+    line-height:1.06;
+    margin:0 0 18px;
+    font-weight:700;
+    max-width:22ch;
+    text-wrap:balance;
+  }
+  .dek{
+    font-size:19px;
+    color:var(--ink-soft);
+    max-width:62ch;
+    margin:0;
+  }
+
+  /* Match-Day banner for Women's SFs */
+  .matchday-banner{
+    background:var(--red-live);
+    color:#fff;
+    padding:22px 28px;
+    margin:0 0 0;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .matchday-banner .md-icon{font-size:28px; flex-shrink:0;}
+  .matchday-banner .md-body{flex:1;}
+  .matchday-banner h2{
+    font-family:'Oswald',sans-serif;
+    font-size:20px;
+    margin:0 0 4px;
+    letter-spacing:0.5px;
+    font-weight:700;
+  }
+  .matchday-banner p{
+    margin:0;
+    font-size:14px;
+    opacity:0.9;
+    font-family:'Source Serif 4',serif;
+  }
+  .matchday-banner .md-times{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    font-family:'Oswald',sans-serif;
+    font-size:13px;
+    text-align:right;
+    flex-shrink:0;
+  }
+  .matchday-banner .md-times span{
+    background:rgba(255,255,255,0.15);
+    padding:3px 10px;
+    letter-spacing:0.3px;
+  }
+
+  .stage-bar{
+    background:var(--chalk-card);
+    border:1px solid var(--line);
+    padding:16px 20px;
+    margin:0 0 28px;
+    display:flex;
+    gap:0;
+    align-items:stretch;
+    overflow-x:auto;
+  }
+  .stage-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    padding:0 18px;
+    border-right:1px solid var(--line);
+    flex:1;
+    min-width:80px;
+  }
+  .stage-item:last-child{border-right:none;}
+  .stage-name{
+    font-family:'Oswald',sans-serif;
+    font-size:11px;
+    letter-spacing:0.4px;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+  .stage-dot{
+    width:12px;height:12px;border-radius:50%;
+    background:var(--line);
+  }
+  .stage-dot.done{background:var(--ball-deep);}
+  .stage-dot.now{background:var(--red-live); box-shadow:0 0 0 3px rgba(214,69,69,0.3); animation:blink 1.2s infinite;}
+  .stage-dot.next{background:var(--court-blue-mid);}
+
+  .sf-preview-panel{
+    background:var(--court-blue-dark);
+    border-left:4px solid var(--ball);
+    padding:26px 28px;
+    margin:28px 0;
+    color:#fff;
+  }
+  .sf-preview-panel.live-panel{
+    border-left-color:var(--red-live);
+    background:linear-gradient(135deg, #1a0808 0%, var(--court-blue-dark) 60%);
+  }
+  .sf-preview-panel h2{
+    font-family:'Oswald',sans-serif;
+    font-size:18px;
+    letter-spacing:0.5px;
+    color:var(--ball);
+    margin:0 0 4px;
+  }
+  .sf-preview-panel.live-panel h2{color:#F4AAAA;}
+  .sf-preview-panel .panel-sub{
+    font-size:14px;
+    color:#9AA8CC;
+    margin:0 0 20px;
+    font-style:italic;
+    font-family:'Source Serif 4',serif;
+  }
+  .live-badge{
+    display:inline-block;
+    background:var(--red-live);
+    color:#fff;
+    font-family:'Oswald',sans-serif;
+    font-size:11px;
+    font-weight:700;
+    padding:2px 8px;
+    letter-spacing:1px;
+    margin-right:8px;
+    animation:blink 1.2s infinite;
+  }
+  .sf-matchup-row{
+    display:flex;
+    align-items:center;
+    gap:0;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(201,222,58,0.3);
+    flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+  .sf-matchup-row.live-row{border-color:rgba(214,69,69,0.5);}
+  .sf-matchup-row:last-child{margin-bottom:0;}
+  .sf-side{
+    flex:1;
+    padding:14px 18px;
+    min-width:140px;
+  }
+  .sf-seed{font-family:'Oswald',sans-serif; font-size:11px; color:#9AA8CC;}
+  .sf-player{font-family:'Oswald',sans-serif; font-size:18px; font-weight:700; color:#fff; margin-top:2px;}
+  .sf-flag{font-size:20px; margin-right:6px;}
+  .sf-vs{
+    padding:0 14px;
+    font-family:'Oswald',sans-serif;
+    font-size:12px;
+    color:var(--ball);
+    letter-spacing:2px;
+    border-left:1px solid rgba(201,222,58,0.3);
+    border-right:1px solid rgba(201,222,58,0.3);
+    display:flex;
+    align-items:center;
+  }
+  .sf-meta{
+    border-top:1px solid rgba(201,222,58,0.2);
+    padding:8px 18px;
+    font-family:'Oswald',sans-serif;
+    font-size:12px;
+    color:#9AA8CC;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:4px;
+    width:100%;
+  }
+  .sf-meta .uae{color:var(--ball); font-weight:600;}
+  .sf-meta .tonight{color:#F4AAAA; font-weight:700;}
+  .sf-note{
+    font-size:11px;
+    background:rgba(201,222,58,0.12);
+    color:var(--ball);
+    padding:2px 8px;
+    font-family:'Oswald',sans-serif;
+    letter-spacing:0.3px;
+    font-weight:600;
+    display:inline-block;
+    margin-top:2px;
+  }
+
+  .result-panel{
+    background:var(--green-result-bg);
+    border-left:4px solid var(--green-result);
+    padding:26px 28px;
+    margin:28px 0;
+  }
+  .result-panel h2{
+    font-family:'Oswald',sans-serif;
+    font-size:17px;
+    letter-spacing:0.5px;
+    color:var(--green-result);
+    margin:0 0 4px;
+  }
+  .result-panel .panel-sub{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+    font-style:italic;
+    font-family:'Source Serif 4',serif;
+  }
+  .result-matchup{
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    margin-bottom:12px;
+    background:var(--chalk-card);
+    border:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .result-matchup:last-child{margin-bottom:0;}
+  .result-side{
+    flex:1;
+    padding:14px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    min-width:130px;
+  }
+  .result-seed{
+    font-family:'Oswald',sans-serif;
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:0.3px;
+  }
+  .result-player{
+    font-family:'Oswald',sans-serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.2;
+  }
+  .result-player.winner{color:var(--green-result);}
+  .result-flag{font-size:18px;}
+  .result-vs{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 12px;
+    border-left:1px solid var(--line);
+    border-right:1px solid var(--line);
+  }
+  .result-vs span{
+    font-family:'Oswald',sans-serif;
+    font-size:10px;
+    color:var(--ink-soft);
+    letter-spacing:1px;
+  }
+  .result-score-bar{
+    background:var(--chalk);
+    border-top:1px solid var(--line);
+    padding:8px 16px;
+    font-family:'Oswald',sans-serif;
+    font-size:13px;
+    color:var(--ink);
+    letter-spacing:0.2px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:4px;
+    width:100%;
+    font-variant-numeric:tabular-nums;
+  }
+  .result-score-bar .final-tag{
+    font-size:10px;
+    color:#fff;
+    background:var(--green-result);
+    padding:2px 7px;
+    letter-spacing:0.5px;
+    font-weight:600;
+  }
+  .result-score-bar .score-val{
+    color:var(--green-result);
+    font-weight:600;
+  }
+
+  section{padding:8px 0 30px;}
+  section h2.section-title{
+    font-size:26px;
+    margin:0 0 22px;
+    font-weight:600;
+    border-top:2px solid var(--ink);
+    padding-top:14px;
+  }
+  .story{margin-bottom:30px;}
+  .story h3{font-size:20px; margin:0 0 4px; font-weight:600; text-wrap:balance;}
+  .story .score-line{font-family:'Oswald',sans-serif; font-size:13px; color:var(--court-blue); letter-spacing:0.3px; margin:0 0 10px;}
+  .story .score-line.result-line{color:var(--green-result);}
+  .story p{margin:0 0 10px; font-size:16.5px;}
+  .story p:last-child{margin-bottom:0;}
+  .story-new{border-left:3px solid var(--ball); padding-left:16px; margin-bottom:30px;}
+  .story-new h3{font-size:20px; margin:0 0 4px; font-weight:600; text-wrap:balance;}
+  .story-new .score-line{font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:0.3px; margin:0 0 10px;}
+  .story-new .result-line{color:var(--green-result);}
+  .story-new p{margin:0 0 10px; font-size:16.5px;}
+  .story-new p:last-child{margin-bottom:0;}
+
+  .matchup-cols{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:6px;}
+  @media (max-width:640px){.matchup-cols{grid-template-columns:1fr;}}
+  .matchup-col h4{font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:0.4px; color:var(--ink-soft); margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--ink);}
+  .qf-item{display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); font-size:14.5px; align-items:baseline;}
+  .qf-item:last-child{border-bottom:none;}
+  .qf-tag{font-family:'Oswald',sans-serif; font-size:12px; color:#fff; background:var(--green-result); padding:2px 7px; flex-shrink:0;}
+  .sf-item{display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); font-size:14.5px; align-items:baseline;}
+  .sf-item:last-child{border-bottom:none;}
+  .sf-tag{font-family:'Oswald',sans-serif; font-size:12px; color:#12141A; background:var(--gold); padding:2px 7px; flex-shrink:0;}
+  .sf-tag.tonight-tag{background:var(--red-live); color:#fff; animation:blink 1.2s infinite;}
+  .sf-tag.tbd{background:var(--court-blue); color:#fff;}
+
+  table.full-sched{width:100%; border-collapse:collapse; margin-top:24px; font-size:14.5px;}
+  table.full-sched th, table.full-sched td{text-align:left; padding:9px 8px; border-bottom:1px solid var(--line);}
+  table.full-sched th{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:0.3px; color:var(--ink-soft); font-weight:500;}
+  table.full-sched tr.done-row td{color:var(--ink-soft);}
+  table.full-sched tr.done-row td:first-child::before{content:'\2713 '; color:var(--green-result); font-weight:700;}
+  table.full-sched tr.sf-row td{background:rgba(232,185,35,0.06); color:var(--ink); font-weight:600;}
+  table.full-sched tr.live-row td{background:rgba(214,69,69,0.07); color:var(--ink); font-weight:700;}
+  table.full-sched tr.live-row td:first-child::before{content:'\25B6 '; color:var(--red-live);}
+  table.full-sched tr.final-row td{background:rgba(27,62,130,0.06); color:var(--ink-soft);}
+
+  .watch-item{padding:16px 0; border-bottom:1px solid var(--line);}
+  .watch-item:last-child{border-bottom:none;}
+  .watch-item h3{font-size:17px; margin:0 0 5px; font-weight:600; text-wrap:balance;}
+  .watch-item p{margin:0; font-size:15.5px; color:var(--ink-soft);}
+  .watch-item .badge{display:inline-block; font-family:'Oswald',sans-serif; font-size:11px; padding:2px 8px; margin-bottom:6px; letter-spacing:0.3px;}
+  .badge-women{background:#1B3E82; color:#fff;}
+  .badge-men{background:#0F2350; color:var(--ball);}
+  .badge-story{background:var(--green-result); color:#fff;}
+  .badge-us{background:var(--red-live); color:#fff;}
+  .badge-tonight{background:var(--red-live); color:#fff; animation:blink 1.2s infinite;}
+
+  footer{background:var(--court-blue-dark); color:#B9C4E2; margin-top:30px; padding:30px 0 34px; font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:0.2px;}
+  footer .wrap{display:flex; flex-direction:column; gap:6px;}
+  footer .byline{color:#fff; font-size:13.5px;}
+  hr.court-line{border:none; border-top:2px solid var(--ink); margin:44px 0 0;}
+
+  @media (max-width:600px){
+    h1.headline{font-size:32px;}
+    .sf-preview-panel{padding:18px 16px;}
+    .result-panel{padding:18px 16px;}
+    .matchday-banner{padding:16px;}
+    .matchday-banner .md-times{text-align:left;}
+  }
+
+  /* LIVE MATCH + AI PREDICTION */
+  .live-score-strip{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:14px;
+    margin:0 0 16px;
+    padding:16px 18px;
+    background:rgba(214,69,69,0.10);
+    border:1px solid rgba(214,69,69,0.55);
+    border-radius:2px;
+  }
+  .live-score-player{
+    font-family:'Oswald',sans-serif;
+    font-size:18px;
+    font-weight:700;
+  }
+  .live-score-player.right{text-align:right;}
+  .live-score-sets{
+    text-align:center;
+    font-family:'Oswald',sans-serif;
+    min-width:130px;
+  }
+  .live-score-main{
+    font-size:26px;
+    line-height:1;
+    font-weight:700;
+    color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+  .live-score-caption{
+    margin-top:5px;
+    font-size:11px;
+    color:#F4AAAA;
+    letter-spacing:.4px;
+  }
+  .ai-panel{
+    display:grid;
+    grid-template-columns:210px 1fr;
+    gap:26px;
+    align-items:center;
+    margin:18px 0 0;
+    padding:22px;
+    background:rgba(255,255,255,0.045);
+    border:1px solid rgba(201,222,58,0.28);
+  }
+  .ai-chart{
+    width:180px;
+    height:180px;
+    margin:auto;
+    border-radius:50%;
+    background:conic-gradient(var(--ball) 0 63%, var(--court-blue-mid) 63% 100%);
+    position:relative;
+    display:grid;
+    place-items:center;
+  }
+  .ai-chart::after{
+    content:"";
+    width:112px;
+    height:112px;
+    border-radius:50%;
+    background:var(--court-blue-dark);
+    position:absolute;
+  }
+  .ai-chart-label{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    font-family:'Oswald',sans-serif;
+    color:#fff;
+  }
+  .ai-chart-label strong{display:block;font-size:28px;line-height:1;}
+  .ai-chart-label span{font-size:10px;color:#9AA8CC;letter-spacing:.5px;}
+  .ai-title{
+    font-family:'Oswald',sans-serif;
+    font-size:18px;
+    font-weight:700;
+    color:var(--ball);
+    margin:0 0 5px;
+    letter-spacing:.4px;
+  }
+  .ai-sub{
+    margin:0 0 12px;
+    color:#9AA8CC;
+    font-size:13px;
+    font-family:'Source Serif 4',serif;
+  }
+  .ai-legend{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px 18px;
+    font-family:'Oswald',sans-serif;
+    font-size:13px;
+  }
+  .ai-legend div{display:flex;align-items:center;gap:7px;}
+  .ai-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .ai-dot.sab{background:var(--ball);}
+  .ai-dot.peg{background:var(--court-blue-mid);}
+  .ai-factors{
+    margin:13px 0 0;
+    padding-top:11px;
+    border-top:1px solid rgba(255,255,255,0.10);
+    color:#B9C4E2;
+    font-size:12px;
+    line-height:1.55;
+  }
+  .ai-disclaimer{
+    margin:10px 0 0;
+    color:#7F8BA8;
+    font-size:10.5px;
+    font-style:italic;
+  }
+  @media (max-width:640px){
+    .live-score-strip{grid-template-columns:1fr;gap:7px;}
+    .live-score-player,.live-score-player.right{text-align:center;}
+    .ai-panel{grid-template-columns:1fr;gap:14px;}
+    .ai-chart{width:155px;height:155px;}
+    .ai-chart::after{width:96px;height:96px;}
+    .ai-legend{grid-template-columns:1fr;}
+  }
+
+  /* GALLERY */
+  .gallery-note{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-style:italic;
+    margin:-10px 0 22px;
+    font-family:'Source Serif 4',serif;
+  }
+  .gallery-note code{
+    font-style:normal;
+    font-family:'Oswald',sans-serif;
+    background:var(--line);
+    padding:1px 6px;
+    border-radius:2px;
+    font-size:12px;
+  }
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:18px;
+  }
+  @media (max-width:760px){
+    .gallery-grid{grid-template-columns:repeat(2, 1fr);}
+  }
+  @media (max-width:520px){
+    .gallery-grid{grid-template-columns:1fr;}
+  }
+  .gallery-item{margin:0;}
+  .gallery-frame{
+    position:relative;
+    aspect-ratio:4/3;
+    overflow:hidden;
+    background:var(--court-blue-dark);
+    border:1px solid var(--line);
+  }
+  .gallery-frame img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .35s ease;
+  }
+  .gallery-frame:hover img{transform:scale(1.05);}
+  .gallery-placeholder{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    padding:14px;
+    background:linear-gradient(160deg, var(--court-blue-dark) 0%, var(--court-blue) 100%);
+    color:#C7D1E8;
+  }
+  .gallery-placeholder svg{width:34px;height:34px;color:var(--ball);opacity:0.9;}
+  .gallery-placeholder .ph-label{
+    font-family:'Oswald',sans-serif;
+    font-size:10.5px;
+    letter-spacing:0.3px;
+    color:#9AA8CC;
+  }
+  .gallery-placeholder code{
+    font-family:'Oswald',sans-serif;
+    font-size:10.5px;
+    background:rgba(255,255,255,0.12);
+    color:var(--ball);
+    padding:2px 6px;
+    border-radius:2px;
+    word-break:break-all;
+  }
+  .gallery-item figcaption{
+    margin-top:9px;
+    font-family:'Oswald',sans-serif;
+    font-size:13.5px;
+    color:var(--ink);
+  }
+  .gallery-item figcaption .role{
+    display:block;
+    font-family:'Source Serif 4',serif;
+    font-style:italic;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:1px;
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="masthead-title">US OPEN <span>2026</span></p>
+    <p class="masthead-sub">Flushing Meadows, New York &middot; Archived recap &middot; <a href="../index.html" style="color:inherit;">Back to current tournament</a></p>
+  </div>
+</header>
+
+<!-- MATCH DAY ALERT -->
+<div class="alert-band">
+  &#127942; FINAL &mdash; ZVEREV def. SHELTON &middot; 6-3, 7-6(2), 5-7, 6-2 &mdash; ZVEREV WINS THE US OPEN
+  <span class="sep">&nbsp;|&nbsp;</span>
+  &#10003; FINAL &mdash; RYBAKINA def. SABALENKA &middot; 6-4, 5-7, 6-2 &mdash; RYBAKINA WINS THE US OPEN
+  <span class="sep">&nbsp;|&nbsp;</span>
+  &#10003; FINAL &mdash; ZVEREV def. KHACHANOV &middot; 6-3, 7-6(7), 7-6(6)
+  <span class="sep">&nbsp;|&nbsp;</span>
+  &#10003; FINAL &mdash; SHELTON def. TIAFOE &middot; 4-6, 6-3, 6-3, 7-5
+</div>
+
+<div class="ticker-band">
+  <div class="wrap">
+    <div class="ticker-head">TOURNAMENT COMPLETE &mdash; ZVEREV WINS THE US OPEN &bull; ARTHUR ASHE STADIUM</div>
+    <div class="ticker-row">
+      <!-- Latest event first: Men's Final FINAL -->
+      <div class="sb-card matchday">
+        <div class="sb-tour">US Open &middot; MEN'S FINAL &middot; Arthur Ashe Stadium &middot; FINAL</div>
+        <div class="sb-name"><span class="sb-winner">&#127465;&#127466; Zverev [1] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Shelton [8] OUT</span></div>
+        <div class="sb-status completed">6-3, 7-6(2), 5-7, 6-2 &mdash; Zverev wins his second major of 2026</div>
+      </div>
+      <!-- Women's Final: FINAL -->
+      <div class="sb-card matchday">
+        <div class="sb-tour">&#10003; FINAL &middot; WOMEN'S FINAL &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127463;&#127486; Sabalenka [1] OUT</span></div>
+        <div class="sb-name"><span class="sb-winner">&#127472;&#127487; Rybakina [2] &#10003;</span></div>
+        <div class="sb-status completed">6-4, 5-7, 6-2 &mdash; Rybakina wins her first US Open</div>
+      </div>
+      <!-- Men's SF2 (most recently completed) -->
+      <div class="sb-card matchday">
+        <div class="sb-tour">&#10003; FINAL &middot; Men's SF2 &middot; ALL-AMERICAN &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span class="sb-winner">&#127482;&#127480; Shelton [8] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Tiafoe [11] OUT</span></div>
+        <div class="sb-status completed">4-6, 6-3, 6-3, 7-5 &mdash; into his first major final</div>
+      </div>
+      <div class="sb-card matchday">
+        <div class="sb-tour">&#10003; FINAL &middot; Men's SF1 &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span class="sb-winner">&#127465;&#127466; Zverev [1] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127479;&#127482; Khachanov OUT</span></div>
+        <div class="sb-status completed">6-3, 7-6(7), 7-6(6) &mdash; third straight Slam final</div>
+      </div>
+      <!-- Women's SFs: FINAL -->
+      <div class="sb-card matchday">
+        <div class="sb-tour">&#10003; FINAL &middot; Women's SF1 &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span class="sb-winner">&#127463;&#127486; Sabalenka [1] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Pegula [3] OUT</span></div>
+        <div class="sb-status completed">7-5, 6-2 &mdash; 80 minutes</div>
+      </div>
+      <div class="sb-card matchday">
+        <div class="sb-tour">&#10003; FINAL &middot; Women's SF2 &middot; Arthur Ashe Stadium</div>
+        <div class="sb-name"><span>&#127472;&#127487; Rybakina [2] &nbsp; <strong id="rybakina-live-score">6-4</strong></span></div>
+        <div class="sb-name"><span>&#127482;&#127480; Gauff [4] &nbsp; <strong id="gauff-live-score">6-4</strong></span></div>
+        <div class="sb-status completed">FINAL &middot; Rybakina wins 3-6, 6-4, 6-4</div>
+      </div>
+      <!-- QF Highlights -->
+      <div class="sb-card result">
+        <div class="sb-tour">QF Upset &middot; Men's QF &middot; FINISHED</div>
+        <div class="sb-name"><span class="sb-winner">&#127482;&#127480; Shelton [8] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127466;&#127480; Alcaraz [2] OUT</span></div>
+        <div class="sb-status completed">FINAL &mdash; 3:33 AM finish!</div>
+      </div>
+      <div class="sb-card result">
+        <div class="sb-tour">QF Epic &middot; Men's QF &middot; FINISHED</div>
+        <div class="sb-name"><span class="sb-winner">&#127482;&#127480; Tiafoe [11] &#10003;</span></div>
+        <div class="sb-name"><span style="opacity:0.6;">&#127482;&#127480; Michelsen OUT</span></div>
+        <div class="sb-status completed">FINAL &mdash; came back from 0-2 in sets</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MATCH DAY BANNER: Tournament complete -->
+<div class="matchday-banner" style="background:var(--green-result);">
+  <div class="md-icon">&#127942;</div>
+  <div class="md-body">
+    <h2>ZVEREV WINS THE US OPEN</h2>
+    <p>Alexander Zverev has beaten Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win the men's title, denying the American a shot at ending the 23-year US Grand Slam drought. The 2026 US Open is complete.</p>
+  </div>
+  <div class="md-times">
+    <span><strong>FINAL</strong> &bull; Zverev def. Shelton &middot; 6-3, 7-6(2), 5-7, 6-2</span>
+    <span>YESTERDAY &bull; Rybakina def. Sabalenka &middot; Women's Champion</span>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section class="hero">
+    <svg class="court-graphic" viewBox="0 0 300 600" aria-hidden="true">
+      <rect x="10" y="10" width="280" height="580" fill="none" stroke="currentColor" stroke-width="4"/>
+      <rect x="50" y="10" width="200" height="580" fill="none" stroke="currentColor" stroke-width="3"/>
+      <line x1="10" y1="300" x2="290" y2="300" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8"/>
+      <line x1="50" y1="138" x2="250" y2="138" stroke="currentColor" stroke-width="3"/>
+      <line x1="50" y1="462" x2="250" y2="462" stroke="currentColor" stroke-width="3"/>
+      <line x1="150" y1="138" x2="150" y2="462" stroke="currentColor" stroke-width="3"/>
+      <line x1="145" y1="10" x2="155" y2="10" stroke="currentColor" stroke-width="4"/>
+      <line x1="145" y1="590" x2="155" y2="590" stroke="currentColor" stroke-width="4"/>
+    </svg>
+    <p class="dateline">Sunday, September 13, 2026 &mdash; Dubai &middot; Tournament Complete</p>
+    <h1 class="headline">Zverev Wins the US Open, Denying Shelton's Bid for History</h1>
+    <p class="dek">Alexander Zverev has beaten Ben Shelton 6-3, 7-6(2), 5-7, 6-2 at Arthur Ashe Stadium to win his second Grand Slam title of 2026 and complete a hat-trick of major finals this season. Shelton, who took the third set to keep his hopes alive, falls short in his bid to become the first American man to win a major since Andy Roddick in 2003. Elena Rybakina won the women's title Saturday, beating Aryna Sabalenka 6-4, 5-7, 6-2 — closing the book on the 2026 US Open.</p>
+  </section>
+
+  <div class="stage-bar" aria-label="Tournament progress">
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 128</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 64</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 32</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Round of 16</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Quarterfinals</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">Semifinals</span></div>
+    <div class="stage-item"><span class="stage-dot done"></span><span class="stage-name">&#10003; Finals</span></div>
+  </div>
+
+  <!-- MEN'S FINAL: FINAL -->
+  <div class="sf-preview-panel" style="border-left-color:var(--green-result);">
+    <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127942; MEN'S FINAL &mdash; ZVEREV WINS THE US OPEN</h2>
+    <p class="panel-sub">Arthur Ashe Stadium &middot; Alexander Zverev denies Ben Shelton's bid to end the American men's major drought</p>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final: Alexander Zverev defeats Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win the US Open">
+      <div class="live-score-player">🇩🇪 Alexander Zverev [1]</div>
+      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">6-3, 7-6(2), 5-7, 6-2</div><div class="live-score-caption" style="color:var(--green-result);">FINAL &middot; ZVEREV WINS</div></div>
+      <div class="live-score-player right">🇺🇸 Ben Shelton [8]</div>
+    </div>
+    <div class="sf-matchup-row">
+      <div class="sf-side">
+        <div><span class="sf-flag">&#127465;&#127466;</span><span class="sf-seed">[1] Seed &middot; US OPEN CHAMPION</span></div>
+        <div class="sf-player">Alexander Zverev</div>
+        <div class="sf-note" style="background:rgba(26,107,58,0.12);color:var(--green-result);">CHAMPION &middot; Beat Khachanov (SF) 6-3, 7-6(7), 7-6(6)</div>
+      </div>
+      <div class="sf-vs">VS</div>
+      <div class="sf-side" style="text-align:right;">
+        <div><span class="sf-seed">[8] Seed &middot; Runner-up</span><span class="sf-flag"> &#127482;&#127480;</span></div>
+        <div class="sf-player">Ben Shelton</div>
+        <div class="sf-note">Beat Tiafoe (SF) 4-6, 6-3, 6-3, 7-5</div>
+      </div>
+      <div class="sf-meta">
+        <span>Men's Final &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">Zverev wins 6-3, 7-6(2), 5-7, 6-2</span> &nbsp;|&nbsp; FINAL</span>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:13px;color:#9AA8CC;">
+      <strong style="color:#D8DFF2;">In the stands:</strong> Today's men's final drew Brad Pitt, Katie Holmes, New York Knicks star Jalen Brunson, and Anna Wintour among the celebrity sightings. Saturday's women's final drew its own stacked crowd &mdash; Maria Sharapova (marking 20 years since her 2006 US Open title), Paris Hilton, Billie Jean King, Amy Adams, Elizabeth Banks and Fran Drescher were all courtside.
+    </div>
+  </div>
+
+  <!-- WOMEN'S FINAL: CHAMPION -->
+  <div class="sf-preview-panel" style="border-left-color:var(--green-result);">
+    <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127942; WOMEN'S FINAL &mdash; RYBAKINA WINS THE US OPEN</h2>
+    <p class="panel-sub">Arthur Ashe Stadium &middot; Elena Rybakina denies Sabalenka's three-peat bid to win her first US Open title</p>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final: Elena Rybakina defeats Aryna Sabalenka 6-4, 5-7, 6-2 to take the US Open title">
+      <div class="live-score-player">🇧🇾 Aryna Sabalenka [1]</div>
+      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">4-6, 7-5, 2-6</div><div class="live-score-caption" style="color:var(--green-result);">FINAL &middot; RYBAKINA WINS</div></div>
+      <div class="live-score-player right">🇰🇿 Elena Rybakina [2]</div>
+    </div>
+    <div class="sf-matchup-row">
+      <div class="sf-side">
+        <div><span class="sf-flag">&#127463;&#127486;</span><span class="sf-seed">[1] Seed &middot; Runner-up</span></div>
+        <div class="sf-player">Aryna Sabalenka</div>
+        <div class="sf-note">Beat Pegula [3] (SF) 7-5, 6-2</div>
+      </div>
+      <div class="sf-vs">VS</div>
+      <div class="sf-side" style="text-align:right;">
+        <div><span class="sf-seed">[2] Seed &middot; US OPEN CHAMPION</span><span class="sf-flag"> &#127472;&#127487;</span></div>
+        <div class="sf-player">Elena Rybakina</div>
+        <div class="sf-note" style="background:rgba(26,107,58,0.12);color:var(--green-result);">CHAMPION &middot; def. Gauff [4] (SF) 3-6, 6-4, 6-4</div>
+      </div>
+      <div class="sf-meta">
+        <span>Women's Final &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">Rybakina wins 6-4, 5-7, 6-2</span> &nbsp;|&nbsp; FINAL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEN'S SEMIFINALS: BOTH FINAL -->
+  <div class="sf-preview-panel">
+    <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127934; MEN'S SEMIFINALS &mdash; BOTH RESULTS FINAL</h2>
+    <p class="panel-sub">Arthur Ashe Stadium &middot; Zverev and Shelton advance to Sunday's final</p>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Alexander Zverev 6-3, 7-6(7), 7-6(6) Karen Khachanov — FINAL">
+      <div class="live-score-player">🇩🇪 Alexander Zverev [1]</div>
+      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">6-3, 7-6(7), 7-6(6)</div><div class="live-score-caption" style="color:var(--green-result);">FINAL</div></div>
+      <div class="live-score-player right">🇷🇺 Karen Khachanov</div>
+    </div>
+    <div class="sf-matchup-row">
+      <div class="sf-side">
+        <div><span class="sf-flag">&#127465;&#127466;</span><span class="sf-seed">[1] Seed &middot; No sets dropped all tournament</span></div>
+        <div class="sf-player">Alexander Zverev</div>
+        <div class="sf-note">Beat van de Zandschulp (QF)</div>
+      </div>
+      <div class="sf-vs">VS</div>
+      <div class="sf-side" style="text-align:right;">
+        <div><span class="sf-seed">Unseeded &middot; Cinderella run</span><span class="sf-flag"> &#127479;&#127482;</span></div>
+        <div class="sf-player">Karen Khachanov</div>
+        <div class="sf-note">Beat Blockx [28] (QF)</div>
+      </div>
+      <div class="sf-meta">
+        <span>Men's Semifinal 1 &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">FINAL 6-3, 7-6(7), 7-6(6)</span> &nbsp;|&nbsp; <span class="uae">Fri Sep 11, 11:00 PM UAE</span></span>
+      </div>
+    </div>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Frances Tiafoe 4-6, 6-3, 6-3, 7-5 Ben Shelton — FINAL, Shelton wins">
+      <div class="live-score-player">🇺🇸 Frances Tiafoe [11]</div>
+      <div class="live-score-sets"><div class="live-score-main" style="color:var(--green-result);">4-6, 6-3, 6-3, 7-5</div><div class="live-score-caption" style="color:var(--green-result);">FINAL</div></div>
+      <div class="live-score-player right">🇺🇸 Ben Shelton [8]</div>
+    </div>
+    <div class="sf-matchup-row">
+      <div class="sf-side">
+        <div><span class="sf-flag">&#127482;&#127480;</span><span class="sf-seed">[11] Seed &middot; COMEBACK KID OF THE TOURNAMENT</span></div>
+        <div class="sf-player">Frances Tiafoe</div>
+        <div class="sf-note">Beat Michelsen (QF) &mdash; came back from two sets down</div>
+      </div>
+      <div class="sf-vs">VS</div>
+      <div class="sf-side" style="text-align:right;">
+        <div><span class="sf-seed">[8] Seed &middot; SLAYER OF ALCARAZ</span><span class="sf-flag"> &#127482;&#127480;</span></div>
+        <div class="sf-player">Ben Shelton</div>
+        <div class="sf-note">Beat Alcaraz [2] (QF) &mdash; finished 3:33 AM</div>
+      </div>
+      <div class="sf-meta">
+        <span>Men's Semifinal 2 &middot; ALL-AMERICAN &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">Shelton wins 4-6, 6-3, 6-3, 7-5</span> &nbsp;|&nbsp; <span class="uae">Sat Sep 12, 3:00 AM UAE</span></span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- WOMEN'S SEMIFINALS: MATCH DAY -->
+  <div class="sf-preview-panel">
+    <h2><span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127942; WOMEN'S SEMIFINALS &mdash; BOTH RESULTS FINAL</h2>
+    <p class="panel-sub">Sabalenka and Rybakina booked their spots in Saturday's final at Arthur Ashe Stadium.</p>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Sabalenka 7-5, 6-2 Pegula — FINAL">
+      <div class="live-score-player">🇧🇾 Aryna Sabalenka</div>
+      <div class="live-score-sets">
+        <div class="live-score-main" style="color:var(--green-result);">7-5&nbsp;&nbsp;6-2</div>
+        <div class="live-score-caption" style="color:var(--green-result);">FINAL &middot; 80 MIN</div>
+      </div>
+      <div class="live-score-player right">🇺🇸 Jessica Pegula</div>
+    </div>
+
+    <div class="sf-matchup-row live-row">
+      <div class="sf-side">
+        <div><span class="sf-flag">&#127463;&#127486;</span><span class="sf-seed">[1] Seed &middot; Defending Champion 2024 &amp; 2025 &mdash; Chasing 3rd Straight</span></div>
+        <div class="sf-player">Aryna Sabalenka</div>
+        <div class="sf-note">Beat Noskova [6] in QF</div>
+      </div>
+      <div class="sf-vs">VS</div>
+      <div class="sf-side" style="text-align:right;">
+        <div><span class="sf-seed">[3] Seed &middot; 2022 US Open Finalist &mdash; Home Crowd Favourite</span><span class="sf-flag"> &#127482;&#127480;</span></div>
+        <div class="sf-player">Jessica Pegula</div>
+        <div class="sf-note">Beat Navarro [26] in QF</div>
+      </div>
+      <div class="sf-meta">
+        <span>Women's Semifinal 1 &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">FINAL 7-5, 6-2</span> &nbsp;|&nbsp; <span class="uae">Fri Sep 11, 3:00 AM UAE</span></span>
+      </div>
+    </div>
+    <div class="live-score-strip" style="background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);" aria-label="Final score: Rybakina 3-6, 6-4, 6-4 Gauff — FINAL">
+      <div class="live-score-player">🇰🇿 Elena Rybakina</div>
+      <div class="live-score-sets">
+        <div class="live-score-main" style="color:var(--green-result);">3-6&nbsp;&nbsp;6-4&nbsp;&nbsp;6-4</div>
+        <div class="live-score-caption" style="color:var(--green-result);">FINAL</div>
+      </div>
+      <div class="live-score-player right">🇺🇸 Coco Gauff</div>
+    </div>
+
+    <div class="sf-matchup-row">
+      <div class="sf-side">
+        <div><span class="sf-flag">&#127472;&#127487;</span><span class="sf-seed">[2] Seed &middot; NEW World No. 1 &mdash; Clinched at QF</span></div>
+        <div class="sf-player">Elena Rybakina</div>
+        <div class="sf-note">Beat Zheng in QF &middot; Clinched No. 1 ranking</div>
+      </div>
+      <div class="sf-vs">VS</div>
+      <div class="sf-side" style="text-align:right;">
+        <div><span class="sf-seed">[4] Seed &middot; 2023 US Open Champion</span><span class="sf-flag"> &#127482;&#127480;</span></div>
+        <div class="sf-player">Coco Gauff</div>
+        <div class="sf-note">Beat Andreeva [5] in QF</div>
+      </div>
+      <div class="sf-meta">
+        <span>Women's Semifinal 2 &middot; Arthur Ashe Stadium &middot; FINAL</span>
+        <span><span style="color:var(--green-result);font-weight:700;">Rybakina 3-6, 6-4, 6-4 Gauff</span> &nbsp;|&nbsp; FINAL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEN'S QF RESULTS -->
+  <div class="result-panel">
+    <h2>&#10003; MEN'S QUARTERFINALS &mdash; ALL RESULTS FINAL</h2>
+    <p class="panel-sub">Tuesday &ndash; Wednesday, September 8&ndash;9 &middot; All four matches complete</p>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">[8] Seed &middot; BIGGEST UPSET</span><span class="result-player winner">Ben Shelton</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127466;&#127480;</span><span class="result-seed">[2] Seed &middot; Defending Champion</span><span class="result-player">Carlos Alcaraz</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">Finished 3:33 AM ET &mdash; latest match in US Open history</span></div>
+    </div>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">[11] Seed &middot; COMEBACK</span><span class="result-player winner">Frances Tiafoe</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">Unseeded</span><span class="result-player">Alex Michelsen</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">Down 0-2 in sets &mdash; Tiafoe wins three straight</span></div>
+    </div>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127465;&#127466;</span><span class="result-seed">[1] Seed</span><span class="result-player winner">Alexander Zverev</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127475;&#127473;</span><span class="result-seed">Unseeded</span><span class="result-player">Botic van de Zandschulp</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">No sets dropped all tournament for Zverev</span></div>
+    </div>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127479;&#127482;</span><span class="result-seed">Unseeded</span><span class="result-player winner">Karen Khachanov</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127463;&#127466;</span><span class="result-seed">[28] Seed</span><span class="result-player">Alexander Blockx</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">Blockx retired with injury mid-third set</span></div>
+    </div>
+  </div>
+
+  <!-- WOMEN'S QF RESULTS -->
+  <div class="result-panel">
+    <h2>&#10003; WOMEN'S QUARTERFINALS &mdash; ALL RESULTS FINAL</h2>
+    <p class="panel-sub">Tuesday &ndash; Wednesday, September 8&ndash;9 &middot; All four matches complete</p>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127463;&#127486;</span><span class="result-seed">[1] Seed</span><span class="result-player winner">Aryna Sabalenka</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127464;&#127487;</span><span class="result-seed">[6] Seed</span><span class="result-player">Linda Noskova</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">Two tiebreaks &mdash; Sabalenka survives</span></div>
+    </div>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">[3] Seed</span><span class="result-player winner">Jessica Pegula</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">[26] Seed</span><span class="result-player">Emma Navarro</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">All-American QF &mdash; Pegula through</span></div>
+    </div>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127482;&#127480;</span><span class="result-seed">[4] Seed &middot; 2023 Champion</span><span class="result-player winner">Coco Gauff</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127479;&#127482;</span><span class="result-seed">[5] Seed</span><span class="result-player">Mirra Andreeva</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">Gauff from a set down to power through</span></div>
+    </div>
+    <div class="result-matchup">
+      <div class="result-side"><span class="result-flag">&#127472;&#127487;</span><span class="result-seed">[2] Seed &middot; NEW World No. 1</span><span class="result-player winner">Elena Rybakina</span></div>
+      <div class="result-vs"><span>DEF.</span></div>
+      <div class="result-side" style="align-items:flex-end; text-align:right;"><span class="result-flag">&#127464;&#127475;</span><span class="result-seed">Unseeded</span><span class="result-player">Qinwen Zheng</span></div>
+      <div class="result-score-bar"><span class="final-tag">FINAL</span><span style="font-size:11px; color:var(--ink-soft);">Rybakina clinches WTA World No. 1 ranking</span></div>
+    </div>
+  </div>
+
+  <section>
+    <h2 class="section-title">The Stories So Far</h2>
+
+    <div class="story-new">
+      <h3>Zverev Wins the US Open, Denying Shelton's Bid for History</h3>
+      <p class="score-line result-line">ZVEREV [1] def. SHELTON [8] &mdash; 6-3, 7-6(2), 5-7, 6-2 (Men's Final)</p>
+      <p>Alexander Zverev completed a career-defining season, beating Ben Shelton to win his second Grand Slam title of 2026 after his triumph at Roland Garros in the spring. Zverev took the first two sets, closing out the second in a tiebreak, before Shelton found his range and clawed back to win the third 7-5, giving the sold-out Arthur Ashe crowd hope of a first American men's major champion since Andy Roddick in 2003. Zverev regrouped and closed out the fourth set 6-2 to seal the title.</p>
+      <p>It's Zverev's third straight Grand Slam final of the year &mdash; following his Roland Garros title and Wimbledon runner-up finish &mdash; and his second career major, to go with his 2020 US Open final loss to Dominic Thiem. He extends his head-to-head record over Shelton to 6-0. For Shelton, it's a heartbreaking near-miss after a fortnight that included a record-late win over Carlos Alcaraz and a four-set win over close friend Frances Tiafoe in the semifinal &mdash; but the 23-year-old leaves New York as the first American man to reach a Grand Slam final since Taylor Fritz at the 2024 US Open.</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Rybakina Denies Sabalenka's Three-Peat, Wins First US Open Title</h3>
+      <p class="score-line result-line">RYBAKINA [2] def. SABALENKA [1] &mdash; 6-4, 5-7, 6-2 (Women's Final)</p>
+      <p>Elena Rybakina completed a remarkable season by beating Aryna Sabalenka to win the US Open, coming back from a set down to deny the two-time defending champion a shot at joining Chris Evert and Serena Williams as the only three-peat winners at Flushing Meadows. Rybakina took the opening set 6-4, but Sabalenka fought back to level the match at 7-5 in the second, setting up a decider at Arthur Ashe Stadium.</p>
+      <p>It's Rybakina's third career Grand Slam title, adding the US Open to her 2022 Wimbledon and 2026 Australian Open crowns &mdash; and it caps a stretch that has already carried her to the World No. 1 ranking, effective Monday, ending Sabalenka's 99-week reign at the top. It's also the third Grand Slam final of the year between the pair, with Rybakina now leading that head-to-head 2-1 after her Australian Open win in January.</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Shelton Outlasts Tiafoe in an All-American Classic to Reach His First Major Final</h3>
+      <p class="score-line result-line">SHELTON [8] def. TIAFOE [11] &mdash; 4-6, 6-3, 6-3, 7-5 (Men's SF2)</p>
+      <p>Frances Tiafoe took the opening set, but Ben Shelton settled in and took the next two 6-3, 6-3 to turn the match around. Tiafoe pushed back in the fourth, but Shelton closed it out 7-5 to reach his first career Grand Slam final. It guaranteed an American finalist for the first time since Andy Roddick won the title here in 2003.</p>
+      <p>Shelton went on to meet top seed Alexander Zverev in Sunday's final at Arthur Ashe Stadium, a match Zverev won in four sets (see above).</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Zverev Survives Two Tiebreaks to Reach a Third Straight Grand Slam Final</h3>
+      <p class="score-line result-line">ZVEREV [1] def. KHACHANOV &mdash; 6-3, 7-6(7), 7-6(6) (Men's SF1)</p>
+      <p>Alexander Zverev won in straight sets, but the scoreline flatters him. He took the opening set 6-3 with ease, but unseeded Karen Khachanov pushed him to the limit from there, forcing back-to-back tiebreaks. Khachanov even erased two match points in the second-set breaker before Zverev finally closed it out, and led the deciding tiebreak 4-1 with two set points of his own before Zverev reeled off the last points to seal it.</p>
+      <p>It was Zverev's third consecutive Grand Slam final of 2026, following his Roland Garros title and his Wimbledon final defeat. He went on to beat Ben Shelton in Sunday's final to win the title (see above).</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Sabalenka Breaks Through Pegula in a High-Power Semifinal</h3>
+      <p class="score-line result-line">SABALENKA [1] def. PEGULA [3] &mdash; 7-5, 6-2 (Women's SF1)</p>
+      <p>Aryna Sabalenka reached the US Open final for a fourth consecutive year. Jessica Pegula stayed with the defending champion through most of the opening set, using accurate first serves and quick, flat exchanges to keep the match level. Sabalenka finally turned the pressure into a breakthrough at 5-5, winning the last two games to take the first set 7-5.</p>
+      <p>The second set was a different story. Sabalenka increased the pressure on Pegula's second serve and repeatedly attacked from the baseline. She broke in the fourth game to move ahead 3-1, then added another break at 5-2 before closing out the match in 80 minutes. She finished with seven aces and 29 winners against 20 unforced errors, while Pegula could not find another break-point chance after her lone opportunity late in the first set.</p>
+      <p>The victory sent Sabalenka into a fourth consecutive US Open final, where she lost to Elena Rybakina (see above).</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Rybakina Comes Back to Beat Gauff and Reach the US Open Final</h3>
+      <p class="score-line result-line">RYBAKINA [2] def. GAUFF [4] &mdash; 3-6, 6-4, 6-4 (Women's SF2)</p>
+      <p>Coco Gauff made the stronger start and took the opening set 6-3, using aggressive returns and a much-improved serve to put Elena Rybakina under pressure. The new world No. 1 responded in the second set, finding more success against Gauff's forehand and leveling the match 6-4, as Gauff's error count began to climb.</p>
+      <p>The deciding set stayed close, but Gauff's serve and forehand continued to break down under the pressure. Rybakina steadied herself, capitalized on the mistakes, and closed out the third set 6-4 to complete the comeback. Rybakina advanced to her first US Open final, where she beat defending champion Aryna Sabalenka for the title (see above).</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Shelton Stuns Alcaraz in a Match That Ended at 3:33 a.m. &mdash; the Latest in US Open History</h3>
+      <p class="score-line result-line">SHELTON [8] def. ALCARAZ [2] (Men's QF)</p>
+      <p>Ben Shelton had never beaten Carlos Alcaraz in three previous meetings. Wednesday night at Arthur Ashe he beat him in five sets, in a match that finished at 3:33 a.m. ET &mdash; the latest finish in US Open history. Alcaraz won the first set in a tiebreak, Shelton owned the second and third, and Alcaraz took the fourth convincingly before Shelton closed it out in a deciding-set tiebreak. When the match point landed, Shelton let out the roar Flushing Meadows had been waiting for.</p>
+      <p>This ended Alcaraz's 18-match Grand Slam winning streak. Shelton would go on to beat Tiafoe in the all-American men's semifinal to reach his first major final, where he fell to Alexander Zverev (see above).</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Tiafoe Comes Back from 0-2 in Sets to Beat Michelsen in Five</h3>
+      <p class="score-line result-line">TIAFOE [11] def. MICHELSEN (Men's QF)</p>
+      <p>Two sets down against Alex Michelsen, Frances Tiafoe looked like he was heading out. Instead he won three consecutive sets, taking the decisive fifth-set tiebreak. He went on to meet Ben Shelton in the most anticipated match of the tournament: two Americans, one guaranteed finalist, and Arthur Ashe roaring behind both of them.</p>
+    </div>
+
+    <div class="story-new">
+      <h3>Historic: Four Americans in Grand Slam Semis &mdash; All Top-4 Women Seeds Through</h3>
+      <p class="score-line">HISTORIC &mdash; Gauff [4], Pegula [3], Tiafoe [11], Shelton [8] all in the last four</p>
+      <p>Four Americans in four Grand Slam semifinals. The men's draw guaranteed a first American Grand Slam finalist since Roddick in 2003. On the women's side: Gauff and Pegula, and all four top seeds made the semis &mdash; the first time that has happened at the US Open since 1975. In the end, it was Rybakina's title and Zverev's, but the American depth at this tournament was historic.</p>
+    </div>
+
+    <div class="story">
+      <h3>Zverev Yet to Drop a Set &mdash; Is He Unbeatable?</h3>
+      <p class="score-line result-line">ZVEREV [1] def. VAN DE ZANDSCHULP (Men's QF)</p>
+      <p>Alexander Zverev had not dropped a single set all tournament. He dispatched van de Zandschulp without being tested ahead of his semifinal against Karen Khachanov. Zverev had been in two Grand Slam finals and lost both. He had never looked more ready to close one out &mdash; and he ultimately did, winning the title (see above).</p>
+    </div>
+
+    <div class="story">
+      <h3>Sinner Out Before It Started &mdash; Djokovic Falls in Round 1</h3>
+      <p class="score-line">EARLY EXITS &mdash; No. 1 Sinner (knee), Djokovic R1 loss to Navone</p>
+      <p>World No. 1 Jannik Sinner withdrew before the tournament with a right knee injury. Novak Djokovic was eliminated in the first round by Mariano Navone &mdash; only his third career first-round loss in a major, and the first time none of the Big Three reached Round 2 since the 2003 French Open. Both exits opened the draw wide, and Zverev made the most of it, winning the title.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Semifinals Draw</h2>
+    <div class="matchup-cols">
+      <div class="matchup-col">
+        <h4>Women's Singles &mdash; CHAMPION CROWNED</h4>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF1</span><span>Sabalenka [1] def. Pegula [3] &mdash; 7-5, 6-2</span></div>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF2</span><span>Rybakina [2] def. Gauff [4] &mdash; 3-6, 6-4, 6-4 &middot; Arthur Ashe Stadium</span></div>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL</span><span>Rybakina [2] def. Sabalenka [1] &mdash; 6-4, 5-7, 6-2 (New York)</span></div>
+      </div>
+      <div class="matchup-col">
+        <h4>Men's Singles &mdash; CHAMPION CROWNED</h4>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF1</span><span>Zverev [1] def. Khachanov &mdash; 6-3, 7-6(7), 7-6(6)</span></div>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL SF2</span><span>Shelton [8] def. Tiafoe [11] &mdash; 4-6, 6-3, 6-3, 7-5 &middot; Arthur Ashe Stadium</span></div>
+        <div class="sf-item"><span class="sf-tag" style="background:var(--green-result);color:#fff;">FINAL</span><span>Zverev [1] def. Shelton [8] &mdash; 6-3, 7-6(2), 5-7, 6-2 (New York)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Full Schedule &mdash; Dubai Times</h2>
+    <table class="full-sched">
+      <thead><tr><th>UAE Date / Time</th><th>New York (ET)</th><th>Event</th></tr></thead>
+      <tbody>
+        <tr class="done-row"><td>Fri, Sep 11 &middot; 3:00 AM</td><td>Thu 7:00 PM</td><td>&#10003; Women's SF1: Sabalenka [1] def. Pegula [3] &mdash; 7-5, 6-2</td></tr>
+        <tr class="done-row"><td>Fri, Sep 11 &middot; 5:00 AM</td><td>Thu 9:00 PM</td><td>&#10003; Women's SF2: Rybakina [2] def. Gauff [4] &mdash; 3-6, 6-4, 6-4</td></tr>
+        <tr class="done-row"><td>Fri, Sep 11 &middot; 11:00 PM</td><td>Fri 3:00 PM</td><td>&#10003; Men's SF1: Zverev [1] def. Khachanov &mdash; 6-3, 7-6(7), 7-6(6)</td></tr>
+        <tr class="done-row"><td>Sat, Sep 12 &middot; 3:00 AM</td><td>Fri 7:00 PM</td><td>&#10003; Men's SF2 ALL-AMERICAN: Shelton [8] def. Tiafoe [11] &mdash; 4-6, 6-3, 6-3, 7-5</td></tr>
+        <tr class="done-row"><td>Sun, Sep 13 &middot; 12:00 AM</td><td>Sat 4:00 PM</td><td>&#10003; Women's Final: Rybakina [2] def. Sabalenka [1] &mdash; 6-4, 5-7, 6-2</td></tr>
+        <tr class="done-row"><td>Sun, Sep 13 &middot; 10:00 PM</td><td>Sun 2:00 PM</td><td>&#10003; Men's Final: Zverev [1] def. Shelton [8] &mdash; 6-3, 7-6(2), 5-7, 6-2</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:12px; font-style:italic; font-family:'Source Serif 4',serif;">UAE = Gulf Standard Time (UTC+4). The 2026 US Open is complete.</p>
+  </section>
+
+  <section>
+    <h2 class="section-title">Storylines From the Finals</h2>
+    <div class="watch-item">
+      <span class="badge badge-story" style="background:var(--green-result);">FINAL &middot; MEN'S FINAL</span>
+      <h3>Zverev Wins the US Open, Ending Shelton's Bid for History</h3>
+      <p>Alexander Zverev beat Ben Shelton 6-3, 7-6(2), 5-7, 6-2 to win his second Grand Slam title of the year, completing a run of three straight major finals. Shelton fell short in his bid to become the first American man to win a major since Andy Roddick in 2003.</p>
+    </div>
+    <div class="watch-item">
+      <span class="badge badge-story" style="background:var(--green-result);">FINAL &middot; WOMEN'S FINAL</span>
+      <h3>Rybakina Beats Sabalenka to Win the US Open</h3>
+      <p>Elena Rybakina came back from a set down to beat Aryna Sabalenka 6-4, 5-7, 6-2, denying the two-time defending champion a three-peat and claiming her third career Grand Slam title. She takes over the World No. 1 ranking on Monday.</p>
+    </div>
+    <div class="watch-item">
+      <span class="badge badge-us">FINAL &middot; MEN'S SF2</span>
+      <h3>Shelton Beats Tiafoe: First US Men's Major Finalist Since Roddick</h3>
+      <p>Frances Tiafoe took the opening set, but Ben Shelton won three of the next four to reach his first Grand Slam final, 4-6, 6-3, 6-3, 7-5 &mdash; the first American men's finalist since Andy Roddick won right here in 2003.</p>
+    </div>
+    <div class="watch-item">
+      <span class="badge badge-story">FINAL &middot; WOMEN'S SF2</span>
+      <h3>Rybakina Comes Back to Beat Gauff in Three Sets</h3>
+      <p>Coco Gauff took the opening set 6-3, but Elena Rybakina responded by winning the second and third sets 6-4, 6-4 to reach the US Open final, where she went on to beat defending champion Aryna Sabalenka for the title.</p>
+    </div>
+    <div class="watch-item">
+      <span class="badge badge-men">FINAL &middot; MEN'S SF1</span>
+      <h3>Zverev Escapes Two Tiebreaks to Beat Khachanov</h3>
+      <p>Alexander Zverev hadn't dropped a set all tournament and still didn't &mdash; but Karen Khachanov made him work for every point, taking both the second and third sets to tiebreaks. Zverev prevailed 6-3, 7-6(7), 7-6(6) to reach, and ultimately win, his third straight Grand Slam final.</p>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <h2 class="section-title">Championship Gallery</h2>
+    <div class="gallery-grid">
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 5H3v2a4 4 0 0 0 4 4M17 5h4v2a4 4 0 0 1-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>../photos/zverev-champion.jpg</code>
+          </div>
+          <img src="../photos/zverev-champion.jpg" alt="Alexander Zverev holding the US Open men's singles trophy" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Alexander Zverev<span class="role">Men's Singles Champion</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 5H3v2a4 4 0 0 0 4 4M17 5h4v2a4 4 0 0 1-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>../photos/rybakina-champion.jpg</code>
+          </div>
+          <img src="../photos/rybakina-champion.jpg" alt="Elena Rybakina holding the US Open women's singles trophy" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Elena Rybakina<span class="role">Women's Singles Champion</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 3v18M4 9h4M4 15h4" stroke-linecap="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>../photos/trophy-ceremony.jpg</code>
+          </div>
+          <img src="../photos/trophy-ceremony.jpg" alt="US Open trophy presentation ceremony at Arthur Ashe Stadium" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Trophy Ceremony<span class="role">Arthur Ashe Stadium</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4a12 12 0 0 1 0 16M12 4a12 12 0 0 0 0 16" /></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>../photos/shelton-final.jpg</code>
+          </div>
+          <img src="../photos/shelton-final.jpg" alt="Ben Shelton during the men's singles final" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Ben Shelton<span class="role">Men's Runner-up</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4a12 12 0 0 1 0 16M12 4a12 12 0 0 0 0 16" /></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>../photos/sabalenka-final.jpg</code>
+          </div>
+          <img src="../photos/sabalenka-final.jpg" alt="Aryna Sabalenka during the women's singles final" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Aryna Sabalenka<span class="role">Women's Runner-up</span></figcaption>
+      </figure>
+
+      <figure class="gallery-item">
+        <div class="gallery-frame">
+          <div class="gallery-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 20h18M5 20V10l7-6 7 6v10M9 20v-6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="ph-label">ADD PHOTO</span>
+            <code>../photos/arthur-ashe-stadium.jpg</code>
+          </div>
+          <img src="../photos/arthur-ashe-stadium.jpg" alt="Arthur Ashe Stadium during the 2026 US Open" onerror="this.style.display='none'">
+        </div>
+        <figcaption>Arthur Ashe Stadium<span class="role">Flushing Meadows, New York</span></figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <hr class="court-line">
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="byline">US Open 2026 &mdash; Road to the Finals &middot; Tournament Complete</p>
+    <p>Final: Zverev [1] def. Shelton [8] 6-3, 7-6(2), 5-7, 6-2 to win the men's title Sunday. Rybakina [2] def. Sabalenka [1] 6-4, 5-7, 6-2 to win the women's title Saturday. The 2026 US Open is complete.</p>
+    <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
+    <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the USTA or the US Open.</p>
+  </div>
+</footer>
+
+
+<script>
+  // Scores are manually updated on this fan recap page.
+  // Women's semifinals final: Sabalenka def. Pegula 7-5, 6-2; Rybakina def. Gauff 3-6, 6-4, 6-4.
+  // Men's semifinals final: Zverev def. Khachanov 6-3, 7-6(7), 7-6(6); Shelton def. Tiafoe 4-6, 6-3, 6-3, 7-5.
+  // Women's final result: Rybakina def. Sabalenka 6-4, 5-7, 6-2 to win the 2026 US Open (her 3rd career major).
+  // Men's final result: Zverev def. Shelton 6-3, 7-6(2), 5-7, 6-2 to win the 2026 US Open (his 2nd major of the year). Tournament complete.
+</script>
+
+</body>
+</html>
