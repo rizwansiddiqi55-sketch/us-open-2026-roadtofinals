@@ -804,7 +804,7 @@
 </header>
 
 <div class="alert-band">
-  &#128308; LIVE NOW &mdash; SABALENKA vs MUCHOV&Aacute; &middot; SABALENKA WON THE 1ST SET 7-6 &middot; 2ND SET 0-0 <span class="sep">&nbsp;|&nbsp;</span> ANDREEVA vs SVITOLINA &middot; 1:10 AM UAE (EST.) <span class="sep">&nbsp;|&nbsp;</span> WED NOV 11 &mdash; KOSTYUK vs PEGULA &middot; 12:00 AM UAE <span class="sep">&nbsp;|&nbsp;</span> GAUFF vs NOSKOVA &middot; 1:10 AM UAE (EST.) <span class="sep">&nbsp;|&nbsp;</span> &#10003; FINAL &mdash; GAUFF def. PEGULA &middot; 6-4, 6-7(5), 6-2 <span class="sep">&nbsp;|&nbsp;</span> &#10003; FINAL &mdash; NOSKOVA def. KOSTYUK &middot; 6-2, 6-4
+  &#128308; LIVE NOW &mdash; SABALENKA vs MUCHOV&Aacute; &middot; SABALENKA WON THE 1ST SET 7-6 &middot; 2ND SET 0-0 <span class="sep">&nbsp;|&nbsp;</span> TUE NOV 10 &mdash; ANDREEVA vs SVITOLINA &middot; 1:10 AM UAE (EST.)
 </div>
 
 <div class="ticker-band">
@@ -1156,7 +1156,18 @@
           fin=ms.filter(function(m){return m.status==='final';}).sort(function(a,b){return b.order-a.order;}),
           all=live.concat(up,fin);
       row.innerHTML=all.map(card).join('');
-      if(banner) banner.innerHTML=all.map(seg).join(' <span class="sep">&nbsp;|&nbsp;</span> ');
+      if(banner){
+        function uaeDay(iso){ return new Date(Date.parse(iso)+4*3600000).toISOString().slice(0,10); }
+        var today=new Date(Date.now()+4*3600000).toISOString().slice(0,10);
+        var days=all.filter(function(m){return m.start;}).map(function(m){return uaeDay(m.start);});
+        var shown=all.filter(function(m){ return m.start && uaeDay(m.start)===today; });
+        if(!shown.length){
+          var future=days.filter(function(x){return x>today;}).sort();
+          var pick=future.length?future[0]:days.slice().sort().pop();
+          shown=all.filter(function(m){ return m.start && uaeDay(m.start)===pick; });
+        }
+        banner.innerHTML=shown.map(seg).join(' <span class="sep">&nbsp;|&nbsp;</span> ');
+      }
       if(stamp && d.updated){
         try{ stamp.textContent=(d.source==='live'?'Live feed \u00B7 ':'Scores refresh automatically \u00B7 ')+'updated '+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}).format(new Date(d.updated))+' UAE'; }catch(e){}
       }
