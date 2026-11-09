@@ -11,11 +11,13 @@
       "time": "12:00 AM UAE",
       "p1": {
         "name": "Kostyuk",
-        "flag": "🇺🇦"
+        "flag": "🇺🇦",
+        "full": "Marta Kostyuk"
       },
       "p2": {
         "name": "Noskova",
-        "flag": "🇨🇿"
+        "flag": "🇨🇿",
+        "full": "Linda Noskova"
       },
       "sets": [
         {
@@ -27,7 +29,8 @@
           "p2": 6
         }
       ],
-      "start": "2026-11-08T20:00:00Z"
+      "start": "2026-11-08T20:00:00Z",
+      "dayText": "Opening Day of the WTA Finals"
     },
     {
       "id": "gauff-pegula",
@@ -38,11 +41,13 @@
       "time": "1:10 AM UAE (EST.)",
       "p1": {
         "name": "Gauff",
-        "flag": "🇺🇸"
+        "flag": "🇺🇸",
+        "full": "Coco Gauff"
       },
       "p2": {
         "name": "Pegula",
-        "flag": "🇺🇸"
+        "flag": "🇺🇸",
+        "full": "Jessica Pegula"
       },
       "sets": [
         {
@@ -59,7 +64,8 @@
           "p2": 2
         }
       ],
-      "start": "2026-11-08T21:10:00Z"
+      "start": "2026-11-08T21:10:00Z",
+      "dayText": "Opening Day of the WTA Finals"
     },
     {
       "id": "sabalenka-muchova",
@@ -70,11 +76,13 @@
       "time": "12:00 AM UAE",
       "p1": {
         "name": "Sabalenka",
-        "flag": "🇧🇾"
+        "flag": "🇧🇾",
+        "full": "Aryna Sabalenka"
       },
       "p2": {
         "name": "Muchová",
-        "flag": "🇨🇿"
+        "flag": "🇨🇿",
+        "full": "Karolina Muchová"
       },
       "sets": [
         {
@@ -86,7 +94,8 @@
           "p2": 0
         }
       ],
-      "start": "2026-11-09T20:15:00Z"
+      "start": "2026-11-09T20:15:00Z",
+      "dayText": "Day Two of the WTA Finals"
     },
     {
       "id": "andreeva-svitolina",
@@ -97,14 +106,17 @@
       "time": "1:10 AM UAE (EST.)",
       "p1": {
         "name": "Andreeva",
-        "flag": "🇷🇺"
+        "flag": "🇷🇺",
+        "full": "Mirra Andreeva"
       },
       "p2": {
         "name": "Svitolina",
-        "flag": "🇺🇦"
+        "flag": "🇺🇦",
+        "full": "Elina Svitolina"
       },
       "sets": [],
-      "start": "2026-11-09T21:30:00Z"
+      "start": "2026-11-09T21:30:00Z",
+      "dayText": "Day Two of the WTA Finals"
     },
     {
       "id": "kostyuk-pegula",
@@ -115,14 +127,17 @@
       "time": "12:00 AM UAE",
       "p1": {
         "name": "Kostyuk",
-        "flag": "🇺🇦"
+        "flag": "🇺🇦",
+        "full": "Marta Kostyuk"
       },
       "p2": {
         "name": "Pegula",
-        "flag": "🇺🇸"
+        "flag": "🇺🇸",
+        "full": "Jessica Pegula"
       },
       "sets": [],
-      "start": "2026-11-10T20:00:00Z"
+      "start": "2026-11-10T20:00:00Z",
+      "dayText": "Day Three of the WTA Finals"
     },
     {
       "id": "gauff-noskova",
@@ -133,14 +148,17 @@
       "time": "1:10 AM UAE (EST.)",
       "p1": {
         "name": "Gauff",
-        "flag": "🇺🇸"
+        "flag": "🇺🇸",
+        "full": "Coco Gauff"
       },
       "p2": {
         "name": "Noskova",
-        "flag": "🇨🇿"
+        "flag": "🇨🇿",
+        "full": "Linda Noskova"
       },
       "sets": [],
-      "start": "2026-11-10T21:30:00Z"
+      "start": "2026-11-10T21:30:00Z",
+      "dayText": "Day Three of the WTA Finals"
     }
   ]
 }
