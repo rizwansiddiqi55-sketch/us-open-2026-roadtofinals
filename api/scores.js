@@ -7,7 +7,7 @@
 const PROVIDER = 'https://api.livetennisapi.com/api/public/v1/matches?tour=wta&status=live&limit=50';
 
 // Quota guards (kept per warm serverless instance, on top of the CDN cache).
-let blockedUntil = 0;          // set when the provider says the daily allowance is spent
+const blocked = {};            // per-key: epoch ms until which that key must not be used
 let memo = null;               // last good provider response
 let memoAt = 0;
 const MEMO_MS = 120000;        // never call the provider more than once per 2 minutes per instance
@@ -40,28 +40,40 @@ function windowOpen(matches, now) {
   });
 }
 
-async function fetchProvider(key) {
+// Tries each configured key in order (TENNIS_API_KEY, then TENNIS_API_KEY2). A key that is
+// rate-limited (429) or rejected (401/403) is parked, and the next key is used instead.
+async function fetchProvider(keys) {
   const now = Date.now();
-  if (now < blockedUntil) throw new Error('quota blocked');
   if (memo && now - memoAt < MEMO_MS) return memo;
-  const r = await fetch(PROVIDER, { headers: { Authorization: 'Bearer ' + key } });
-  if (r.status === 429) {
-    let until = now + 15 * 60 * 1000;
+  let lastErr = new Error('no usable key');
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (now < (blocked[i] || 0)) continue;
+    let r;
     try {
-      const j = await r.json();
-      if (j && j.resets_at) until = Math.max(until, Date.parse(j.resets_at) + 30000);
-    } catch (e) {}
-    blockedUntil = until;
-    throw new Error('rate limited');
+      r = await fetch(PROVIDER, { headers: { Authorization: 'Bearer ' + key } });
+    } catch (e) { lastErr = e; continue; }
+    if (r.status === 429) {
+      let until = now + 15 * 60 * 1000;
+      try {
+        const j = await r.json();
+        if (j && j.resets_at) until = Math.max(until, Date.parse(j.resets_at) + 30000);
+      } catch (e) {}
+      blocked[i] = until;
+      lastErr = new Error('rate limited');
+      continue;
+    }
+    if (r.status === 401 || r.status === 403) { blocked[i] = now + 60 * 60 * 1000; lastErr = new Error('key rejected'); continue; }
+    if (!r.ok) { lastErr = new Error('provider ' + r.status); continue; }
+    memo = await r.json();
+    memoAt = now;
+    return memo;
   }
-  if (!r.ok) throw new Error('provider ' + r.status);
-  memo = await r.json();
-  memoAt = now;
-  return memo;
+  throw lastErr;
 }
 
-async function overlayLive(data, key) {
-  const body = await fetchProvider(key);
+async function overlayLive(data, keys) {
+  const body = await fetchProvider(keys);
   const live = new Map();
   (body.data || []).forEach((pm) => {
     if (pm.is_doubles) return;
@@ -119,9 +131,9 @@ module.exports = async (req, res) => {
   data.source = 'static';
   let ttl = 60;
   try {
-    const key = process.env.TENNIS_API_KEY;
-    if (key && windowOpen(data.matches, Date.now())) {
-      data = await overlayLive(data, key);
+    const keys = [process.env.TENNIS_API_KEY, process.env.TENNIS_API_KEY2].filter(Boolean);
+    if (keys.length && windowOpen(data.matches, Date.now())) {
+      data = await overlayLive(data, keys);
       ttl = 300; // 5 minutes: ~12 provider calls/hour, well inside the free 100/day
     }
   } catch (e) {
