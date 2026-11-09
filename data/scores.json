@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T01:49:00+04:00",
+  "updated": "2026-11-10T02:12:00+04:00",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -70,7 +70,7 @@
     {
       "id": "sabalenka-muchova",
       "order": 3,
-      "status": "live",
+      "status": "final",
       "court": "Court 2",
       "label": "TUE NOV 10",
       "time": "12:00 AM UAE",
@@ -91,8 +91,8 @@
           "tb": 2
         },
         {
-          "p1": 5,
-          "p2": 3
+          "p1": 7,
+          "p2": 5
         }
       ],
       "start": "2026-11-09T20:15:00Z",
