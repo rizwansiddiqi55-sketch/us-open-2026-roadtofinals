@@ -1129,9 +1129,9 @@
       var tour=m.court;
       if(m.status==='live'){
         return '<div class="sb-card matchday"><div class="sb-tour">&#128308; LIVE &middot; Group stage &middot; '+tour+'</div>'
-          +'<div class="sb-name"><span>'+m.p1.flag+' '+m.p1.name+' &nbsp; <strong>'+games(m,'p1')+'</strong></span></div>'
-          +'<div class="sb-name"><span>'+m.p2.flag+' '+m.p2.name+' &nbsp; <strong>'+games(m,'p2')+'</strong></span></div>'
-          +'<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note?' &middot; '+m.note:'')+'</div></div>';
+          +'<div class="sb-name"><span>'+m.p1.flag+' '+m.p1.name+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+' &nbsp; <strong>'+games(m,'p1')+'</strong></span></div>'
+          +'<div class="sb-name"><span>'+m.p2.flag+' '+m.p2.name+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+' &nbsp; <strong>'+games(m,'p2')+'</strong></span></div>'
+          +'<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note?' &middot; '+m.note:'')+(m.server?' &middot; '+m[m.server].name+' serving':'')+'</div></div>';
       }
       if(m.status==='final'){
         var w=won(m)||'p1', l=w==='p1'?'p2':'p1', flip=(w==='p2');

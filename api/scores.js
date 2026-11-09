@@ -63,6 +63,12 @@ async function overlayLive(data, key) {
     m.sets = sets;
     m.live = true;
     delete m.note;
+    // Provider: server 1 = its p1, 2 = its p2. Map to our p1/p2 (names may be in a different order).
+    delete m.server;
+    if (sc.server === 1 || sc.server === 2) {
+      const srv = sc.server === 1 ? 'p1' : 'p2';
+      m.server = same ? srv : (srv === 'p1' ? 'p2' : 'p1');
+    }
     if (sc.is_tiebreak && Array.isArray(sc.points)) {
       const p = same ? sc.points : [sc.points[1], sc.points[0]];
       m.note = 'Tiebreak ' + p[0] + '-' + p[1];
