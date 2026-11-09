@@ -1,0 +1,21 @@
+{
+  "updated": "2026-11-10T00:30:00+04:00",
+  "tournament": "WTA Finals 2026",
+  "matches": [
+    { "id": "noskova-kostyuk", "order": 1, "status": "final", "court": "Court 2", "label": "MON NOV 9", "time": "12:00 AM UAE",
+      "p1": { "name": "Kostyuk", "flag": "🇺🇦" }, "p2": { "name": "Noskova", "flag": "🇨🇿" },
+      "sets": [ { "p1": 2, "p2": 6 }, { "p1": 4, "p2": 6 } ] },
+    { "id": "gauff-pegula", "order": 2, "status": "final", "court": "Court 2", "label": "MON NOV 9", "time": "1:10 AM UAE (EST.)",
+      "p1": { "name": "Gauff", "flag": "🇺🇸" }, "p2": { "name": "Pegula", "flag": "🇺🇸" },
+      "sets": [ { "p1": 6, "p2": 4 }, { "p1": 6, "p2": 7, "tb": 5 }, { "p1": 6, "p2": 2 } ] },
+    { "id": "sabalenka-muchova", "order": 3, "status": "live", "court": "Court 2", "label": "TUE NOV 10", "time": "12:00 AM UAE",
+      "p1": { "name": "Sabalenka", "flag": "🇧🇾" }, "p2": { "name": "Muchová", "flag": "🇨🇿" },
+      "sets": [ { "p1": 4, "p2": 3 } ] },
+    { "id": "andreeva-svitolina", "order": 4, "status": "upcoming", "court": "Court 2", "label": "TUE NOV 10", "time": "1:10 AM UAE (EST.)",
+      "p1": { "name": "Andreeva", "flag": "🇷🇺" }, "p2": { "name": "Svitolina", "flag": "🇺🇦" }, "sets": [] },
+    { "id": "kostyuk-pegula", "order": 5, "status": "upcoming", "court": "Court 2", "label": "WED NOV 11", "time": "12:00 AM UAE",
+      "p1": { "name": "Kostyuk", "flag": "🇺🇦" }, "p2": { "name": "Pegula", "flag": "🇺🇸" }, "sets": [] },
+    { "id": "gauff-noskova", "order": 6, "status": "upcoming", "court": "Court 2", "label": "WED NOV 11", "time": "1:10 AM UAE (EST.)",
+      "p1": { "name": "Gauff", "flag": "🇺🇸" }, "p2": { "name": "Noskova", "flag": "🇨🇿" }, "sets": [] }
+  ]
+}
