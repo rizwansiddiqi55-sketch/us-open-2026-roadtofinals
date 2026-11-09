@@ -100,6 +100,16 @@ async function overlayLive(data, keys) {
     m.sets = sets;
     m.live = true;
     delete m.note;
+    // Warn when the feed itself looks behind (its data is old/stale, or no games recorded long after the start).
+    {
+      const reasons = [];
+      const feedAge = Number(sc.age_seconds) || 0;
+      const liveAt = Date.parse(pm.live_at || '');
+      const total = sets.reduce((a, x) => a + x.p1 + x.p2, 0);
+      if (sc.stale || feedAge > 180) reasons.push('feed data is ' + Math.max(1, Math.round(feedAge / 60)) + ' min old');
+      if (liveAt && sets.length === 1 && total === 0 && Date.now() - liveAt > 12 * 60 * 1000) reasons.push('no games recorded yet');
+      if (reasons.length) m.lag = reasons.join('; '); else delete m.lag;
+    }
     // Provider: server 1 = its p1, 2 = its p2. Map to our p1/p2 (names may be in a different order).
     delete m.server;
     if (sc.server === 1 || sc.server === 2) {
