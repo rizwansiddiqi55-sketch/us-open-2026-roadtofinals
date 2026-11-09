@@ -1,0 +1,16 @@
+{
+  "name": "WTA Finals 2026 — Indian Wells",
+  "short_name": "WTA Finals",
+  "description": "Independent fan recap: WTA Finals 2026 schedule, results and storylines in Dubai time.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F2350",
+  "theme_color": "#0F2350",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
