@@ -1118,7 +1118,7 @@
 </div>
 <script>
   (function(){
-    var FEED='/data/scores.json', EVERY=20000, last='';
+    var FEEDS=['/api/scores','/data/scores.json'], EVERY=20000, last='';
     var row=document.querySelector('.ticker-row'), banner=document.querySelector('.alert-band'), stamp=document.getElementById('feedStamp');
     if(!row) return;
     function won(m){ var a=0,b=0; (m.sets||[]).forEach(function(x){ if(x.p1>x.p2)a++; else if(x.p2>x.p1)b++; }); return a>b?'p1':(b>a?'p2':null); }
@@ -1131,7 +1131,7 @@
         return '<div class="sb-card matchday"><div class="sb-tour">&#128308; LIVE &middot; Group stage &middot; '+tour+'</div>'
           +'<div class="sb-name"><span>'+m.p1.flag+' '+m.p1.name+' &nbsp; <strong>'+games(m,'p1')+'</strong></span></div>'
           +'<div class="sb-name"><span>'+m.p2.flag+' '+m.p2.name+' &nbsp; <strong>'+games(m,'p2')+'</strong></span></div>'
-          +'<div class="sb-status tonight">Live &mdash; '+line(m,false)+'</div></div>';
+          +'<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note?' &middot; '+m.note:'')+'</div></div>';
       }
       if(m.status==='final'){
         var w=won(m)||'p1', l=w==='p1'?'p2':'p1', flip=(w==='p2');
@@ -1146,7 +1146,7 @@
         +'<div class="sb-status upcoming">'+m.label.replace(/^(\w+) (\w+) (\d+)$/,function(_,d,mo,n){return d.charAt(0)+d.slice(1).toLowerCase()+' '+mo.charAt(0)+mo.slice(1).toLowerCase()+' '+n;})+' &middot; '+m.time+'</div></div>';
     }
     function seg(m){
-      if(m.status==='live') return '&#128308; LIVE NOW &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+line(m,false);
+      if(m.status==='live') return '&#128308; LIVE NOW &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+line(m,false)+(m.note&&/^Tiebreak/.test(m.note)?' ('+m.note.toUpperCase()+')':'');
       if(m.status==='final'){ var w=won(m)||'p1', l=w==='p1'?'p2':'p1'; return '&#10003; FINAL &mdash; '+m[w].name.toUpperCase()+' def. '+m[l].name.toUpperCase()+' &middot; '+line(m,w==='p2'); }
       return m.label+' &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+m.time.toUpperCase();
     }
@@ -1158,13 +1158,16 @@
       row.innerHTML=all.map(card).join('');
       if(banner) banner.innerHTML=all.map(seg).join(' <span class="sep">&nbsp;|&nbsp;</span> ');
       if(stamp && d.updated){
-        try{ stamp.textContent='Scores refresh automatically \u00B7 updated '+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}).format(new Date(d.updated))+' UAE'; }catch(e){}
+        try{ stamp.textContent=(d.source==='live'?'Live feed \u00B7 ':'Scores refresh automatically \u00B7 ')+'updated '+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}).format(new Date(d.updated))+' UAE'; }catch(e){}
       }
+    }
+    function fetchFeed(i){
+      return fetch(FEEDS[i]+'?t='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
+        .catch(function(e){ if(i+1<FEEDS.length) return fetchFeed(i+1); throw e; });
     }
     function refresh(){
       if(document.hidden) return Promise.resolve();
-      return fetch(FEED+'?t='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
-        .then(function(t){ if(t===last) return; last=t; render(JSON.parse(t)); }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; render(JSON.parse(t)); }).catch(function(){});
     }
     window.refreshScores=refresh;
     refresh(); setInterval(refresh,EVERY);
