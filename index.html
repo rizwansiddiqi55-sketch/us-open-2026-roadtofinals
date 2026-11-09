@@ -781,6 +781,17 @@
   .install-link{background:none; border:0; color:inherit; text-decoration:underline; cursor:pointer; font:inherit; padding:0;}
   .panel-day{font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:1.5px; color:var(--ball); background:var(--court-blue-dark); padding:8px 14px; border-radius:6px; margin:26px 0 12px; font-weight:600;}
   table.standings th, table.standings td{padding:9px 6px; font-size:13.5px;}
+  .wx-card{background:var(--chalk-card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:16px;}
+  .wx-now{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .wx-icon{font-size:44px; line-height:1;}
+  .wx-temp{font-family:'Oswald',sans-serif; font-size:34px; font-weight:600; color:var(--ink);}
+  .wx-temp small{font-size:16px; color:var(--ink-soft); font-weight:400;}
+  .wx-meta{font-size:13.5px; color:var(--ink-soft);}
+  .wx-days{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px;}
+  .wx-day{border:1px solid var(--line); border-radius:10px; padding:10px 6px; text-align:center; font-size:12.5px; color:var(--ink-soft);}
+  .wx-day b{display:block; font-family:'Oswald',sans-serif; letter-spacing:.5px; color:var(--ink); font-size:13px;}
+  .wx-day .wx-ic{font-size:24px; display:block; margin:4px 0;}
+  .wx-day .wx-hi{color:var(--ink); font-weight:700;}
 </style>
 </head>
 <body>
@@ -1001,6 +1012,14 @@
     <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Ranked by round-robin record, then set and game record. Group 2 standings will be added once the group&rsquo;s players and results are confirmed.</p>
   </section>
 
+  <section id="weather">
+    <h2 class="section-title">Indian Wells Weather</h2>
+    <div class="wx-card" id="wxCard" aria-live="polite">
+      <p class="wx-meta" id="wxStatus">Loading the latest forecast for Indian Wells, California&hellip;</p>
+    </div>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Live forecast from Open-Meteo for Indian Wells Tennis Garden. Temperatures shown in &deg;F with &deg;C in brackets. Local time is Pacific Time.</p>
+  </section>
+
   <section>
     <h2 class="section-title">Schedule &mdash; Dubai Times</h2>
     <table class="full-sched">
@@ -1092,6 +1111,30 @@
   <button class="ib-x" id="ibX" type="button" aria-label="Dismiss">&times;</button>
 </div>
 <script>
+  (function(){
+    var card=document.getElementById('wxCard'); if(!card) return;
+    var codes={0:['\u2600\uFE0F','Clear'],1:['\uD83C\uDF24\uFE0F','Mostly clear'],2:['\u26C5','Partly cloudy'],3:['\u2601\uFE0F','Overcast'],45:['\uD83C\uDF2B\uFE0F','Fog'],48:['\uD83C\uDF2B\uFE0F','Fog'],51:['\uD83C\uDF26\uFE0F','Light drizzle'],53:['\uD83C\uDF26\uFE0F','Drizzle'],55:['\uD83C\uDF27\uFE0F','Heavy drizzle'],61:['\uD83C\uDF27\uFE0F','Light rain'],63:['\uD83C\uDF27\uFE0F','Rain'],65:['\uD83C\uDF27\uFE0F','Heavy rain'],80:['\uD83C\uDF26\uFE0F','Showers'],81:['\uD83C\uDF27\uFE0F','Showers'],82:['\u26C8\uFE0F','Heavy showers'],95:['\u26C8\uFE0F','Thunderstorm'],96:['\u26C8\uFE0F','Thunderstorm'],99:['\u26C8\uFE0F','Thunderstorm']};
+    function info(c){ return codes[c]||['\uD83C\uDF21\uFE0F','Weather']; }
+    function c(f){ return Math.round((f-32)*5/9); }
+    var url='https://api.open-meteo.com/v1/forecast?latitude=33.7206&longitude=-116.3411'
+      +'&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code'
+      +'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
+      +'&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FLos_Angeles&forecast_days=5';
+    fetch(url).then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); }).then(function(d){
+      var cur=d.current, i=info(cur.weather_code), t=Math.round(cur.temperature_2m);
+      var html='<div class="wx-now"><span class="wx-icon">'+i[0]+'</span><div><div class="wx-temp">'+t+'&deg;F <small>('+c(t)+'&deg;C)</small></div>'
+        +'<div class="wx-meta">'+i[1]+' &middot; Wind '+Math.round(cur.wind_speed_10m)+' mph &middot; Humidity '+Math.round(cur.relative_humidity_2m)+'%</div></div></div><div class="wx-days">';
+      var names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      for(var k=0;k<4&&k<d.daily.time.length;k++){
+        var dt=new Date(d.daily.time[k]+'T12:00:00'), di=info(d.daily.weather_code[k]);
+        var hi=Math.round(d.daily.temperature_2m_max[k]), lo=Math.round(d.daily.temperature_2m_min[k]), rain=d.daily.precipitation_probability_max[k];
+        html+='<div class="wx-day"><b>'+names[dt.getDay()]+' '+(dt.getMonth()+1)+'/'+dt.getDate()+'</b><span class="wx-ic">'+di[0]+'</span><span class="wx-hi">'+hi+'&deg;</span> / '+lo+'&deg;F<br>'+c(hi)+'&deg; / '+c(lo)+'&deg;C<br>Rain '+(rain==null?'&ndash;':rain+'%')+'</div>';
+      }
+      card.innerHTML=html+'</div>';
+    }).catch(function(){
+      card.innerHTML='<p class="wx-meta">Weather is unavailable right now. Check back soon.</p>';
+    });
+  })();
   (function(){
     var banner=document.getElementById('installBanner'), msg=document.getElementById('ibMsg'),
         go=document.getElementById('ibGo'), x=document.getElementById('ibX'), deferred=null;
