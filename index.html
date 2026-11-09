@@ -771,6 +771,14 @@
     margin-top:1px;
   }
   @supports(padding:max(0px)){ body{ padding-left:env(safe-area-inset-left); padding-right:env(safe-area-inset-right);} .masthead{ padding-top:max(0px, env(safe-area-inset-top)); } }
+  .install-banner{position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); z-index:50; background:var(--court-blue-dark); color:#fff; border:1px solid var(--ball); border-radius:14px; padding:12px 14px; display:none; box-shadow:0 8px 24px rgba(0,0,0,.35); font-family:'Source Serif 4',Georgia,serif; font-size:14px; line-height:1.4;}
+  .install-banner.show{display:flex; gap:12px; align-items:center;}
+  .install-banner .ib-text{flex:1;}
+  .install-banner strong{font-family:'Oswald',sans-serif; letter-spacing:.5px; color:var(--ball);}
+  .install-banner button{font-family:'Oswald',sans-serif; border:0; border-radius:8px; padding:8px 12px; font-size:13px; cursor:pointer;}
+  .install-banner .ib-go{background:var(--ball); color:#0F2350; font-weight:700;}
+  .install-banner .ib-x{background:transparent; color:#cfd8f0; font-size:20px; padding:4px 8px;}
+  .install-link{background:none; border:0; color:inherit; text-decoration:underline; cursor:pointer; font:inherit; padding:0;}
 </style>
 </head>
 <body>
@@ -1049,12 +1057,55 @@
 <footer>
   <div class="wrap">
     <p class="byline">WTA Finals 2026 &middot; Indian Wells &middot; Group Stage</p>
+    <p><button class="install-link" id="installLink" type="button">Install this page as a phone app</button></p>
     <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
     <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the WTA or the BNP Paribas Open.</p>
   </div>
 </footer>
 
+<div class="install-banner" id="installBanner" role="dialog" aria-label="Install this app">
+  <div class="ib-text"><strong>GET THE APP</strong><br><span id="ibMsg">Add this page to your home screen.</span></div>
+  <button class="ib-go" id="ibGo" type="button" hidden>Install</button>
+  <button class="ib-x" id="ibX" type="button" aria-label="Dismiss">&times;</button>
+</div>
 <script>
+  (function(){
+    var banner=document.getElementById('installBanner'), msg=document.getElementById('ibMsg'),
+        go=document.getElementById('ibGo'), x=document.getElementById('ibX'), deferred=null;
+    function safeGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+    function safeSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+    var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    var ua = navigator.userAgent || '';
+    var isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+    var isSafari = /safari/i.test(ua) && !/crios|fxios|edgios|chrome|android/i.test(ua);
+    var isMobile = /android|iphone|ipad|ipod|mobile/i.test(ua) || isIOS;
+    function show(){ if(!standalone && isMobile && !safeGet('installDismissed')) banner.classList.add('show'); }
+    function hide(permanent){ banner.classList.remove('show'); if(permanent) safeSet('installDismissed','1'); }
+    x.addEventListener('click', function(){ hide(true); });
+    window.addEventListener('beforeinstallprompt', function(e){
+      e.preventDefault(); deferred=e;
+      msg.textContent='Install WTA Finals on your phone for quick access.';
+      go.hidden=false; show();
+    });
+    go.addEventListener('click', function(){
+      if(!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.then(function(){ deferred=null; hide(true); });
+    });
+    window.addEventListener('appinstalled', function(){ hide(true); });
+    if(isIOS){
+      msg.innerHTML = isSafari
+        ? 'Tap <strong>Share</strong> <span aria-hidden="true">&#x2B06;&#xFE0E;</span> then <strong>Add to Home Screen</strong>.'
+        : 'Open this page in <strong>Safari</strong>, tap Share, then <strong>Add to Home Screen</strong>.';
+      show();
+    } else if(isMobile){
+      setTimeout(function(){
+        if(!deferred){ msg.innerHTML='Open the browser menu <strong>&#8942;</strong> and tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.'; show(); }
+      }, 2500);
+    }
+    var link=document.getElementById('installLink');
+    if(link){ link.addEventListener('click', function(){ try{ localStorage.removeItem('installDismissed'); }catch(e){} standalone=false; isMobile=true; show(); }); }
+  })();
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); });
   }
