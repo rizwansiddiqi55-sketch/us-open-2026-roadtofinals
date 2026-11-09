@@ -10,7 +10,10 @@ const PROVIDER = 'https://api.livetennisapi.com/api/public/v1/matches?tour=wta&s
 const blocked = {};            // per-key: epoch ms until which that key must not be used
 let memo = null;               // last good provider response
 let memoAt = 0;
-const MEMO_MS = 120000;        // never call the provider more than once per 2 minutes per instance
+const MEMO_MS = 150000;        // reuse a provider answer for 2.5 min so the page refreshes about every 3 minutes
+let dayKey = '';               // per-instance daily call counter (free plan = 100/day)
+let dayCalls = 0;
+const DAY_LIMIT = 90;
 
 function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -45,12 +48,16 @@ function windowOpen(matches, now) {
 async function fetchProvider(keys) {
   const now = Date.now();
   if (memo && now - memoAt < MEMO_MS) return memo;
+  const today = new Date(now).toISOString().slice(0, 10);
+  if (today !== dayKey) { dayKey = today; dayCalls = 0; }
+  if (dayCalls >= DAY_LIMIT) throw new Error('daily call guard');
   let lastErr = new Error('no usable key');
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
     if (now < (blocked[i] || 0)) continue;
     let r;
     try {
+      dayCalls++;
       r = await fetch(PROVIDER, { headers: { Authorization: 'Bearer ' + key } });
     } catch (e) { lastErr = e; continue; }
     if (r.status === 429) {
@@ -116,6 +123,10 @@ async function overlayLive(data, keys) {
       const srv = sc.server === 1 ? 'p1' : 'p2';
       m.server = same ? srv : (srv === 'p1' ? 'p2' : 'p1');
     }
+    if (Array.isArray(sc.points) && sc.points.length === 2) {
+      const pp = same ? sc.points : [sc.points[1], sc.points[0]];
+      m.points = pp.map((x) => (String(x).toUpperCase() === 'A' ? 'AD' : String(x).toUpperCase()));
+    } else { delete m.points; }
     if (sc.is_tiebreak && Array.isArray(sc.points)) {
       const p = same ? sc.points : [sc.points[1], sc.points[0]];
       m.note = 'Tiebreak ' + p[0] + '-' + p[1];
@@ -226,6 +237,7 @@ async function citoAssist(data, primaryOk) {
       }
       if (it.game_score) {
         const parts = String(it.game_score).split('-');
+        m.points = same ? parts.slice(0, 2) : parts.slice(0, 2).reverse();
         m.note = 'Game: ' + (same ? it.game_score : parts.reverse().join('-'));
       }
       data.source = 'live';
@@ -254,7 +266,7 @@ module.exports = async (req, res) => {
     if (keys.length && windowOpen(data.matches, Date.now())) {
       data = await overlayLive(data, keys);
       primaryOk = true;
-      ttl = 300; // 5 minutes: ~12 provider calls/hour, well inside the free 100/day
+      ttl = 180; // 3 minutes (about 20 provider calls/hour per region)
     }
   } catch (e) {
     data.source = 'static';

@@ -792,6 +792,9 @@
   .wx-day b{display:block; font-family:'Oswald',sans-serif; letter-spacing:.5px; color:var(--ink); font-size:13px;}
   .wx-day .wx-ic{font-size:24px; display:block; margin:4px 0;}
   .wx-day .wx-hi{color:var(--ink); font-weight:700;}
+  .nmw{display:inline-block; min-width:8.6em;}
+  .gms{display:inline-block; min-width:2.6em; letter-spacing:.5px;}
+  .pt{display:inline-block; min-width:30px; text-align:center; border:1px solid rgba(255,255,255,.4); border-radius:5px; padding:0 6px; margin-left:10px; background:rgba(0,0,0,.25); color:#fff;}
 </style>
 </head>
 <body>
@@ -1123,7 +1126,7 @@
 </div>
 <script>
   (function(){
-    var FEEDS=['/api/scores','/data/scores.json'], EVERY=20000, last='';
+    var FEEDS=['/api/scores','/data/scores.json'], EVERY=60000, last='';
     var row=document.querySelector('.ticker-row'), banner=document.querySelector('.alert-band'), stamp=document.getElementById('feedStamp');
     if(!row) return;
     function won(m){ var a=0,b=0; (m.sets||[]).forEach(function(x){ if(x.p1>x.p2)a++; else if(x.p2>x.p1)b++; }); return a>b?'p1':(b>a?'p2':null); }
@@ -1134,9 +1137,9 @@
       var tour=m.court;
       if(m.status==='live'){
         return '<div class="sb-card matchday"><div class="sb-tour">&#128308; LIVE &middot; Group stage &middot; '+tour+'</div>'
-          +'<div class="sb-name"><span>'+m.p1.flag+' '+m.p1.name+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+' &nbsp; <strong>'+games(m,'p1')+'</strong></span></div>'
-          +'<div class="sb-name"><span>'+m.p2.flag+' '+m.p2.name+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+' &nbsp; <strong>'+games(m,'p2')+'</strong></span></div>'
-          +'<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note?' &middot; '+m.note:'')+(m.server?' &middot; '+m[m.server].name+' serving':'')+(m.lag?'<br><span title="'+m.lag+'">&#9888; Feed may be behind</span>':'')+'</div></div>';
+          +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p1.flag+' '+m.p1.name+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p1')+'</strong>'+(m.points?'<span class="pt">'+m.points[0]+'</span>':'')+'</span></div>'
+          +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p2.flag+' '+m.p2.name+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p2')+'</strong>'+(m.points?'<span class="pt">'+m.points[1]+'</span>':'')+'</span></div>'
+          +'<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note&&!m.points?' &middot; '+m.note:(m.note&&/^Tiebreak/.test(m.note)?' · '+m.note:''))+(m.server?' &middot; '+m[m.server].name+' serving':'')+(m.lag?'<br><span title="'+m.lag+'">&#9888; Feed may be behind</span>':'')+'</div></div>';
       }
       if(m.status==='final'){
         var w=won(m)||'p1', l=w==='p1'?'p2':'p1', flip=(w==='p2');
