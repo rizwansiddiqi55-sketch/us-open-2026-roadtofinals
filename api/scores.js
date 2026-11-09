@@ -118,6 +118,110 @@ async function overlayLive(data, keys) {
   return data;
 }
 
+
+// ---------------------------------------------------------------------------------------------
+// Cito API (second fallback). Free plan = 500 requests/MONTH and 60s-delayed live data, so it is
+// used sparingly: (a) to CONFIRM FINALS (finished matches) when the main feed has dropped a match
+// we show as live, and (b) as a live backup only if the main feed is completely unavailable.
+// ---------------------------------------------------------------------------------------------
+const CITO = 'https://api.citoapi.com/api/v1/tennis';
+const CITO_TOURNAMENT = 'wta_2026_808'; // Indian Wells Finals
+const finals = {};                       // id -> confirmed final (kept for the life of the instance)
+const cito = { blockedUntil: 0, remaining: null, done: null, doneAt: 0, live: null, liveAt: 0 };
+
+async function citoGet(path) {
+  const key = process.env.CITO_API_KEY;
+  if (!key) throw new Error('no cito key');
+  if (Date.now() < cito.blockedUntil) throw new Error('cito blocked');
+  if (cito.remaining !== null && cito.remaining < 30) throw new Error('cito monthly budget protected');
+  const r = await fetch(CITO + path, { headers: { 'x-api-key': key } });
+  const rem = r.headers && r.headers.get ? r.headers.get('x-ratelimit-monthly-remaining') : null;
+  if (rem !== null && rem !== undefined && rem !== '') cito.remaining = Number(rem);
+  if (r.status === 429) { cito.blockedUntil = Date.now() + 30 * 60 * 1000; throw new Error('cito rate limited'); }
+  if (r.status === 401 || r.status === 403) { cito.blockedUntil = Date.now() + 60 * 60 * 1000; throw new Error('cito key rejected'); }
+  if (!r.ok) throw new Error('cito ' + r.status);
+  return r.json();
+}
+
+async function citoCompleted() {
+  if (cito.done && Date.now() - cito.doneAt < 10 * 60 * 1000) return cito.done;
+  const j = await citoGet('/matches?tournament_id=' + CITO_TOURNAMENT + '&page_size=50');
+  cito.done = (j.items || []).filter((m) => m.status === 'COMPLETED');
+  cito.doneAt = Date.now();
+  return cito.done;
+}
+
+async function citoLiveItems() {
+  if (cito.live && Date.now() - cito.liveAt < 3 * 60 * 1000) return cito.live;
+  const j = await citoGet('/live');
+  cito.live = (j.items || []).filter((m) => m.tournament_id === CITO_TOURNAMENT);
+  cito.liveAt = Date.now();
+  return cito.live;
+}
+
+function citoSets(item, same) {
+  return (item.sets || []).map((x) => {
+    const a = same ? x.player1_games : x.player2_games;
+    const b = same ? x.player2_games : x.player1_games;
+    const set = { p1: a == null ? 0 : a, p2: b == null ? 0 : b };
+    const tp = x.tiebreak_points;
+    if (tp && tp.loser != null && !tp.in_progress) set.tb = tp.loser;
+    return set;
+  });
+}
+
+function findMatch(data, item) {
+  const key = pairKey(item.player1.name, item.player2.name);
+  return data.matches.find((m) => pairKey(m.p1.name, m.p2.name) === key);
+}
+
+async function citoAssist(data, primaryOk) {
+  if (!process.env.CITO_API_KEY) return;
+  const now = Date.now();
+  const stale = data.matches.filter((m) => m.status === 'live' && !m.live); // shown live, not confirmed live by main feed
+  const open = windowOpen(data.matches, now);
+  if (!stale.length && (primaryOk || !open)) return;
+
+  // (a) confirm finals
+  const done = await citoCompleted();
+  done.forEach((it) => {
+    const m = findMatch(data, it);
+    if (!m || m.status === 'final') return;
+    const same = last(it.player1.name) === last(m.p1.name);
+    const sets = citoSets(it, same);
+    if (!sets.length) return;
+    // Keep tiebreak points we already know when the set score matches (Cito does not always report them).
+    sets.forEach((x, i) => { const old = (m.sets || [])[i]; if (x.tb == null && old && old.tb != null && old.p1 === x.p1 && old.p2 === x.p2) x.tb = old.tb; });
+    m.status = 'final';
+    m.sets = sets;
+    delete m.note; delete m.live; delete m.server;
+    finals[m.id] = { sets: sets };
+  });
+
+  // (b) live backup, only if the main feed failed entirely
+  if (!primaryOk && open) {
+    const live = await citoLiveItems();
+    live.forEach((it) => {
+      const m = findMatch(data, it);
+      if (!m || m.status === 'final') return;
+      const same = last(it.player1.name) === last(m.p1.name);
+      m.status = 'live';
+      m.live = true;
+      m.sets = citoSets(it, same);
+      if (it.server === 1 || it.server === 2) {
+        const srv = it.server === 1 ? 'p1' : 'p2';
+        m.server = same ? srv : (srv === 'p1' ? 'p2' : 'p1');
+      }
+      if (it.game_score) {
+        const parts = String(it.game_score).split('-');
+        m.note = 'Game: ' + (same ? it.game_score : parts.reverse().join('-'));
+      }
+      data.source = 'live';
+      data.updated = new Date().toISOString();
+    });
+  }
+}
+
 module.exports = async (req, res) => {
   const proto = (req.headers['x-forwarded-proto'] || 'https').split(',')[0];
   const base = process.env.STATIC_BASE || proto + '://' + req.headers.host;
@@ -130,15 +234,23 @@ module.exports = async (req, res) => {
   }
   data.source = 'static';
   let ttl = 60;
+  // Apply finals already confirmed on this instance (saves Cito calls).
+  data.matches.forEach((m) => { if (finals[m.id] && m.status !== 'final') { m.status = 'final'; m.sets = finals[m.id].sets; delete m.note; delete m.live; delete m.server; } });
+  let primaryOk = false;
   try {
     const keys = [process.env.TENNIS_API_KEY, process.env.TENNIS_API_KEY2].filter(Boolean);
     if (keys.length && windowOpen(data.matches, Date.now())) {
       data = await overlayLive(data, keys);
+      primaryOk = true;
       ttl = 300; // 5 minutes: ~12 provider calls/hour, well inside the free 100/day
     }
   } catch (e) {
     data.source = 'static';
   }
+  try {
+    await citoAssist(data, primaryOk);
+    if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
+  } catch (e) { /* Cito is best-effort */ }
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).json(data);

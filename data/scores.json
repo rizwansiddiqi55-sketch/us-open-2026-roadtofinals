@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T02:12:00+04:00",
+  "updated": "2026-11-10T02:20:00+04:00",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -101,7 +101,7 @@
     {
       "id": "andreeva-svitolina",
       "order": 4,
-      "status": "upcoming",
+      "status": "live",
       "court": "Court 2",
       "label": "TUE NOV 10",
       "time": "1:50 AM UAE (EST.)",
@@ -115,7 +115,12 @@
         "flag": "🇺🇦",
         "full": "Elina Svitolina"
       },
-      "sets": [],
+      "sets": [
+        {
+          "p1": 0,
+          "p2": 0
+        }
+      ],
       "start": "2026-11-09T21:30:00Z",
       "dayText": "Day Two of the WTA Finals"
     },
