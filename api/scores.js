@@ -82,6 +82,7 @@ async function overlayLive(data, keys) {
 
   data.matches.forEach((m) => {
     if (m.status === 'final') return; // confirmed results are never overwritten
+    if (m.pinUntil && Date.now() < Date.parse(m.pinUntil)) { m.live = true; return; } // manually confirmed score is pinned
     const pm = live.get(pairKey(m.p1.name, m.p2.name));
     if (!pm) {
       // We had it as live, the feed no longer lists it live: probably just finished.
@@ -204,6 +205,7 @@ async function citoAssist(data, primaryOk) {
     live.forEach((it) => {
       const m = findMatch(data, it);
       if (!m || m.status === 'final') return;
+      if (m.pinUntil && Date.now() < Date.parse(m.pinUntil)) return;
       const same = last(it.player1.name) === last(m.p1.name);
       m.status = 'live';
       m.live = true;
