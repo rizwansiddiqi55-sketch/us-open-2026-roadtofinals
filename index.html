@@ -11,7 +11,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/png" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<title>WTA Finals 2026 — Andreeva and Svitolina Under Way</title>
+<title>WTA Finals 2026 — Sabalenka Beats Muchová 7-6(2), 7-5; Andreeva and Svitolina Under Way</title>
 <meta name="description" content="WTA Finals 2026 at Indian Wells, Nov 8-15: group-stage schedule in Dubai time, matchups and storylines. Archived: Paris Masters and US Open recaps.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -856,8 +856,8 @@
 
   <section class="hero">
     <p class="dateline">Sunday, November 8, 2026 &mdash; Dubai &middot; WTA Finals, Indian Wells</p>
-    <h1 class="headline" id="mainHeadline">Andreeva and Svitolina Under Way on Day Two of the WTA Finals</h1>
-    <p class="dek">The season-ending WTA Finals run November 8&ndash;15 at Indian Wells. <span id="dekLive">Mirra Andreeva and Elina Svitolina are playing on Court 2. The first set is just getting under way at the latest update.</span> The group stage is under way in Dubai time on Monday, November 9, with Linda Noskova beating Marta Kostyuk 6-2, 6-4 on Court 2. Coco Gauff then beat fellow American Jessica Pegula 6-4, 6-7(5), 6-2 on Court 2. Tuesday, November 10 brings Aryna Sabalenka against Karolina Muchov&aacute; at 12:00 AM and Mirra Andreeva against Elina Svitolina at about 1:50 AM, also on Court 2. Wednesday, November 11 brings Marta Kostyuk against Jessica Pegula at 12:00 AM and Coco Gauff against Linda Noskova at about 1:10 AM, both on Court 2.</p>
+    <h1 class="headline" id="mainHeadline">Sabalenka Beats Muchov&aacute; 7-6(2), 7-5; Andreeva and Svitolina Under Way on Day Two of the WTA Finals</h1>
+    <p class="dek" id="mainDek">The season-ending WTA Finals run November 8&ndash;15 at Indian Wells. Mirra Andreeva and Elina Svitolina are playing on Court 2. The first set is just getting under way at the latest update. On Monday, November 9, Linda Noskova beat Marta Kostyuk 6-2, 6-4 and Coco Gauff beat Jessica Pegula 6-4, 6-7(5), 6-2. On Tuesday, November 10, Aryna Sabalenka beat Karolina Muchov&aacute; 7-6(2), 7-5. Wednesday, November 11 brings Marta Kostyuk against Jessica Pegula at 12:00 AM and Coco Gauff against Linda Noskova at about 1:10 AM, both on Court 2.</p>
   </section>
 
   <h3 class="panel-day">TUESDAY, NOV 10</h3>
@@ -1194,11 +1194,50 @@
     function fn(m,w){ return m[w].full||m[w].name; }
     function other(w){ return w==='p1'?'p2':'p1'; }
     function plain(x){ return x.p1+'-'+x.p2+(x.tb!=null?'('+x.tb+')':''); }
+
+    var DOWS={MON:'Monday',TUE:'Tuesday',WED:'Wednesday',THU:'Thursday',FRI:'Friday',SAT:'Saturday',SUN:'Sunday'};
+    function dayName(label){ var p=label.split(' '); return (DOWS[p[0]]||p[0])+', November '+p[2]; }
+    function atTime(m){ var t=String(m.time||'').replace(/\s*UAE.*$/i,''); return (/EST/i.test(m.time||'')?'at about ':'at ')+t; }
+    function finalLine(m){
+      var c1=0,c2=0; m.sets.forEach(function(x){ if(x.p1>x.p2)c1++; else c2++; });
+      var w=c1>c2?'p1':'p2', l=other(w);
+      var scoreTxt=m.sets.map(function(x){return sc(x,w);}).join(', ');
+      return {txt:nm(m,w)+' Beats '+nm(m,l)+' '+scoreTxt, full:fn(m,w)+' beat '+fn(m,l)+' '+scoreTxt};
+    }
+    // Builds the headline (live match + latest result of the same day) and the whole intro paragraph from the data.
+    function finishText(d,live){
+      var fins=d.matches.filter(function(x){return x.status==='final' && x.sets && x.sets.length;}).sort(function(a,b){return a.order-b.order;});
+      var last=fins[fins.length-1], lastTxt=last?finalLine(last).txt:'';
+      var head, title;
+      if(live){
+        head=live.head; title=live.title;
+        if(last && last.label===live.m.label){ head=lastTxt+'; '+head; title=lastTxt+'; '+title; }
+      } else if(last){
+        head=lastTxt+(last.dayText?' on '+last.dayText:''); title=lastTxt;
+      } else return;
+      var hl=document.getElementById('mainHeadline'); if(hl) hl.textContent=head;
+      document.title='WTA Finals 2026 — '+title;
+      var parts=['The season-ending WTA Finals run November 8–15 at Indian Wells.'];
+      if(live) parts.push(live.body);
+      var all=d.matches.slice().sort(function(a,b){return a.order-b.order;}), labels=[];
+      all.forEach(function(x){ if(labels.indexOf(x.label)<0) labels.push(x.label); });
+      labels.forEach(function(lb){
+        var f=all.filter(function(x){return x.label===lb && x.status==='final' && x.sets && x.sets.length;});
+        if(f.length) parts.push('On '+dayName(lb)+', '+f.map(function(x){return finalLine(x).full;}).join(' and ')+'.');
+      });
+      labels.forEach(function(lb){
+        var dayAll=all.filter(function(x){return x.label===lb;}), u=dayAll.filter(function(x){return x.status==='upcoming';});
+        if(!u.length) return;
+        var whole=(u.length===dayAll.length);
+        parts.push((whole?'':'Still to come on ')+dayName(lb)+(whole?' brings ':', ')+u.map(function(x){return fn(x,'p1')+' against '+fn(x,'p2')+' '+atTime(x);}).join(' and ')+', '+(u.length>1?'both ':'')+'on '+u[0].court+'.');
+      });
+      var dek=document.getElementById('mainDek'); if(dek) dek.textContent=parts.join(' ');
+    }
     // Rewrites headline, intro sentence, live panel, schedule row and storyline from the live score.
     function narrate(d){
       var m=d.matches.filter(function(x){return x.status==='live';})[0];
-      if(!m || (m.note && /finished/i.test(m.note))) return;
-      var sets=m.sets||[]; if(!sets.length) return;
+      if(!m || (m.note && /finished/i.test(m.note))){ finishText(d,null); return; }
+      var sets=m.sets||[]; if(!sets.length){ finishText(d,null); return; }
       var done=sets.slice(0,-1), cur=sets[sets.length-1];
       var day=m.dayText?' on '+m.dayText:'';
       var A=nm(m,'p1'), B=nm(m,'p2'), head, title, parts=[], i;
@@ -1224,9 +1263,7 @@
         else { head=nm(m,w2)+' Wins the Second Set '+sc(done[1],w2)+' Against '+nm(m,l2)+day; title=head.replace(day,''); }
       }
       var body=(parts.length?parts.join(' ')+' ':fn(m,'p1')+' and '+fn(m,'p2')+' are playing on '+m.court+'. ')+curTxt+' at the latest update.'+srv;
-      var hl=document.getElementById('mainHeadline'); if(hl) hl.textContent=head;
-      document.title='WTA Finals 2026 — '+title;
-      var dl=document.getElementById('dekLive'); if(dl) dl.textContent=body;
+      finishText(d,{head:head,title:title,body:body,m:m});
       var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]');
       if(panel){
         var badge=panel.querySelector('h2 .live-badge'); if(badge){ badge.removeAttribute('style'); badge.textContent='LIVE'; }
