@@ -1169,11 +1169,12 @@
         banner.innerHTML=shown.map(seg).join(' <span class="sep">&nbsp;|&nbsp;</span> ');
       }
       if(stamp && d.updated){
-        try{ stamp.textContent=(d.source==='live'?'Live feed \u00B7 ':'Scores refresh automatically \u00B7 ')+'updated '+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}).format(new Date(d.updated))+' UAE'; }catch(e){}
+        try{ var anyLive=d.matches.some(function(x){return x.status==='live';}); stamp.textContent=(d.source==='live'?'Live feed \u00B7 ':(anyLive?'Live feed paused \u00B7 showing last confirmed score \u00B7 ':'Scores refresh automatically \u00B7 '))+'updated '+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}).format(new Date(d.updated))+' UAE'; }catch(e){}
       }
     }
     function fetchFeed(i){
-      return fetch(FEEDS[i]+'?t='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
+      // The API URL must stay constant so the server/CDN cache protects the provider quota; only the static file is cache-busted.
+      return fetch(i===0?FEEDS[i]:FEEDS[i]+'?t='+Date.now(),i===0?{}:{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
         .catch(function(e){ if(i+1<FEEDS.length) return fetchFeed(i+1); throw e; });
     }
     function refresh(){

@@ -6,6 +6,12 @@
 
 const PROVIDER = 'https://api.livetennisapi.com/api/public/v1/matches?tour=wta&status=live&limit=50';
 
+// Quota guards (kept per warm serverless instance, on top of the CDN cache).
+let blockedUntil = 0;          // set when the provider says the daily allowance is spent
+let memo = null;               // last good provider response
+let memoAt = 0;
+const MEMO_MS = 120000;        // never call the provider more than once per 2 minutes per instance
+
 function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 }
@@ -30,14 +36,32 @@ function windowOpen(matches, now) {
     if (m.status === 'live') return true;
     if (!m.start) return false;
     const t = Date.parse(m.start);
-    return now >= t - 60 * 60 * 1000 && now <= t + 5 * 60 * 60 * 1000;
+    return now >= t - 15 * 60 * 1000 && now <= t + 5 * 60 * 60 * 1000;
   });
 }
 
-async function overlayLive(data, key) {
+async function fetchProvider(key) {
+  const now = Date.now();
+  if (now < blockedUntil) throw new Error('quota blocked');
+  if (memo && now - memoAt < MEMO_MS) return memo;
   const r = await fetch(PROVIDER, { headers: { Authorization: 'Bearer ' + key } });
+  if (r.status === 429) {
+    let until = now + 15 * 60 * 1000;
+    try {
+      const j = await r.json();
+      if (j && j.resets_at) until = Math.max(until, Date.parse(j.resets_at) + 30000);
+    } catch (e) {}
+    blockedUntil = until;
+    throw new Error('rate limited');
+  }
   if (!r.ok) throw new Error('provider ' + r.status);
-  const body = await r.json();
+  memo = await r.json();
+  memoAt = now;
+  return memo;
+}
+
+async function overlayLive(data, key) {
+  const body = await fetchProvider(key);
   const live = new Map();
   (body.data || []).forEach((pm) => {
     if (pm.is_doubles) return;
@@ -103,7 +127,7 @@ module.exports = async (req, res) => {
   } catch (e) {
     data.source = 'static';
   }
-  res.setHeader('Cache-Control', 'public, s-maxage=' + ttl + ', stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).json(data);
 };
