@@ -795,6 +795,8 @@
   .nmw{display:inline-block; min-width:8.6em;}
   .gms{display:inline-block; min-width:2.6em; letter-spacing:.5px;}
   .pt{display:inline-block; min-width:30px; text-align:center; border:1px solid rgba(255,255,255,.4); border-radius:5px; padding:0 6px; margin-left:10px; background:rgba(0,0,0,.25); color:#fff;}
+  .refresh-btn{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.8px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:5px 12px; margin:6px 0 4px; cursor:pointer;}
+  .refresh-btn:active{opacity:.7;}
 </style>
 </head>
 <body>
@@ -814,6 +816,7 @@
   <div class="wrap">
     <div class="ticker-head">WTA FINALS &mdash; LIVE &amp; UPCOMING FIRST &bull; RESULTS AT THE END &bull; SWIPE FOR ALL MATCHES &rarr;</div>
     <div class="ticker-head" id="feedStamp" style="font-size:12px;opacity:.85;margin-top:2px;"></div>
+    <button type="button" id="refreshBtn" class="refresh-btn" aria-label="Refresh scores">&#8635; Refresh</button>
     <div class="ticker-row">
       <div class="sb-card matchday">
         <div class="sb-tour">&#128308; LIVE &middot; Group stage &middot; Court 2</div>
@@ -1182,7 +1185,7 @@
     }
     function fetchFeed(i){
       // The API URL must stay constant so the server/CDN cache protects the provider quota; only the static file is cache-busted.
-      return fetch(i===0?FEEDS[i]:FEEDS[i]+'?t='+Date.now(),i===0?{}:{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
+      return fetch(i===0?FEEDS[i]+'?b='+Math.floor(Date.now()/180000):FEEDS[i]+'?t='+Date.now(),i===0?{}:{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
         .catch(function(e){ if(i+1<FEEDS.length) return fetchFeed(i+1); throw e; });
     }
     function refresh(){
@@ -1323,9 +1326,10 @@
     // Home-screen apps are frozen in the background and are not reloaded when reopened. A watchdog detects that the page
     // was asleep (the timer did not run for a while) and reloads it, which also picks up new site code.
     var lastTick=Date.now(), SLEEP_MS=150000;
-    function wake(){ if(document.hidden) return; if(Date.now()-lastTick>SLEEP_MS){ lastTick=Date.now(); location.reload(); } else { refresh(); } }
+    function wake(){ if(document.hidden) return; try{ if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration) navigator.serviceWorker.getRegistration().then(function(r){ if(r) r.update(); }); }catch(e){} if(Date.now()-lastTick>SLEEP_MS){ lastTick=Date.now(); location.reload(); } else { refresh(); } }
     refresh();
     setInterval(function(){ if(Date.now()-lastTick>SLEEP_MS && !document.hidden){ location.reload(); return; } lastTick=Date.now(); if(!document.hidden) refresh(); },EVERY);
+    var rb=document.getElementById('refreshBtn'); if(rb) rb.addEventListener('click',function(){ rb.textContent='\u21BB Refreshing\u2026'; location.reload(); });
     ['visibilitychange','pageshow','focus','online'].forEach(function(ev){ window.addEventListener(ev,wake); });
     document.addEventListener('visibilitychange',wake);
   })();
