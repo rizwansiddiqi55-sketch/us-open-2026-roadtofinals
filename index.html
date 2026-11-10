@@ -861,7 +861,7 @@
 <main class="wrap">
 
   <section class="hero">
-    <p class="dateline">Sunday, November 8, 2026 &mdash; Dubai &middot; WTA Finals, Indian Wells</p>
+    <p class="dateline" id="dateline">Tuesday, November 10, 2026 &mdash; Dubai &middot; WTA Finals, Indian Wells</p>
     <h1 class="headline" id="mainHeadline">Andreeva Beats Svitolina 6-4, 6-0 on Day Two of the WTA Finals; Sabalenka Beats Muchov&aacute; 7-6(2), 7-5</h1>
     <p class="dek" id="mainDek">The season-ending WTA Finals run November 8&ndash;15 at Indian Wells. On Tuesday, November 10, Mirra Andreeva beat Elina Svitolina 6-4, 6-0 and Aryna Sabalenka beat Karolina Muchov&aacute; 7-6(2), 7-5. On Monday, November 9, Linda Noskova beat Marta Kostyuk 6-2, 6-4 and Coco Gauff beat Jessica Pegula 6-4, 6-7(5), 6-2. Wednesday, November 11 brings Marta Kostyuk against Jessica Pegula at 12:00 AM and Coco Gauff against Linda Noskova at about 1:10 AM, both on Court 2. Thursday, November 12 has Elina Svitolina against Karol&iacute;na Muchov&aacute; at 12:00 AM and Aryna Sabalenka against Mirra Andreeva at about 1:10 AM.</p>
   </section>
@@ -1257,7 +1257,9 @@
       return fetch(i===0?FEEDS[i]+'?b='+Math.floor(Date.now()/180000):FEEDS[i]+'?t='+Date.now(),i===0?{}:{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
         .catch(function(e){ if(i+1<FEEDS.length) return fetchFeed(i+1); throw e; });
     }
+    function setDate(){ try{ var el=document.getElementById('dateline'); if(el) el.innerHTML=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Dubai',weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(new Date())+' &mdash; Dubai &middot; WTA Finals, Indian Wells'; }catch(e){} }
     function refresh(){
+      setDate();
       return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=JSON.parse(t); render(dd); narrate(dd); arrange(dd); }).catch(function(){});
     }
 
