@@ -1026,7 +1026,17 @@
         <tr><td>4</td><td>Marta Kostyuk (alt)</td><td>0&ndash;1</td><td>0&ndash;2 (0%)</td><td>6&ndash;12 (33%)</td></tr>
       </tbody>
     </table>
-    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Ranked by round-robin record, then set and game record. Group 2 standings will be added once the group&rsquo;s players and results are confirmed.</p>
+    <h3 class="panel-day" style="margin-top:22px;">GROUP 2 (GROUP B) &mdash; AFTER TUESDAY&rsquo;S MATCHES</h3>
+    <table class="full-sched standings">
+      <thead><tr><th>#</th><th>Player</th><th>RR W&ndash;L</th><th>Set W&ndash;L</th><th>Game W&ndash;L</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Mirra Andreeva (3)</td><td>1&ndash;0</td><td>2&ndash;0 (100%)</td><td>12&ndash;4 (75%)</td></tr>
+        <tr><td>2</td><td>Aryna Sabalenka (2)</td><td>1&ndash;0</td><td>2&ndash;0 (100%)</td><td>14&ndash;11 (56%)</td></tr>
+        <tr><td>3</td><td>Karol&iacute;na Muchov&aacute; (7)</td><td>0&ndash;1</td><td>0&ndash;2 (0%)</td><td>11&ndash;14 (44%)</td></tr>
+        <tr><td>4</td><td>Elina Svitolina (6)</td><td>0&ndash;1</td><td>0&ndash;2 (0%)</td><td>4&ndash;12 (25%)</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Ranked by round-robin record, then set and game record. Andreeva and Sabalenka are level on 1&ndash;0 and 2&ndash;0 in sets, so the order here follows game percentage; they meet on Thursday (Nov 12, 1:10 AM UAE est.).</p>
   </section>
 
   <section id="weather">
@@ -1176,6 +1186,11 @@
           var future=days.filter(function(x){return x>today;}).sort();
           var pick=future.length?future[0]:days.slice().sort().pop();
           shown=all.filter(function(m){ return m.start && uaeDay(m.start)===pick; });
+        }
+        var allDone=shown.length&&!shown.some(function(m){return m.status!=='final';});
+        if(allDone){
+          var nxt=days.filter(function(x){return x>today;}).sort()[0];
+          if(nxt) shown=all.filter(function(m){ return m.start && uaeDay(m.start)===nxt && m.status!=='final'; }).concat(shown);
         }
         banner.innerHTML=shown.map(seg).join(' <span class="sep">&nbsp;|&nbsp;</span> ');
       }
