@@ -1219,10 +1219,10 @@
     function card(m){
       var tour=m.court;
       if(m.status==='live'){
-        return '<div class="sb-card matchday"><div class="sb-tour">&#128308; LIVE &middot; Group stage &middot; '+tour+'</div>'
+        return '<div class="sb-card matchday"><div class="sb-tour">'+(m.note&&/finished/i.test(m.note)?'&#9201; FINISHED':'&#128308; LIVE')+' &middot; Group stage &middot; '+tour+'</div>'
           +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p1.flag+' '+m.p1.name+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p1')+'</strong>'+(m.points?'<span class="pt">'+m.points[0]+'</span>':'')+'</span></div>'
           +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p2.flag+' '+m.p2.name+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p2')+'</strong>'+(m.points?'<span class="pt">'+m.points[1]+'</span>':'')+'</span></div>'
-          +'<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note&&!m.points?' &middot; '+m.note:(m.note&&/^Tiebreak/.test(m.note)?' · '+m.note:''))+(m.server?' &middot; '+m[m.server].name+' serving':'')+(m.lag?'<br><span title="'+m.lag+'">&#9888; Feed may be behind</span>':'')+'</div></div>';
+          +'<div class="sb-status tonight">'+(m.note&&/finished/i.test(m.note)?'Finished':'Live')+' &mdash; '+line(m,false)+(m.note&&!m.points?' &middot; '+m.note:(m.note&&/^Tiebreak/.test(m.note)?' · '+m.note:''))+(m.server?' &middot; '+m[m.server].name+' serving':'')+(m.lag?'<br><span title="'+m.lag+'">&#9888; Feed may be behind</span>':'')+'</div></div>';
       }
       if(m.status==='final'){
         var w=won(m)||'p1', l=w==='p1'?'p2':'p1', flip=(w==='p2');
@@ -1237,6 +1237,7 @@
         +'<div class="sb-status upcoming">'+m.label.replace(/^(\w+) (\w+) (\d+)$/,function(_,d,mo,n){return d.charAt(0)+d.slice(1).toLowerCase()+' '+mo.charAt(0)+mo.slice(1).toLowerCase()+' '+n;})+' &middot; '+m.time+'</div></div>';
     }
     function seg(m){
+      if(m.status==='live' && m.note && /finished/i.test(m.note)) return '&#9201; MATCH FINISHED &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+line(m,false)+' (FINAL SCORE BEING CONFIRMED)';
       if(m.status==='live') return '&#128308; LIVE NOW &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+line(m,false)+(m.note&&/^Tiebreak/.test(m.note)?' ('+m.note.toUpperCase()+')':'');
       if(m.status==='final'){ var w=won(m)||'p1', l=w==='p1'?'p2':'p1'; return '&#10003; FINAL &mdash; '+m[w].name.toUpperCase()+' def. '+m[l].name.toUpperCase()+' &middot; '+line(m,w==='p2'); }
       return m.label+' &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+m.time.toUpperCase();
@@ -1332,9 +1333,24 @@
         .catch(function(e){ if(i+1<FEEDS.length) return fetchFeed(i+1); throw e; });
     }
     function setDate(){ try{ var el=document.getElementById('dateline'); if(el) el.innerHTML=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Dubai',weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(new Date())+' &mdash; Dubai &middot; WTA Finals, Indian Wells'; }catch(e){} }
+    // Remember the last live score in this browser, so a match that has just ended never resets to "upcoming" while the final is confirmed.
+    function keepLive(dd){
+      try{
+        var st=JSON.parse(localStorage.getItem('wtaLive')||'{}'), now=Date.now();
+        dd.matches.forEach(function(m){
+          if(m.status==='live' && m.sets && m.sets.length && !(m.note&&/finished/i.test(m.note))){ st[m.id]={sets:m.sets,at:now}; }
+          else if(m.status==='final'){ delete st[m.id]; }
+          else if(m.status==='upcoming' && (!m.sets||!m.sets.length) && st[m.id] && now-st[m.id].at<6*3600000){
+            m.status='live'; m.sets=st[m.id].sets; m.note='Match finished — final score being confirmed'; delete m.live; delete m.server; delete m.points;
+          }
+        });
+        localStorage.setItem('wtaLive',JSON.stringify(st));
+      }catch(e){}
+      return dd;
+    }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=JSON.parse(t); render(dd); narrate(dd); arrange(dd); }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); narrate(dd); arrange(dd); }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];

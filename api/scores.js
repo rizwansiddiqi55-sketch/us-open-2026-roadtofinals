@@ -14,6 +14,7 @@ const MEMO_MS = 150000;        // reuse a provider answer for 2.5 min so the pag
 let dayKey = '';               // per-instance daily call counter (free plan = 100/day)
 let dayCalls = 0;
 const DAY_LIMIT = 90;
+const seen = {};               // id -> last live snapshot seen on this instance (kept so a finished match never resets to 'upcoming')
 
 function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -92,8 +93,16 @@ async function overlayLive(data, keys) {
     if (m.pinUntil && Date.now() < Date.parse(m.pinUntil)) { m.live = true; return; } // manually confirmed score is pinned
     const pm = live.get(pairKey(m.p1.name, m.p2.name));
     if (!pm) {
-      // We had it as live, the feed no longer lists it live: probably just finished.
-      if (m.status === 'live') m.note = 'Match finished — final score being confirmed';
+      // The feed no longer lists it live: probably just finished. Keep the last live score (never reset to 'upcoming').
+      const snap = seen[m.id];
+      if (snap && Date.now() - snap.at < 6 * 60 * 60 * 1000) {
+        m.status = 'live';
+        m.sets = snap.sets;
+        delete m.live; delete m.server; delete m.points; delete m.lag;
+        m.note = 'Match finished — final score being confirmed';
+      } else if (m.status === 'live') {
+        m.note = 'Match finished — final score being confirmed';
+      }
       return;
     }
     const sc = pm.score || {};
@@ -106,6 +115,7 @@ async function overlayLive(data, keys) {
     m.status = 'live';
     m.sets = sets;
     m.live = true;
+    seen[m.id] = { sets: sets.map((x) => Object.assign({}, x)), at: Date.now() };
     delete m.note;
     // Warn when the feed itself looks behind (its data is old/stale, or no games recorded long after the start).
     {
@@ -201,6 +211,9 @@ async function citoAssist(data, primaryOk) {
   if (!process.env.CITO_API_KEY) return;
   const now = Date.now();
   const stale = data.matches.filter((m) => m.status === 'live' && !m.live); // shown live, not confirmed live by main feed
+  // Started long ago (or seen live earlier) but still not final: ask Cito whether it has finished.
+  const overdue = data.matches.filter((m) => m.status !== 'final' && !m.live && m.start && now > Date.parse(m.start) + (seen[m.id] ? 20 : 75) * 60 * 1000 && now < Date.parse(m.start) + 7 * 60 * 60 * 1000);
+  if (overdue.length) stale.push.apply(stale, overdue);
   const open = windowOpen(data.matches, now);
   if (!stale.length && (primaryOk || !open)) return;
 
