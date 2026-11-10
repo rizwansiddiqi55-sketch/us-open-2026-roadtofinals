@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T05:42:37Z",
+  "updated": "2026-11-10T22:33:26Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -131,7 +131,7 @@
     {
       "id": "kostyuk-pegula",
       "order": 5,
-      "status": "upcoming",
+      "status": "final",
       "court": "Court 2",
       "label": "WED NOV 11",
       "time": "12:00 AM UAE",
@@ -145,7 +145,16 @@
         "flag": "🇺🇸",
         "full": "Jessica Pegula"
       },
-      "sets": [],
+      "sets": [
+        {
+          "p1": 2,
+          "p2": 6
+        },
+        {
+          "p1": 5,
+          "p2": 7
+        }
+      ],
       "start": "2026-11-10T20:00:00Z",
       "dayText": "Day Three of the WTA Finals"
     },
