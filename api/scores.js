@@ -112,6 +112,17 @@ async function overlayLive(data, keys) {
     const b = same ? g[1] : g[0];
     const sets = [];
     for (let i = 0; i < Math.max(a.length, b.length); i++) sets.push({ p1: a[i] || 0, p2: b[i] || 0 });
+    // Best of three: when the feed already shows a player with two completed sets, the match is over.
+    const won = (x, y) => (x >= 6 && x - y >= 2) || (x === 7 && (y === 5 || y === 6));
+    const w1 = sets.filter((x) => won(x.p1, x.p2)).length;
+    const w2 = sets.filter((x) => won(x.p2, x.p1)).length;
+    if (w1 >= 2 || w2 >= 2) {
+      m.status = 'final';
+      m.sets = sets;
+      delete m.note; delete m.live; delete m.server; delete m.points; delete m.lag;
+      finals[m.id] = { sets: sets };
+      return;
+    }
     m.status = 'live';
     m.sets = sets;
     m.live = true;
