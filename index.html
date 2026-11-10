@@ -1305,7 +1305,17 @@
           up=ms.filter(function(m){return m.status==='upcoming';}).sort(function(a,b){return a.order-b.order;}),
           fin=ms.filter(function(m){return m.status==='final';}).sort(function(a,b){return b.order-a.order;}),
           all=live.concat(up,fin);
-      row.innerHTML=all.map(card).join('');
+      // Score strip: today's matches first (live, then still to play, then finished), then upcoming days, then earlier results
+      var tdy=new Date(Date.now()+4*3600000).toISOString().slice(0,10);
+      function dayOf(m){ return m.start?new Date(Date.parse(m.start)+4*3600000).toISOString().slice(0,10):''; }
+      function stripRank(m){
+        var isToday=dayOf(m)===tdy;
+        if(m.status==='live') return 0;
+        if(isToday) return m.status==='upcoming'?1:2;
+        return m.status==='upcoming'?3:4;
+      }
+      var strip=all.map(function(m,i){return {m:m,i:i};}).sort(function(a,b){ var ra=stripRank(a.m), rb=stripRank(b.m); return ra!==rb?ra-rb:a.i-b.i; }).map(function(x){return x.m;});
+      row.innerHTML=strip.map(card).join('');
       if(banner){
         function uaeDay(iso){ return new Date(Date.parse(iso)+4*3600000).toISOString().slice(0,10); }
         var today=new Date(Date.now()+4*3600000).toISOString().slice(0,10);
