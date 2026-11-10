@@ -797,6 +797,15 @@
   .pt{display:inline-block; min-width:30px; text-align:center; border:1px solid rgba(255,255,255,.4); border-radius:5px; padding:0 6px; margin-left:10px; background:rgba(0,0,0,.25); color:#fff;}
   .refresh-btn{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.8px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:5px 12px; margin:6px 0 4px; cursor:pointer;}
   .refresh-btn:active{opacity:.7;}
+  .wp{background:var(--court-blue-dark); color:#fff; border-radius:6px; border-left:5px solid var(--ball); padding:14px 16px 12px; margin:0 0 22px;}
+  .wp .wp-head{font-family:'Oswald',sans-serif; letter-spacing:1.2px; font-size:13px; color:var(--ball); display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+  .wp .wp-score{font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:.6px; color:#F4AAAA;}
+  .wp .wp-row{display:flex; justify-content:space-between; align-items:baseline; font-family:'Oswald',sans-serif; font-size:19px; margin:12px 0 4px;}
+  .wp .wp-row b{font-size:26px; color:var(--ball);}
+  .wp .wp-bar{display:flex; height:12px; border-radius:6px; overflow:hidden; background:rgba(255,255,255,.15);}
+  .wp .wp-bar i{display:block; height:100%; transition:width .6s ease;}
+  .wp .wp-a{background:var(--ball);} .wp .wp-b{background:#6FA0E8;}
+  .wp .wp-note{font-size:11.5px; line-height:1.4; opacity:.7; margin:9px 0 0; font-style:italic;}
 </style>
 </head>
 <body>
@@ -865,6 +874,8 @@
     <h1 class="headline" id="mainHeadline">Andreeva Beats Svitolina 6-4, 6-0 on Day Two of the WTA Finals; Sabalenka Beats Muchov&aacute; 7-6(2), 7-5</h1>
     <p class="dek" id="mainDek">The season-ending WTA Finals run November 8&ndash;15 at Indian Wells. On Tuesday, November 10, Mirra Andreeva beat Elina Svitolina 6-4, 6-0 and Aryna Sabalenka beat Karolina Muchov&aacute; 7-6(2), 7-5. On Monday, November 9, Linda Noskova beat Marta Kostyuk 6-2, 6-4 and Coco Gauff beat Jessica Pegula 6-4, 6-7(5), 6-2. Wednesday, November 11 brings Marta Kostyuk against Jessica Pegula at 12:00 AM and Coco Gauff against Linda Noskova at about 1:10 AM, both on Court 2. Thursday, November 12 has Elina Svitolina against Karol&iacute;na Muchov&aacute; at 12:00 AM and Aryna Sabalenka against Mirra Andreeva at about 1:10 AM.</p>
   </section>
+
+  <div id="winPredictor" class="wp" hidden aria-live="polite"></div>
 
   <h3 class="panel-day">LIVE NOW</h3>
 
@@ -1225,7 +1236,65 @@
       if(m.status==='final'){ var w=won(m)||'p1', l=w==='p1'?'p2':'p1'; return '&#10003; FINAL &mdash; '+m[w].name.toUpperCase()+' def. '+m[l].name.toUpperCase()+' &middot; '+line(m,w==='p2'); }
       return m.label+' &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+m.time.toUpperCase();
     }
+
+    // ---- Win predictor (live match only): a Markov model of the score. Players are treated as evenly matched. ----
+    var WP_PS=0.57; // chance the server wins a point (WTA tour average is roughly 55-58%)
+    function wpGame(x,y,q){ // chance the player with point-chance q wins a game from x-y points
+      var mem={};
+      function f(a,b){
+        if(a>=4&&a-b>=2) return 1; if(b>=4&&b-a>=2) return 0;
+        if(a>=3&&b>=3){ if(a===b) return q*q/(q*q+(1-q)*(1-q)); return a>b ? q+(1-q)*(q*q/(q*q+(1-q)*(1-q))) : q*(q*q/(q*q+(1-q)*(1-q))); }
+        var k=a+','+b; if(mem[k]!==undefined) return mem[k];
+        return mem[k]=q*f(a+1,b)+(1-q)*f(a,b+1);
+      }
+      return f(x,y);
+    }
+    function wpPts(v){ var m={'0':0,'15':1,'30':2,'40':3}; v=String(v==null?'':v).toUpperCase(); return v==='AD'?4:(m[v]!==undefined?m[v]:0); }
+    function wpWin(m){
+      var hold=wpGame(0,0,WP_PS), mem={};
+      function setP(g1,g2,srv){ // chance P1 wins the set, srv = who serves the next game
+        if((g1>=6&&g1-g2>=2)||g1===7) return 1; if((g2>=6&&g2-g1>=2)||g2===7) return 0; if(g1===6&&g2===6) return 0.5;
+        var k=g1+'-'+g2+srv; if(mem[k]!==undefined) return mem[k];
+        var o=srv==='p1'?'p2':'p1', a=setP(g1+1,g2,o), b=setP(g1,g2+1,o);
+        return mem[k]= srv==='p1' ? hold*a+(1-hold)*b : hold*b+(1-hold)*a;
+      }
+      var sets=(m.sets||[]).slice(), w1=0, w2=0, cur=sets.length?sets.pop():{p1:0,p2:0};
+      function done(x){ return (x.p1>=6&&x.p1-x.p2>=2)||x.p1===7||(x.p2>=6&&x.p2-x.p1>=2)||x.p2===7; }
+      sets.forEach(function(x){ if(x.p1>x.p2) w1++; else w2++; });
+      var pc;
+      if(done(cur)){ if(cur.p1>cur.p2) w1++; else w2++; pc=0.5; cur=null; }
+      else if(cur.p1===6&&cur.p2===6) pc=0.5;
+      else {
+        var srv=m.server, pts=m.points||['0','0'], a=wpPts(pts[0]), b=wpPts(pts[1]);
+        if(a===4) b=3; else if(b===4) a=3;
+        var inGame=(a+b>0), calc=function(sv){
+          var o=sv==='p1'?'p2':'p1', pg;
+          if(!inGame) return setP(cur.p1,cur.p2,sv);
+          pg= sv==='p1' ? wpGame(a,b,WP_PS) : 1-wpGame(b,a,WP_PS);
+          return pg*setP(cur.p1+1,cur.p2,o)+(1-pg)*setP(cur.p1,cur.p2+1,o);
+        };
+        pc = (srv==='p1'||srv==='p2') ? calc(srv) : (calc('p1')+calc('p2'))/2;
+      }
+      if(w1===0&&w2===0) return pc*0.75+(1-pc)*0.25;
+      if(w1===1&&w2===0) return pc+(1-pc)*0.5;
+      if(w1===0&&w2===1) return pc*0.5;
+      return w1>w2?1:(w2>w1?0:pc);
+    }
+    function wpRender(d){
+      var box=document.getElementById('winPredictor'); if(!box) return;
+      var m=(d.matches||[]).filter(function(x){return x.status==='live';})[0];
+      if(!m){ box.hidden=true; box.innerHTML=''; return; }
+      var p=wpWin(m), a=Math.min(99,Math.max(1,Math.round(p*100))), b=100-a;
+      var sc=(m.sets||[]).map(function(x){return x.p1+'-'+x.p2;}).join(', ');
+      box.innerHTML='<div class="wp-head"><span>&#127919; WIN PREDICTOR &middot; LIVE</span><span class="wp-score">'+(sc?sc+' &middot; ':'')+m.p1.name+' v '+m.p2.name+'</span></div>'+
+        '<div class="wp-row"><span>'+m.p1.name+'</span><b>'+a+'%</b></div>'+
+        '<div class="wp-bar"><i class="wp-a" style="width:'+a+'%"></i><i class="wp-b" style="width:'+b+'%"></i></div>'+
+        '<div class="wp-row"><span>'+m.p2.name+'</span><b>'+b+'%</b></div>'+
+        '<p class="wp-note">Estimate from the live score, games, serve and points, assuming the two players are evenly matched. It updates with each feed refresh. Not betting odds.</p>';
+      box.hidden=false;
+    }
     function render(d){
+      try{ wpRender(d); }catch(e){}
       var ms=d.matches.slice(), live=ms.filter(function(m){return m.status==='live';}),
           up=ms.filter(function(m){return m.status==='upcoming';}).sort(function(a,b){return a.order-b.order;}),
           fin=ms.filter(function(m){return m.status==='final';}).sort(function(a,b){return b.order-a.order;}),
