@@ -1366,8 +1366,9 @@
       if(live) parts.push(live.body);
       var all=d.matches.slice().sort(function(a,b){return a.order-b.order;}), labels=[];
       all.forEach(function(x){ if(labels.indexOf(x.label)<0) labels.push(x.label); });
-      labels.forEach(function(lb){
-        var f=all.filter(function(x){return x.label===lb && x.status==='final' && x.sets && x.sets.length;});
+      // results: latest day first, and the latest match first within each day
+      labels.slice().reverse().forEach(function(lb){
+        var f=all.filter(function(x){return x.label===lb && x.status==='final' && x.sets && x.sets.length;}).reverse();
         if(f.length) parts.push('On '+dayName(lb)+', '+f.map(function(x){return finalLine(x).full;}).join(' and ')+'.');
       });
       labels.forEach(function(lb){
