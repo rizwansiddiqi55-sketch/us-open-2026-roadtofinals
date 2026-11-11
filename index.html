@@ -1286,13 +1286,15 @@
     function setStr(x,flip){ var a=flip?x.p2:x.p1, b=flip?x.p1:x.p2; return a+'-'+b+(x.tb!=null?'('+x.tb+')':''); }
     function line(m,flip){ return (m.sets||[]).map(function(x){return setStr(x,flip);}).join(', '); }
     function games(m,who){ return (m.sets||[]).map(function(x){ return x[who]; }).join(' &nbsp; '); }
+    // Short-lived alert on a live match (e.g. a medical timeout), set in data/scores.json with `alert` and `alertUntil`.
+    function alertTxt(m){ return (m.alert && m.status==='live' && (!m.alertUntil || Date.now()<Date.parse(m.alertUntil)))?m.alert:''; }
     function card(m){
       var tour=m.court;
       if(m.status==='live'){
         return '<div class="sb-card matchday"><div class="sb-tour">'+(m.note&&/finished/i.test(m.note)?'&#9201; FINISHED':'&#128308; LIVE')+' &middot; Group stage &middot; '+tour+'</div>'
           +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p1.flag+' '+m.p1.name+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p1')+'</strong>'+(m.points?'<span class="pt">'+m.points[0]+'</span>':'')+'</span></div>'
           +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p2.flag+' '+m.p2.name+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p2')+'</strong>'+(m.points?'<span class="pt">'+m.points[1]+'</span>':'')+'</span></div>'
-          +'<div class="sb-status tonight">'+(m.note&&/finished/i.test(m.note)?'Finished':'Live')+' &mdash; '+line(m,false)+(m.note&&!m.points?' &middot; '+m.note:(m.note&&/^Tiebreak/.test(m.note)?' · '+m.note:''))+(m.server?' &middot; '+m[m.server].name+' serving':'')+(m.lag?'<br><span title="'+m.lag+'">&#9888; Feed may be behind</span>':'')+'</div></div>';
+          +'<div class="sb-status tonight">'+(m.note&&/finished/i.test(m.note)?'Finished':'Live')+' &mdash; '+line(m,false)+(m.note&&!m.points?' &middot; '+m.note:(m.note&&/^Tiebreak/.test(m.note)?' · '+m.note:''))+(m.server?' &middot; '+m[m.server].name+' serving':'')+(alertTxt(m)?'<br><span style="color:#F4D35E;font-weight:700;">&#9877; '+alertTxt(m)+'</span>':'')+(m.lag?'<br><span title="'+m.lag+'">&#9888; Feed may be behind</span>':'')+'</div></div>';
       }
       if(m.status==='final'){
         var w=won(m)||'p1', l=w==='p1'?'p2':'p1', flip=(w==='p2');
@@ -1308,7 +1310,7 @@
     }
     function seg(m){
       if(m.status==='live' && m.note && /finished/i.test(m.note)) return '&#9201; MATCH FINISHED &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+line(m,false)+' (FINAL SCORE BEING CONFIRMED)';
-      if(m.status==='live') return '&#128308; LIVE NOW &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+line(m,false)+(m.note&&/^Tiebreak/.test(m.note)?' ('+m.note.toUpperCase()+')':'');
+      if(m.status==='live') return '&#128308; LIVE NOW &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+line(m,false)+(m.note&&/^Tiebreak/.test(m.note)?' ('+m.note.toUpperCase()+')':'')+(alertTxt(m)?' &middot; &#9877; '+alertTxt(m).toUpperCase():'');
       if(m.status==='final'){ var w=won(m)||'p1', l=w==='p1'?'p2':'p1'; return '&#10003; FINAL &mdash; '+m[w].name.toUpperCase()+' def. '+m[l].name.toUpperCase()+' &middot; '+line(m,w==='p2'); }
       return m.label+' &mdash; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+' &middot; '+m.time.toUpperCase();
     }
@@ -1511,7 +1513,7 @@
         if(w2!==w1b){ head=nm(m,w2)+' Takes the Second Set '+sc(done[1],w2)+' to Force a Decider Against '+nm(m,l2)+day; title=nm(m,w2)+' Forces a Decider Against '+nm(m,l2); }
         else { head=nm(m,w2)+' Wins the Second Set '+sc(done[1],w2)+' Against '+nm(m,l2)+day; title=head.replace(day,''); }
       }
-      var body=(parts.length?parts.join(' ')+' ':fn(m,'p1')+' and '+fn(m,'p2')+' are playing on '+m.court+'. ')+curTxt+' at the latest update.'+srv;
+      var body=(parts.length?parts.join(' ')+' ':fn(m,'p1')+' and '+fn(m,'p2')+' are playing on '+m.court+'. ')+curTxt+' at the latest update.'+srv+(alertTxt(m)?' '+alertTxt(m).replace(/^Medical timeout\s*[\u2014-]\s*(.+)$/i,'$1 has taken a medical timeout')+'.':'');
       finishText(d,{head:head,title:title,body:body,m:m});
       var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]');
       if(panel){
@@ -1525,6 +1527,7 @@
         var w1c=0,w2c=0; done.forEach(function(x){ if(x.p1>x.p2)w1c++; else w2c++; });
         var cap='LIVE · '+(w1c>w2c?nm(m,'p1').toUpperCase()+' LEADS BY A SET':(w2c>w1c?nm(m,'p2').toUpperCase()+' LEADS BY A SET':(w1c+w2c?'SETS LEVEL':(cg1===cg2?'LEVEL':nm(m,cg1>cg2?'p1':'p2').toUpperCase()+' LEADS'))));
         if(m.server) cap+=' · '+nm(m,m.server).toUpperCase()+' SERVING';
+        if(alertTxt(m)) cap+=' · ⚕ '+alertTxt(m).toUpperCase();
         if(m.lag) cap+=' · ⚠ FEED MAY BE BEHIND';
         strip.querySelector('.live-score-caption').textContent=cap;
         var uae=panel.querySelector('.sf-meta .uae'); if(uae) uae.textContent='LIVE — '+sets.map(function(x){return x.p1+'-'+x.p2;}).join(', ');
