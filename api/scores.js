@@ -199,8 +199,8 @@ async function citoCompleted() {
   return cito.done;
 }
 
-async function citoLiveItems() {
-  if (cito.live && Date.now() - cito.liveAt < 3 * 60 * 1000) return cito.live;
+async function citoLiveItems(maxAge) {
+  if (cito.live && Date.now() - cito.liveAt < (maxAge || 3 * 60 * 1000)) return cito.live;
   const j = await citoGet('/live');
   cito.live = (j.items || []).filter((m) => m.tournament_id === CITO_TOURNAMENT);
   cito.liveAt = Date.now();
@@ -275,6 +275,56 @@ async function citoAssist(data, primaryOk) {
   }
 }
 
+// Live match stats (aces, serve %, break points ...) from the Cito live feed. One request every 5 minutes while a match is live
+// (the free plan allows 500/month); the last snapshot is kept so the page always has the latest known numbers.
+const statsMemo = {};   // match id -> { at, rows }
+let statsTriedAt = 0;
+const STAT_KEYS = [
+  ['total_points_won', 'Points won'],
+  ['aces', 'Aces'],
+  ['double_faults', 'Double faults'],
+  ['first_serve_points_won', '1st serve points won'],
+  ['second_serve_points_won', '2nd serve points won'],
+  ['break_points_won', 'Break points won'],
+  ['service_games_won', 'Service games won'],
+  ['max_points_in_a_row', 'Longest run of points'],
+];
+function statRows(item, same) {
+  const by = {};
+  (item.stats || []).forEach((x) => { (by[x.key] = by[x.key] || {})[x.side] = x; });
+  const rows = [];
+  STAT_KEYS.forEach(([key, label]) => {
+    const e = by[key]; if (!e || !e[1] || !e[2]) return;
+    const a = same ? e[1] : e[2], b = same ? e[2] : e[1];
+    const share = (a.pct != null && b.pct != null) ? [a.pct, b.pct] : [Number(a.numerator) || 0, Number(b.numerator) || 0];
+    const tot = share[0] + share[1];
+    rows.push({ label, p1: a.display, p2: b.display, w1: tot ? Math.round(share[0] / tot * 100) : 50 });
+  });
+  return rows;
+}
+async function citoStats(data) {
+  if (!process.env.CITO_API_KEY) return;
+  const live = data.matches.filter((m) => m.status === 'live' && m.live);
+  if (live.length) {
+    const now = Date.now();
+    if (now - statsTriedAt >= 5 * 60 * 1000 && (cito.remaining === null || cito.remaining > 60)) {
+      statsTriedAt = now;
+      try {
+        const items = await citoLiveItems(5 * 60 * 1000);
+        items.forEach((it) => {
+          if (!it.stats_available) return;
+          const m = findMatch(data, it);
+          if (!m || m.status === 'final') return;
+          const same = last(it.player1.name) === last(m.p1.name);
+          const rows = statRows(it, same);
+          if (rows.length) statsMemo[m.id] = { at: new Date().toISOString(), rows };
+        });
+      } catch (e) { /* stats are optional */ }
+    }
+  }
+  data.matches.forEach((m) => { if (m.status === 'live' && m.live && statsMemo[m.id]) m.stats = statsMemo[m.id]; });
+}
+
 module.exports = async (req, res) => {
   const proto = (req.headers['x-forwarded-proto'] || 'https').split(',')[0];
   const base = process.env.STATIC_BASE || proto + '://' + req.headers.host;
@@ -302,6 +352,7 @@ module.exports = async (req, res) => {
   }
   try {
     await citoAssist(data, primaryOk);
+    await citoStats(data);
     if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
   } catch (e) { /* Cito is best-effort */ }
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=60');

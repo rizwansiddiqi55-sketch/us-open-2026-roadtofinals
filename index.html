@@ -809,6 +809,16 @@
   .sf-photo{display:block; width:64px; height:64px; border-radius:50%; object-fit:cover; object-position:50% 20%; border:2px solid var(--ball); background:var(--court-blue-mid); margin:0 0 6px;}
   .sf-side[style*="right"] .sf-photo{margin-left:auto;}
   .photo-credits{font-size:11px; line-height:1.45; opacity:.7;}
+  .ls{background:var(--court-blue-dark); color:#fff; border-radius:6px; border-left:5px solid #6FA0E8; padding:14px 16px 12px; margin:-8px 0 22px;}
+  .ls .ls-head{font-family:'Oswald',sans-serif; letter-spacing:1.2px; font-size:13px; color:#9CC1FF; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+  .ls .ls-sum{font-size:14px; line-height:1.45; margin:8px 0 10px; color:#E8EAF0;}
+  .ls .ls-names{display:flex; justify-content:space-between; font-family:'Oswald',sans-serif; font-size:15px; margin-bottom:4px;}
+  .ls .ls-row{margin:9px 0 0;}
+  .ls .ls-lab{text-align:center; font-size:11.5px; letter-spacing:.8px; text-transform:uppercase; opacity:.75; font-family:'Oswald',sans-serif;}
+  .ls .ls-vals{display:flex; justify-content:space-between; font-family:'Oswald',sans-serif; font-size:16px; margin:1px 0 3px;}
+  .ls .ls-bar{display:flex; height:6px; border-radius:3px; overflow:hidden; background:rgba(255,255,255,.15);}
+  .ls .ls-bar i{display:block; height:100%;} .ls .ls-a{background:var(--ball);} .ls .ls-b{background:#6FA0E8;}
+  .ls .ls-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
 </style>
 </head>
 <body>
@@ -1437,7 +1447,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1634,6 +1644,27 @@
         img.onerror=function(){ img.remove(); };
         side.insertBefore(img,side.firstChild);
       });
+    }
+
+    // ---- Live match stats card (from the Cito live feed, refreshed by the server about every 5 minutes) ----
+    function statsRender(d){
+      [].slice.call(document.querySelectorAll('.ls')).forEach(function(x){ x.remove(); });
+      var m=(d.matches||[]).filter(function(x){return x.status==='live' && x.stats && x.stats.rows && x.stats.rows.length;})[0];
+      if(!m) return;
+      var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]'); if(!panel) return;
+      var rows=m.stats.rows, byLabel={}; rows.forEach(function(r){ byLabel[r.label]=r; });
+      var parts=[], pts=byLabel['Points won'];
+      if(pts){ var lead=pts.w1>=50?'p1':'p2', pc=lead==='p1'?pts.w1:100-pts.w1; if(pc!==50) parts.push(nm(m,lead)+' has won '+pc+'% of the points'); }
+      var ac=byLabel['Aces']; if(ac){ var a1=parseInt(ac.p1,10)||0, a2=parseInt(ac.p2,10)||0; if(Math.abs(a1-a2)>=2) parts.push((a1>a2?nm(m,'p1'):nm(m,'p2'))+' leads the aces '+Math.max(a1,a2)+'–'+Math.min(a1,a2)); }
+      var df=byLabel['Double faults']; if(df){ var f1=parseInt(df.p1,10)||0, f2=parseInt(df.p2,10)||0; if(Math.abs(f1-f2)>=2) parts.push((f1>f2?nm(m,'p1'):nm(m,'p2'))+' has '+Math.max(f1,f2)+' double faults'); }
+      var when=''; try{ when=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit'}).format(new Date(m.stats.at))+' UAE'; }catch(e){}
+      var box=document.createElement('div'); box.className='ls';
+      box.innerHTML='<div class="ls-head"><span>&#128202; LIVE MATCH STATS</span><span>'+(when?'updated '+when:'')+'</span></div>'+
+        (parts.length?'<p class="ls-sum">'+parts.join('; ')+'.</p>':'')+
+        '<div class="ls-names"><span>'+nm(m,'p1')+'</span><span>'+nm(m,'p2')+'</span></div>'+
+        rows.map(function(r){ return '<div class="ls-row"><div class="ls-lab">'+r.label+'</div><div class="ls-vals"><span>'+r.p1+'</span><span>'+r.p2+'</span></div><div class="ls-bar"><i class="ls-a" style="width:'+r.w1+'%"></i><i class="ls-b" style="width:'+(100-r.w1)+'%"></i></div></div>'; }).join('')+
+        '<p class="ls-note">Match statistics from the Cito live feed. They refresh about every 5 minutes and can run about a minute behind the score.</p>';
+      panel.parentNode.insertBefore(box,panel.nextSibling);
     }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });
