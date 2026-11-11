@@ -1381,7 +1381,9 @@
       function stripRank(m){
         var isToday=dayOf(m)===tdy;
         if(m.status==='live') return 0;
-        if(isToday) return m.status==='upcoming'?1:2;
+        // "today's" matches = the ones playing now or coming up in the next 24 hours (tonight's play), then today's results
+        if(m.status==='upcoming' && (isToday || (m.start && Date.parse(m.start)-Date.now()<24*3600000))) return 1;
+        if(isToday) return 2;
         return m.status==='upcoming'?3:4;
       }
       var strip=all.map(function(m,i){return {m:m,i:i};}).sort(function(a,b){ var ra=stripRank(a.m), rb=stripRank(b.m); return ra!==rb?ra-rb:a.i-b.i; }).map(function(x){return x.m;});
