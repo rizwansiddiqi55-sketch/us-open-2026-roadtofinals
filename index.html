@@ -1433,7 +1433,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); narrate(dd); arrange(dd); }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1539,6 +1539,84 @@
         st.querySelector('h3').textContent=title; st.querySelector('p').textContent=body; }
     }
     // Puts LIVE matches first, then UPCOMING, then COMPLETED, in the match panels, the schedule rows and the storylines.
+
+    // ---- When a match finishes, rewrite its panel, schedule row and storyline, and rebuild the standings tables ----
+    function plainName(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+    function lastKey(m,w){ var p=plainName(m[w].name).trim().split(/\s+/); return p[p.length-1]; }
+    function buildStandings(d){
+      var fins=d.matches.filter(function(x){return x.status==='final'&&x.sets&&x.sets.length;});
+      // groups = players linked by any match
+      var parent={}; function find(a){ while(parent[a]!==a) a=parent[a]=parent[parent[a]]; return a; }
+      d.matches.forEach(function(m){ var a=lastKey(m,'p1'), b=lastKey(m,'p2'); if(!parent[a]) parent[a]=a; if(!parent[b]) parent[b]=b; parent[find(a)]=find(b); });
+      var st={};
+      function get(k){ return st[k]||(st[k]={w:0,l:0,sw:0,sl:0,gw:0,gl:0,beat:{}}); }
+      fins.forEach(function(m){
+        var a=lastKey(m,'p1'), b=lastKey(m,'p2'), A=get(a), B=get(b), c1=0,c2=0;
+        m.sets.forEach(function(x){ if(x.p1>x.p2)c1++; else c2++; A.gw+=x.p1; A.gl+=x.p2; B.gw+=x.p2; B.gl+=x.p1; });
+        A.sw+=c1; A.sl+=c2; B.sw+=c2; B.sl+=c1;
+        if(c1>c2){ A.w++; B.l++; A.beat[b]=1; } else { B.w++; A.l++; B.beat[a]=1; }
+      });
+      return {st:st,find:find};
+    }
+    function pct(a,b){ return (a+b)?Math.round(a/(a+b)*100):0; }
+    function renderStandings(d){
+      var info=buildStandings(d), st=info.st;
+      [].slice.call(document.querySelectorAll('table.standings')).forEach(function(tb){
+        var body=tb.querySelector('tbody'); if(!body) return;
+        var rows=[].slice.call(body.querySelectorAll('tr')).map(function(tr){
+          var tds=tr.querySelectorAll('td'), txt=plainName(tds[1].textContent), key=null;
+          Object.keys(st).forEach(function(k){ if(txt.indexOf(k)>=0) key=k; });
+          return {tr:tr,key:key,name:tds[1].innerHTML};
+        }).filter(function(r){return r.key;});
+        if(rows.length<2) return;
+        rows.forEach(function(r){ var x=st[r.key]||(st[r.key]={w:0,l:0,sw:0,sl:0,gw:0,gl:0,beat:{}}); r.s=x; });
+        rows.sort(function(a,b){
+          if(a.s.w!==b.s.w) return b.s.w-a.s.w;
+          var tied=rows.filter(function(r){return r.s.w===a.s.w;});
+          if(tied.length===2){ if(a.s.beat[b.key]) return -1; if(b.s.beat[a.key]) return 1; }
+          var sp=pct(b.s.sw,b.s.sl)-pct(a.s.sw,a.s.sl); if(sp) return sp;
+          return pct(b.s.gw,b.s.gl)-pct(a.s.gw,a.s.gl);
+        });
+        body.innerHTML=rows.map(function(r,i){ var x=r.s;
+          return '<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+x.w+'&ndash;'+x.l+'</td><td>'+x.sw+'&ndash;'+x.sl+' ('+pct(x.sw,x.sl)+'%)</td><td>'+x.gw+'&ndash;'+x.gl+' ('+pct(x.gw,x.gl)+'%)</td></tr>'; }).join('');
+      });
+      return st;
+    }
+    function settle(d){
+      var st=renderStandings(d);
+      d.matches.forEach(function(m){
+        if(m.status!=='final'||!m.sets||!m.sets.length) return;
+        var c1=0,c2=0; m.sets.forEach(function(x){ if(x.p1>x.p2)c1++; else c2++; });
+        var w=c1>c2?'p1':'p2', l=other(w), score=m.sets.map(function(x){return sc(x,w);}).join(', ');
+        var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]');
+        if(panel){ var bdg=panel.querySelector('h2 .live-badge');
+          if(bdg && bdg.textContent.trim()!=='FINAL'){
+            panel.querySelector('h2').innerHTML='<span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127934; '+(nm(m,w)+' BEATS '+nm(m,l)).toUpperCase();
+            panel.style.borderLeftColor='var(--green-result)';
+            var strip=panel.querySelector('.live-score-strip');
+            if(!strip){ strip=document.createElement('div'); strip.className='live-score-strip';
+              strip.innerHTML='<div class="live-score-player"></div><div class="live-score-sets"><div class="live-score-main"></div><div class="live-score-caption"></div></div><div class="live-score-player right"></div>';
+              var rowEl=panel.querySelector('.sf-matchup-row'); rowEl.parentNode.insertBefore(strip,rowEl); }
+            strip.setAttribute('style','background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);');
+            var pl=strip.querySelectorAll('.live-score-player'); pl[0].textContent=m[w].flag+' '+fn(m,w); pl[1].textContent=m[l].flag+' '+fn(m,l);
+            var mainEl=strip.querySelector('.live-score-main'), capEl=strip.querySelector('.live-score-caption');
+            mainEl.textContent=score; mainEl.style.color='var(--green-result)';
+            capEl.textContent='FINAL · '+nm(m,w).toUpperCase()+' WINS'; capEl.style.color='var(--green-result)';
+            var uae=panel.querySelector('.sf-meta .uae'); if(uae){ uae.className=''; uae.setAttribute('style','color:var(--green-result);font-weight:700;'); uae.textContent='FINAL · '+nm(m,w)+' wins '+score; }
+            [].slice.call(panel.children).forEach(function(c){ if(c.tagName==='P' && /italic/.test(c.getAttribute('style')||'') && !c.classList.contains('panel-sub')) c.remove(); });
+          } }
+        var row=document.querySelector('tr[data-match="'+m.id+'"]');
+        if(row && !row.classList.contains('done-row')){ row.className='done-row'; var tds=row.querySelectorAll('td'); tds[2].innerHTML=m.court+': '+nm(m,w)+' def. '+nm(m,l)+' &mdash; '+score; }
+        var story=document.querySelector('.watch-item[data-match="'+m.id+'"]');
+        if(story){ var bd=story.querySelector('.badge');
+          if(bd && !/FINAL/.test(bd.textContent)){
+            var kw=st[lastKey(m,w)], kl=st[lastKey(m,l)];
+            bd.className='badge badge-us'; bd.setAttribute('style','background:var(--green-result);'); bd.innerHTML='FINAL &middot; '+String(m.dayText||'').split(' of ')[0].toUpperCase();
+            story.querySelector('h3').textContent=nm(m,w)+' Beats '+nm(m,l)+' '+score;
+            story.querySelector('p').textContent=fn(m,w)+' beat '+fn(m,l)+' '+score+' on '+m.court+(Math.max(c1,c2)===2&&Math.min(c1,c2)===0?' in straight sets':' in three sets')+'. '+nm(m,w)+' moves to '+kw.w+'–'+kw.l+' in the group and '+nm(m,l)+' to '+kl.w+'–'+kl.l+'.';
+          } }
+      });
+    }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });
       function rank(id){ var m=byId[id]; return !m?2:(m.status==='live'?0:(m.status==='upcoming'?1:2)); }
