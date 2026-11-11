@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T23:29:47Z",
+  "updated": "2026-11-11T06:22:49Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -229,6 +229,48 @@
       "sets": [],
       "start": "2026-11-11T21:10:00Z",
       "dayText": "Day Four of the WTA Finals"
+    },
+    {
+      "id": "kostyuk-gauff",
+      "order": 9,
+      "status": "upcoming",
+      "court": "Court 2",
+      "label": "FRI NOV 13",
+      "time": "12:00 AM UAE (EST.)",
+      "p1": {
+        "name": "Kostyuk",
+        "flag": "🇺🇦",
+        "full": "Marta Kostyuk"
+      },
+      "p2": {
+        "name": "Gauff",
+        "flag": "🇺🇸",
+        "full": "Coco Gauff"
+      },
+      "sets": [],
+      "start": "2026-11-12T20:00:00Z",
+      "dayText": "Day Five of the WTA Finals"
+    },
+    {
+      "id": "pegula-noskova",
+      "order": 10,
+      "status": "upcoming",
+      "court": "Court 2",
+      "label": "FRI NOV 13",
+      "time": "1:10 AM UAE (EST.)",
+      "p1": {
+        "name": "Pegula",
+        "flag": "🇺🇸",
+        "full": "Jessica Pegula"
+      },
+      "p2": {
+        "name": "Noskova",
+        "flag": "🇨🇿",
+        "full": "Linda Noskova"
+      },
+      "sets": [],
+      "start": "2026-11-12T21:10:00Z",
+      "dayText": "Day Five of the WTA Finals"
     }
   ]
 }
