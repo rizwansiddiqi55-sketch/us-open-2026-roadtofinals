@@ -1553,12 +1553,19 @@
         groups.forEach(function(g,i){ if(!g.length) return; var h=document.createElement('h3'); h.className='panel-day'; h.textContent=titles[i]; parent.insertBefore(h,ref); g.forEach(function(p){ parent.insertBefore(p,ref); }); });
         ref.remove();
       }
-      // schedule: inside each day group, live row first
+      // schedule: days with live/upcoming matches on top (in date order), fully completed days below (newest first);
+      // inside a day: live, then upcoming, then finished.
       var dr=document.querySelector('table.full-sched tbody tr.day-row'), tb=dr?dr.parentNode:null;
       if(tb){
         var rows=[].slice.call(tb.children), groupsR=[], cur=null;
-        rows.forEach(function(r){ if(r.classList.contains('day-row')){ cur={head:r,items:[]}; groupsR.push(cur); } else if(cur){ cur.items.push(r); } });
-        groupsR.forEach(function(g){ g.items.sort(function(a,b){ var ra=rank(a.getAttribute('data-match')), rb=rank(b.getAttribute('data-match')); return (ra===0?0:1)-(rb===0?0:1); }); var after=g.head; g.items.forEach(function(r){ after.parentNode.insertBefore(r,after.nextSibling); after=r; }); });
+        rows.forEach(function(r){ if(r.classList.contains('day-row')){ cur={head:r,items:[],idx:groupsR.length}; groupsR.push(cur); } else if(cur){ cur.items.push(r); } });
+        groupsR.forEach(function(g){
+          g.items.sort(function(a,b){ return rank(a.getAttribute('data-match'))-rank(b.getAttribute('data-match')) || ord(a.getAttribute('data-match'))-ord(b.getAttribute('data-match')); });
+          g.done=g.items.length>0 && g.items.every(function(r){ return rank(r.getAttribute('data-match'))===2; });
+          var td=g.head.querySelector('td'); if(td){ var t=td.innerHTML.replace(/\s*(?:&mdash;|\u2014)\s*COMPLETED\s*$/i,''); td.innerHTML=g.done?t+' &mdash; COMPLETED':t; }
+        });
+        groupsR.sort(function(x,y){ if(x.done!==y.done) return x.done?1:-1; return x.done?y.idx-x.idx:x.idx-y.idx; });
+        groupsR.forEach(function(g){ tb.appendChild(g.head); g.items.forEach(function(r){ tb.appendChild(r); }); });
       }
       // storylines: live first, then the most recently finished, then upcoming
       var sl=[].slice.call(document.querySelectorAll('.watch-item[data-match]'));
