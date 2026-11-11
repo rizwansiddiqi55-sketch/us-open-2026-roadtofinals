@@ -155,6 +155,11 @@ async function overlayLive(data, keys) {
       const p = same ? sc.points : [sc.points[1], sc.points[0]];
       m.note = 'Game: ' + p[0] + '-' + p[1];
     }
+    // A hand-set alert (e.g. medical timeout) clears itself as soon as the live score moves on from the score it was set at.
+    if (m.alert && m.alertSig) {
+      const sig = m.sets.map((x) => x.p1 + '-' + x.p2).join(',') + '|' + (m.points || []).join('-');
+      if (sig !== m.alertSig) { delete m.alert; delete m.alertUntil; delete m.alertSig; }
+    }
   });
   data.updated = new Date().toISOString();
   data.source = 'live';
