@@ -1296,19 +1296,19 @@
     function card(m){
       var tour=m.court;
       if(m.status==='live'){
-        return '<div class="sb-card matchday"><div class="sb-tour">'+(m.note&&/finished/i.test(m.note)?'&#9201; FINISHED':'&#128308; LIVE')+' &middot; Group stage &middot; '+tour+'</div>'
+        return '<div class="sb-card matchday"><div class="sb-tour">'+(m.note&&/finished/i.test(m.note)?'&#9201; FINISHED':'&#128308; LIVE')+' &middot; '+(m.round||'Group stage')+' &middot; '+tour+'</div>'
           +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p1.flag+' '+m.p1.name+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p1')+'</strong>'+(m.points?'<span class="pt">'+m.points[0]+'</span>':'')+'</span></div>'
           +'<div class="sb-name"><span>'+'<span class="nmw">'+m.p2.flag+' '+m.p2.name+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+games(m,'p2')+'</strong>'+(m.points?'<span class="pt">'+m.points[1]+'</span>':'')+'</span></div>'
           +'<div class="sb-status tonight">'+(m.note&&/finished/i.test(m.note)?'Finished':'Live')+' &mdash; '+line(m,false)+(m.note&&!m.points?' &middot; '+m.note:(m.note&&/^Tiebreak/.test(m.note)?' · '+m.note:''))+(m.server?' &middot; '+m[m.server].name+' serving':'')+(alertTxt(m)?'<br><span style="color:#F4D35E;font-weight:700;">&#9877; '+alertTxt(m)+'</span>':'')+(m.lag?'<br><span title="'+m.lag+'">&#9888; Feed may be behind</span>':'')+'</div></div>';
       }
       if(m.status==='final'){
         var w=won(m)||'p1', l=w==='p1'?'p2':'p1', flip=(w==='p2');
-        return '<div class="sb-card result"><div class="sb-tour">&#10003; FINAL &middot; Group stage &middot; '+tour+'</div>'
+        return '<div class="sb-card result"><div class="sb-tour">&#10003; FINAL &middot; '+(m.round||'Group stage')+' &middot; '+tour+'</div>'
           +'<div class="sb-name"><span class="sb-winner">'+m[w].flag+' '+m[w].name+' &#10003;</span></div>'
           +'<div class="sb-name"><span style="opacity:0.6;">'+m[l].flag+' '+m[l].name+'</span></div>'
           +'<div class="sb-status completed">'+line(m,flip)+'</div></div>';
       }
-      return '<div class="sb-card upcoming-sf"><div class="sb-tour">Group stage &middot; '+tour+'</div>'
+      return '<div class="sb-card upcoming-sf"><div class="sb-tour">'+(m.round||'Group stage')+' &middot; '+tour+'</div>'
         +'<div class="sb-name"><span>'+m.p1.flag+' '+m.p1.name+'</span></div>'
         +'<div class="sb-name"><span>'+m.p2.flag+' '+m.p2.name+'</span></div>'
         +'<div class="sb-status upcoming">'+m.label.replace(/^(\w+) (\w+) (\d+)$/,function(_,d,mo,n){return d.charAt(0)+d.slice(1).toLowerCase()+' '+mo.charAt(0)+mo.slice(1).toLowerCase()+' '+n;})+' &middot; '+m.time+'</div></div>';
@@ -1438,7 +1438,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1549,10 +1549,10 @@
     function plainName(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
     function lastKey(m,w){ var p=plainName(m[w].name).trim().split(/\s+/); return p[p.length-1]; }
     function buildStandings(d){
-      var fins=d.matches.filter(function(x){return x.status==='final'&&x.sets&&x.sets.length;});
+      var fins=d.matches.filter(function(x){return x.status==='final'&&x.sets&&x.sets.length&&(!x.roundCode||x.roundCode==='RR');});
       // groups = players linked by any match
       var parent={}; function find(a){ while(parent[a]!==a) a=parent[a]=parent[parent[a]]; return a; }
-      d.matches.forEach(function(m){ var a=lastKey(m,'p1'), b=lastKey(m,'p2'); if(!parent[a]) parent[a]=a; if(!parent[b]) parent[b]=b; parent[find(a)]=find(b); });
+      d.matches.filter(function(x){return !x.roundCode||x.roundCode==='RR';}).forEach(function(m){ var a=lastKey(m,'p1'), b=lastKey(m,'p2'); if(!parent[a]) parent[a]=a; if(!parent[b]) parent[b]=b; parent[find(a)]=find(b); });
       var st={};
       function get(k){ return st[k]||(st[k]={w:0,l:0,sw:0,sl:0,gw:0,gl:0,beat:{}}); }
       fins.forEach(function(m){
@@ -1618,7 +1618,8 @@
             var kw=st[lastKey(m,w)], kl=st[lastKey(m,l)];
             bd.className='badge badge-us'; bd.setAttribute('style','background:var(--green-result);'); bd.innerHTML='FINAL &middot; '+String(m.dayText||'').split(' of ')[0].toUpperCase();
             story.querySelector('h3').textContent=nm(m,w)+' Beats '+nm(m,l)+' '+score;
-            story.querySelector('p').textContent=fn(m,w)+' beat '+fn(m,l)+' '+score+' on '+m.court+(Math.max(c1,c2)===2&&Math.min(c1,c2)===0?' in straight sets':' in three sets')+'. '+nm(m,w)+' moves to '+kw.w+'–'+kw.l+' in the group and '+nm(m,l)+' to '+kl.w+'–'+kl.l+'.';
+            var ko=m.roundCode&&m.roundCode!=='RR';
+            story.querySelector('p').textContent=fn(m,w)+' beat '+fn(m,l)+' '+score+' on '+m.court+(Math.max(c1,c2)===2&&Math.min(c1,c2)===0?' in straight sets':' in three sets')+'. '+(ko?(m.roundCode==='F'?nm(m,w)+' wins the WTA Finals title.':nm(m,w)+' reaches the final.'):nm(m,w)+' moves to '+kw.w+'–'+kw.l+' in the group and '+nm(m,l)+' to '+kl.w+'–'+kl.l+'.');
           } }
       });
     }
@@ -1656,6 +1657,52 @@
         rows.map(function(r){ return '<div class="ls-row"><div class="ls-lab">'+r.label+'</div><div class="ls-vals"><span>'+r.p1+'</span><span>'+r.p2+'</span></div><div class="ls-bar"><i class="ls-a" style="width:'+r.w1+'%"></i><i class="ls-b" style="width:'+(100-r.w1)+'%"></i></div></div>'; }).join('')+
         '<p class="ls-note">Match statistics from the Cito live feed. They refresh about every 5 minutes and can run about a minute behind the score.</p>';
       panel.parentNode.insertBefore(box,panel.nextSibling);
+    }
+
+    // ---- Matches that are not in the page yet (new order of play from the schedule feed): build their panel, schedule row and storyline ----
+    function pad2(n){ return (n<10?'0':'')+n; }
+    function wall(ms,offH){ var u=new Date(ms+offH*3600000), h=u.getUTCHours(); return {dow:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][u.getUTCDay()], mon:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][u.getUTCMonth()], day:u.getUTCDate(), t:((h%12)||12)+':'+pad2(u.getUTCMinutes())+' '+(h<12?'AM':'PM')}; }
+    function ensureElements(d){
+      var panels=[].slice.call(document.querySelectorAll('.sf-preview-panel[data-match]'));
+      d.matches.forEach(function(m){
+        if(m.status==='final' && !m.fromCito) return;
+        var ms=Date.parse(m.start); if(!ms) return;
+        var uae=wall(ms,4), pt=wall(ms,-8), ny=wall(ms,-5), est=/EST/i.test(m.time||'');
+        var rnd=m.round||'Group stage', badge=(m.roundCode==='F'?'FINAL':(m.roundCode==='SF'?'SEMI':'GROUP'));
+        if(!document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]')){
+          var pn=document.createElement('div'); pn.className='sf-preview-panel'; pn.setAttribute('data-match',m.id);
+          pn.innerHTML='<h2><span class="live-badge" style="background:var(--court-blue-mid);animation:none;">'+badge+'</span> &#127934; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+'</h2>'+
+            '<p class="panel-sub">'+m.court+' &middot; '+uae.dow+' '+uae.mon+' '+uae.day+', '+(est?'about ':'')+uae.t+' UAE'+(est?' (estimated)':'')+' &middot; '+pt.dow+' '+(est?'about ':'')+pt.t+' Indian Wells &middot; '+ny.dow+' '+(est?'about ':'')+ny.t+' New York</p>'+
+            '<div class="sf-matchup-row"><div class="sf-side"><div><span class="sf-flag">'+m.p1.flag+'</span><span class="sf-seed">'+(m.p1.country||m.p1.ioc||'')+'</span></div><div class="sf-player">'+fn(m,'p1')+'</div></div>'+
+            '<div class="sf-vs">VS</div>'+
+            '<div class="sf-side" style="text-align:right;"><div><span class="sf-seed">'+(m.p2.country||m.p2.ioc||'')+'</span><span class="sf-flag"> '+m.p2.flag+'</span></div><div class="sf-player">'+fn(m,'p2')+'</div></div>'+
+            '<div class="sf-meta"><span>'+rnd+' &middot; '+m.court+'</span><span class="uae">'+uae.dow+' '+uae.mon+' '+uae.day+', '+(est?'about ':'')+uae.t+' UAE</span></div></div>'+
+            (est?'<p style="font-size:12.5px;color:var(--ink-soft);font-style:italic;margin:10px 0 0;">The start time is an estimate, since it follows the earlier match on the same court.</p>':'');
+          var lastP=panels.length?panels[panels.length-1]:null;
+          if(lastP) lastP.parentNode.insertBefore(pn,lastP.nextSibling);
+          panels.push(pn);
+        }
+        if(!document.querySelector('tr[data-match="'+m.id+'"]')){
+          var tb=document.querySelector('table.full-sched tbody tr.day-row'); tb=tb?tb.parentNode:null;
+          if(tb){
+            var head=(DOWS[uae.dow.toUpperCase()]||uae.dow).toUpperCase()+', '+uae.mon.toUpperCase()+' '+uae.day, hdr=null;
+            [].slice.call(tb.querySelectorAll('tr.day-row')).forEach(function(r){ if(r.textContent.indexOf(head)===0) hdr=r; });
+            var tr=document.createElement('tr'); tr.setAttribute('data-match',m.id);
+            tr.innerHTML='<td>'+uae.dow+', '+uae.mon+' '+uae.day+' &middot; '+uae.t+(est?' (est.)':'')+'</td><td>'+pt.dow+' '+(est?'about ':'')+pt.t+'</td><td>'+m.court+': '+nm(m,'p1')+' vs '+nm(m,'p2')+(m.roundCode&&m.roundCode!=='RR'?' &mdash; '+rnd:'')+'</td>';
+            if(!hdr){ hdr=document.createElement('tr'); hdr.className='day-row'; hdr.innerHTML='<td colspan="3">'+head+'</td>'; tb.appendChild(hdr); tb.appendChild(tr); }
+            else { var after=hdr; while(after.nextElementSibling && !after.nextElementSibling.classList.contains('day-row')) after=after.nextElementSibling; after.parentNode.insertBefore(tr,after.nextSibling); }
+          }
+        }
+        if(!document.querySelector('.watch-item[data-match="'+m.id+'"]')){
+          var items=[].slice.call(document.querySelectorAll('.watch-item[data-match]'));
+          if(items.length){
+            var st=document.createElement('div'); st.className='watch-item'; st.setAttribute('data-match',m.id);
+            var sub=m.roundCode==='F'?'Title match':(m.roundCode==='SF'?'Semifinal':rnd);
+            st.innerHTML='<span class="badge badge-us">'+uae.dow.toUpperCase()+' &middot; '+uae.mon.toUpperCase()+' '+uae.day+'</span><h3>'+nm(m,'p1')+' Meets '+nm(m,'p2')+' &mdash; '+sub+'</h3><p>'+fn(m,'p1')+' and '+fn(m,'p2')+' meet in the '+(m.roundCode&&m.roundCode!=='RR'?sub.toLowerCase():'group stage')+' on '+m.court+' '+atTime(m)+' UAE on '+dayName(m.label)+'.</p>';
+            var lastS=items[items.length-1]; lastS.parentNode.insertBefore(st,lastS.nextSibling);
+          }
+        }
+      });
     }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });

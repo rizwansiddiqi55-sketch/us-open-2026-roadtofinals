@@ -220,7 +220,8 @@ function citoSets(item, same) {
 
 function findMatch(data, item) {
   const key = pairKey(item.player1.name, item.player2.name);
-  return data.matches.find((m) => pairKey(m.p1.name, m.p2.name) === key);
+  // same two players can meet again in a later round, so the round must match too (matches without roundCode are round-robin)
+  return data.matches.find((m) => pairKey(m.p1.name, m.p2.name) === key && (m.roundCode || 'RR') === (item.round || 'RR'));
 }
 
 async function citoAssist(data, primaryOk) {
@@ -273,6 +274,83 @@ async function citoAssist(data, primaryOk) {
       data.updated = new Date().toISOString();
     });
   }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Schedule from Cito: newly published matches of the tournament (e.g. the next day's order of play, semifinals, final)
+// are added automatically. One request per poll, at most every 3 hours (free plan = 500 requests/month).
+// ---------------------------------------------------------------------------------------------
+const COUNTRIES = {
+  BLR: ['🇧🇾', 'Belarus'], RUS: ['🇷🇺', 'Russia'], UKR: ['🇺🇦', 'Ukraine'], CZE: ['🇨🇿', 'Czechia'], USA: ['🇺🇸', 'United States'],
+  KAZ: ['🇰🇿', 'Kazakhstan'], POL: ['🇵🇱', 'Poland'], ITA: ['🇮🇹', 'Italy'], ESP: ['🇪🇸', 'Spain'], FRA: ['🇫🇷', 'France'],
+  GER: ['🇩🇪', 'Germany'], GBR: ['🇬🇧', 'Great Britain'], CAN: ['🇨🇦', 'Canada'], CHN: ['🇨🇳', 'China'], JPN: ['🇯🇵', 'Japan'],
+  GRE: ['🇬🇷', 'Greece'], TUN: ['🇹🇳', 'Tunisia'], BRA: ['🇧🇷', 'Brazil'], SUI: ['🇨🇭', 'Switzerland'], AUS: ['🇦🇺', 'Australia'],
+  DEN: ['🇩🇰', 'Denmark'], LAT: ['🇱🇻', 'Latvia'], ROU: ['🇷🇴', 'Romania'], CRO: ['🇭🇷', 'Croatia'], BEL: ['🇧🇪', 'Belgium'],
+  NED: ['🇳🇱', 'Netherlands'], SRB: ['🇷🇸', 'Serbia'], SVK: ['🇸🇰', 'Slovakia'], ARG: ['🇦🇷', 'Argentina'], MEX: ['🇲🇽', 'Mexico'],
+  COL: ['🇨🇴', 'Colombia'], EGY: ['🇪🇬', 'Egypt'],
+};
+const ROUND_NAMES = { RR: 'Group stage', QF: 'Quarterfinal', SF: 'Semifinal', F: 'Final' };
+const ORDINALS = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+const DOW = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const sched = { at: 0, found: [] };   // found: Cito items already seen for this tournament
+
+function fromCito(it, data) {
+  const known = {};
+  data.matches.forEach((m) => { [m.p1, m.p2].forEach((p) => { known[last(p.name)] = p; }); });
+  const person = (p) => {
+    const k = last(p.name), old = known[k];
+    const c = COUNTRIES[p.ioc] || ['🎾', p.ioc || ''];
+    if (old) return Object.assign({}, old, { ioc: p.ioc, country: c[1] });
+    const parts = String(p.name).trim().split(/\s+/);
+    return { name: parts[parts.length - 1], flag: c[0], full: p.name, ioc: p.ioc, country: c[1] };
+  };
+  const t = Date.parse(it.scheduled_at);
+  const u = new Date(t + 4 * 3600000); // UAE wall clock
+  const label = DOW[u.getUTCDay()] + ' ' + MON[u.getUTCMonth()] + ' ' + u.getUTCDate();
+  const h = u.getUTCHours(), mm = String(u.getUTCMinutes()).padStart(2, '0');
+  const time = ((h % 12) || 12) + ':' + mm + ' ' + (h < 12 ? 'AM' : 'PM') + ' UAE';
+  const day = Math.round((Date.UTC(u.getUTCFullYear(), u.getUTCMonth(), u.getUTCDate()) - Date.UTC(2026, 10, 9)) / 86400000);
+  const rc = it.round || 'RR';
+  const court = (String(it.court || '').match(/(\d+)\s*$/) || [])[1];
+  const p1 = person(it.player1), p2 = person(it.player2);
+  return {
+    id: (last(p1.full) + '-' + last(p2.full) + (rc === 'RR' ? '' : '-' + rc.toLowerCase())),
+    status: 'upcoming', court: court ? 'Court ' + court : 'Court 2', label, time,
+    p1, p2, sets: [], start: new Date(t).toISOString(),
+    dayText: 'Day ' + (ORDINALS[day] || (day + 1)) + ' of the WTA Finals',
+    roundCode: rc, round: ROUND_NAMES[rc] || it.round_name || 'Match', fromCito: true,
+  };
+}
+
+async function citoSchedule(data) {
+  if (!process.env.CITO_API_KEY) return;
+  const now = Date.now();
+  if (now - sched.at >= 3 * 60 * 60 * 1000 && (cito.remaining === null || cito.remaining > 60)) {
+    sched.at = now;
+    try {
+      const latest = Math.max.apply(null, data.matches.map((m) => Date.parse(m.start) || 0).concat([now]));
+      const dates = [];
+      for (let i = 0; i < 3; i++) dates.push(new Date(latest + i * 86400000).toISOString().slice(0, 10));
+      let empty = 0;
+      for (const d of dates) {
+        if (empty >= 1) break;                      // stop at the first day that is not published yet
+        const j = await citoGet('/schedule?date=' + d + '&tour=wta&page_size=100');
+        const items = (j.items || []).filter((x) => x.tournament_id === CITO_TOURNAMENT && x.match_type !== 'doubles');
+        if (!items.length) { empty++; continue; }
+        items.forEach((x) => { if (!sched.found.some((y) => y.match_id === x.match_id)) sched.found.push(x); });
+      }
+    } catch (e) { /* schedule is optional */ }
+  }
+  const have = (it) => data.matches.some((m) => pairKey(m.p1.name, m.p2.name) === pairKey(it.player1.name, it.player2.name) && (m.roundCode || 'RR') === (it.round || 'RR'));
+  const fresh = sched.found.filter((it) => !have(it) && !/COMPLETED|FINISHED|CANCEL/i.test(it.status || '')).sort((a, b) => Date.parse(a.scheduled_at) - Date.parse(b.scheduled_at));
+  if (!fresh.length) return;
+  let order = Math.max.apply(null, data.matches.map((m) => m.order || 0));
+  const add = fresh.map((it) => fromCito(it, data));
+  // later matches of a day are "estimated" (they follow the earlier one on court)
+  const firstOfDay = {};
+  add.forEach((m) => { if (firstOfDay[m.label] === undefined) firstOfDay[m.label] = m.start; else m.time += ' (EST.)'; });
+  add.forEach((m) => { m.order = ++order; data.matches.push(m); });
 }
 
 // Live match stats (aces, serve %, break points ...) from the Cito live feed. One request every 5 minutes while a match is live
@@ -338,6 +416,7 @@ module.exports = async (req, res) => {
   data.source = 'static';
   let ttl = 60;
   // Apply finals already confirmed on this instance (saves Cito calls).
+  try { await citoSchedule(data); } catch (e) { /* optional */ }
   data.matches.forEach((m) => { if (finals[m.id] && m.status !== 'final') { m.status = 'final'; m.sets = finals[m.id].sets; delete m.note; delete m.live; delete m.server; } });
   let primaryOk = false;
   try {
