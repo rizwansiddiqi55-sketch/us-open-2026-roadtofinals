@@ -840,7 +840,7 @@
   .hl .hl-frame{position:relative; width:100%; aspect-ratio:16/9; border-radius:6px; overflow:hidden; background:#000;}
   .hl .hl-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
   .hl .hl-note{font-size:11.5px; opacity:.7; font-style:italic; margin:6px 0 0;}
-  .cm{background:var(--court-blue-dark); color:#fff; border-radius:6px; border-left:5px solid #F4D35E; padding:14px 16px 12px; margin:-8px 0 22px;}
+  .cm{background:var(--court-blue-dark); color:#fff; border-radius:6px; border-left:5px solid #F4D35E; padding:14px 16px 12px; margin:0 0 22px;}
   .cm .cm-head{font-family:'Oswald',sans-serif; letter-spacing:1.2px; font-size:13px; color:#F4D35E; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;}
   .cm ul{list-style:none; margin:8px 0 0; padding:0; max-height:300px; overflow-y:auto;}
   .cm li{display:flex; gap:10px; padding:7px 0; border-top:1px solid rgba(255,255,255,.12); font-size:14px; line-height:1.4;}
@@ -1936,14 +1936,13 @@
       if(live) show=live; else { var fin=d.matches.filter(function(x){return x.status==='final' && st[x.id] && st[x.id].done && now-st[x.id].at<3*3600000;}).sort(function(a,b){return st[b.id].at-st[a.id].at;})[0]; if(fin) show=fin; }
       [].slice.call(document.querySelectorAll('.cm')).forEach(function(x){ x.remove(); });
       if(!show) return;
-      var panel=document.querySelector('.sf-preview-panel[data-match="'+show.id+'"]'); if(!panel) return;
-      var anchor=panel; if(panel.nextElementSibling && panel.nextElementSibling.classList.contains('ls')) anchor=panel.nextElementSibling;
+      var wpBox=document.getElementById('winPredictor'); if(!wpBox) return;   // the commentary sits directly above the win predictor
       var box=document.createElement('div'); box.className='cm';
       var fmt=function(t){ try{ return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit'}).format(new Date(t)); }catch(e){ return ''; } };
       box.innerHTML='<div class="cm-head"><span>&#128221; LIVE COMMENTARY</span><span>'+nm(show,'p1')+' v '+nm(show,'p2')+'</span></div><ul>'+
         st[show.id].lines.slice(0,40).map(function(l){ return '<li'+(l.big?' class="big"':'')+'><time>'+(l.catchup?'earlier':fmt(l.t))+'</time><span>'+String(l.txt).replace(/</g,'&lt;')+'</span></li>'; }).join('')+
         '</ul><p class="cm-note">Written automatically from the live score. It adds a line for each change since the last refresh (about every 2 minutes), so several games can appear together. Times are UAE time. It starts when you first open the page during a match.</p>';
-      anchor.parentNode.insertBefore(box,anchor.nextSibling);
+      wpBox.parentNode.insertBefore(box,wpBox);
     }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });
