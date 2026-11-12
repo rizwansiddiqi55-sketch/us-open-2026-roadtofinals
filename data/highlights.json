@@ -1,0 +1,4 @@
+{
+  "_note": "Official match highlights. Add one entry per match: {\"match\": \"<match id from scores.json>\", \"youtube\": \"<11-character YouTube video id>\", \"title\": \"<short title>\"}. Only use videos the owner allows to be embedded (for example the WTA's own YouTube uploads).",
+  "highlights": []
+}

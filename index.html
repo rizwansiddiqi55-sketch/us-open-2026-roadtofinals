@@ -826,6 +826,20 @@
   .cal-note{font-size:11.5px; opacity:.7; font-style:italic; flex-basis:100%; margin:2px 0 0;}
   .cal-all{margin:6px 0 14px;}
   .cal-all .cal-btn{background:var(--court-blue-dark); color:var(--ball);}
+  .ww{background:var(--chalk-card); border:1px solid var(--line); border-left:5px solid var(--court-blue-mid); border-radius:6px; padding:12px 16px; margin:0 0 22px; color:var(--ink);}
+  .ww .ww-head{font-family:'Oswald',sans-serif; letter-spacing:1.2px; font-size:13px; color:var(--court-blue-mid); display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+  .ww .ww-live{color:var(--red-live); font-weight:700;}
+  .ww ul{list-style:none; margin:8px 0 0; padding:0;}
+  .ww li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 0; border-top:1px solid var(--line); font-size:14px;}
+  .ww li:first-child{border-top:0;}
+  .ww li span.reg{flex:1;}
+  .ww a.ww-btn{font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:.7px; color:#0F2350; background:var(--ball); border-radius:999px; padding:6px 13px; text-decoration:none; white-space:nowrap;}
+  .ww .ww-note{font-size:11.5px; line-height:1.45; opacity:.75; margin:8px 0 0; font-style:italic;}
+  .hl{margin:14px 0 2px;}
+  .hl .hl-btn{font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:.7px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:8px 16px; cursor:pointer;}
+  .hl .hl-frame{position:relative; width:100%; aspect-ratio:16/9; border-radius:6px; overflow:hidden; background:#000;}
+  .hl .hl-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .hl .hl-note{font-size:11.5px; opacity:.7; font-style:italic; margin:6px 0 0;}
 </style>
 </head>
 <body>
@@ -896,6 +910,8 @@
   </section>
 
   <div id="winPredictor" class="wp" hidden aria-live="polite"></div>
+
+  <div id="whereToWatch" class="ww"></div>
 
   <h3 class="panel-day">LIVE NOW</h3>
 
@@ -1464,7 +1480,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} try{ watchRender(dd); }catch(e){} try{ highlightsRender(dd); }catch(e){} }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1780,6 +1796,42 @@
           all.appendChild(ab);
         }
       }
+    }
+
+    // ---- Where to watch: links to the OFFICIAL broadcasters only (no match video is embedded). Rights differ by country. ----
+    var BROADCASTERS=[
+      {reg:'Middle East & North Africa (incl. UAE)', name:'DAZN / WTA TV', url:'https://www.dazn.com'},
+      {reg:'United States & India', name:'Tennis Channel', url:'https://www.tennischannel.com'},
+      {reg:'Everywhere else, or if your country has no local broadcaster', name:'WTA TV', url:'https://www.wtatennis.com'}
+    ];
+    function watchRender(d){
+      var box=document.getElementById('whereToWatch'); if(!box) return;
+      var live=(d.matches||[]).filter(function(m){return m.status==='live';})[0];
+      box.innerHTML='<div class="ww-head"><span>&#128250; WHERE TO WATCH</span>'+(live?'<span class="ww-live">&#128308; LIVE NOW: '+live.p1.name+' v '+live.p2.name+'</span>':'')+'</div>'+
+        '<ul>'+BROADCASTERS.map(function(b){ return '<li><span class="reg">'+b.reg+'</span><a class="ww-btn" href="'+b.url+'" target="_blank" rel="noopener">'+b.name+' &rarr;</a></li>'; }).join('')+'</ul>'+
+        '<p class="ww-note">Official broadcasters only. Rights and subscriptions differ by country, so please check the WTA website for the broadcaster in your country. This page does not stream match video.</p>'+
+        '<p class="ww-note"><a href="https://www.wtatennis.com/videos/highlights" target="_blank" rel="noopener">Official WTA match highlights &rarr;</a></p>';
+    }
+    // ---- Official highlights: videos listed in data/highlights.json are shown under the finished match (click to load, no tracking until played) ----
+    var HL=null, HL_LOADING=false;
+    function loadHighlights(cb){
+      if(HL){ cb(); return; } if(HL_LOADING) return; HL_LOADING=true;
+      fetch('data/highlights.json?t='+Math.floor(Date.now()/600000)).then(function(r){return r.json();}).then(function(j){ HL=(j&&j.highlights)||[]; HL_LOADING=false; cb(); }).catch(function(){ HL=[]; HL_LOADING=false; });
+    }
+    function highlightsRender(d){
+      loadHighlights(function(){
+        HL.forEach(function(h){
+          var m=(d.matches||[]).filter(function(x){return x.id===h.match && x.status==='final';})[0];
+          var panel=m&&document.querySelector('.sf-preview-panel[data-match="'+h.match+'"]');
+          if(!panel||panel.querySelector('.hl')||!/^[A-Za-z0-9_-]{11}$/.test(h.youtube||'')) return;
+          var box=document.createElement('div'); box.className='hl';
+          var btn=document.createElement('button'); btn.type='button'; btn.className='hl-btn'; btn.innerHTML='&#9654; Watch official highlights'+(h.title?': '+String(h.title).replace(/</g,'&lt;'):'');
+          btn.addEventListener('click',function(){
+            box.innerHTML='<div class="hl-frame"><iframe src="https://www.youtube-nocookie.com/embed/'+h.youtube+'?rel=0&autoplay=1" title="Match highlights" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div><p class="hl-note">Official highlights via YouTube.</p>';
+          });
+          box.appendChild(btn); panel.appendChild(box);
+        });
+      });
     }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });
