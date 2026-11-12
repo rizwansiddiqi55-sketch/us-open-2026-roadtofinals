@@ -266,14 +266,18 @@ async function citoAssist(data, primaryOk) {
   // (b) live backup, only if the main feed failed entirely
   if (!primaryOk && open) {
     const live = await citoLiveItems();
+    const matched = {};
     live.forEach((it) => {
       const m = findMatch(data, it);
       if (!m || m.status === 'final') return;
       if (m.pinUntil && Date.now() < Date.parse(m.pinUntil)) return;
       const same = last(it.player1.name) === last(m.p1.name);
+      matched[m.id] = true;
       m.status = 'live';
       m.live = true;
       m.sets = citoSets(it, same);
+      seen[m.id] = { sets: m.sets.map((x) => Object.assign({}, x)), at: Date.now() };
+      data.backup = 'cito';
       if (it.server === 1 || it.server === 2) {
         const srv = it.server === 1 ? 'p1' : 'p2';
         m.server = same ? srv : (srv === 'p1' ? 'p2' : 'p1');
@@ -285,6 +289,13 @@ async function citoAssist(data, primaryOk) {
       }
       data.source = 'live';
       data.updated = new Date().toISOString();
+    });
+    // A match we saw live that the backup no longer lists has probably just finished: keep its last score (never reset to 'upcoming').
+    data.matches.forEach((m) => {
+      const snap = seen[m.id];
+      if (matched[m.id] || m.status === 'final' || !snap || Date.now() - snap.at > 6 * 60 * 60 * 1000) return;
+      m.status = 'live'; m.sets = snap.sets; delete m.live; delete m.server; delete m.points;
+      m.note = 'Match finished — final score being confirmed';
     });
   }
 }
