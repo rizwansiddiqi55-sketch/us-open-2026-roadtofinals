@@ -377,60 +377,6 @@ async function citoSchedule(data) {
   add.forEach((m) => { m.order = ++order; data.matches.push(m); });
 }
 
-// ---------------------------------------------------------------------------------------------
-// SportScore (free, no key): used ONLY to learn that a match has ended and who won (it reports sets won, not the set scores).
-// A match we still show as live/pending is looked up at most every 90 seconds. When it says "finished" we (a) update the notice,
-// (b) finalize the match if our last known set scores agree with its sets won, and (c) make the Cito final check run right away.
-// The page shows the "Powered by SportScore" credit its free terms ask for.
-// ---------------------------------------------------------------------------------------------
-const SS_BASE = 'https://sportscore.com/api/widget/match/?sport=tennis&slug=';
-const ssMemo = {};   // match id -> { at, res }
-function slugify(n) { return norm(n).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-async function ssLookup(m) {
-  const hit = ssMemo[m.id];
-  if (hit && Date.now() - hit.at < 90 * 1000) return hit.res;
-  let res = null;
-  const slugs = [slugify(m.p1.full || m.p1.name) + '-vs-' + slugify(m.p2.full || m.p2.name), slugify(m.p2.full || m.p2.name) + '-vs-' + slugify(m.p1.full || m.p1.name)];
-  for (const sl of slugs) {
-    try {
-      const r = await fetch(SS_BASE + sl);
-      if (!r.ok) continue;
-      const j = await r.json();
-      const x = j && j.match;
-      if (!x || !x.status) continue;
-      if (Math.abs(Date.parse(x.time) - Date.parse(m.start)) > 8 * 3600 * 1000) continue; // a different meeting of the same pair
-      const homeIsP1 = last(x.home) === last(m.p1.name);
-      const h = parseInt(x.home_score, 10), a = parseInt(x.away_score, 10);
-      res = { status: x.status, p1: homeIsP1 ? h : a, p2: homeIsP1 ? a : h };
-      break;
-    } catch (e) { /* optional */ }
-  }
-  ssMemo[m.id] = { at: Date.now(), res };
-  return res;
-}
-const setWon = (x, y) => (x >= 6 && x - y >= 2) || (x === 7 && (y === 5 || y === 6));
-async function sportscoreEnded(data) {
-  const now = Date.now();
-  const cand = data.matches.filter((m) => m.status !== 'final' && !m.live && m.start && now > Date.parse(m.start) + 40 * 60 * 1000 && now < Date.parse(m.start) + 8 * 3600 * 1000);
-  for (const m of cand) {
-    const r = await ssLookup(m);
-    if (!r || r.status !== 'finished' || !(r.p1 !== r.p2) || !(Math.max(r.p1, r.p2) >= 2)) continue;
-    const w = r.p1 > r.p2 ? 'p1' : 'p2';
-    const sets = m.sets || [];
-    const c1 = sets.filter((x) => setWon(x.p1, x.p2)).length, c2 = sets.filter((x) => setWon(x.p2, x.p1)).length;
-    if (sets.length && c1 === r.p1 && c2 === r.p2) {          // our last known scores agree with the result: the match is complete
-      m.status = 'final'; delete m.note; delete m.live; delete m.server; delete m.points; delete m.lag;
-      finals[m.id] = { sets: sets };
-      continue;
-    }
-    if (sets.length) {
-      m.status = 'live';
-      m.note = 'Match finished — ' + (m[w].full || m[w].name) + ' won ' + Math.max(r.p1, r.p2) + '–' + Math.min(r.p1, r.p2) + ' in sets; final score being confirmed';
-    }
-    cito.doneAt = 0;                                           // look for the official final on the next Cito check
-  }
-}
-
 // Live match stats (aces, serve %, break points ...) from the Cito live feed. One request every 5 minutes while a match is live
 // (the free plan allows 500/month); the last snapshot is kept so the page always has the latest known numbers.
 const statsMemo = {};   // match id -> { at, rows }
@@ -508,7 +454,6 @@ module.exports = async (req, res) => {
     data.source = 'static';
   }
   try {
-    try { await sportscoreEnded(data); } catch (e) { /* optional */ }
     await citoAssist(data, primaryOk);
     await citoStats(data);
     if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
