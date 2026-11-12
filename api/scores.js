@@ -349,6 +349,8 @@ function fromCito(it, data) {
 
 async function citoSchedule(data) {
   if (!process.env.CITO_API_KEY) return;
+  // ESPN already supplies the schedule; spend Cito's limited monthly requests only if ESPN was tried and returned nothing.
+  if (!(espn.at > 0 && espn.comps.length === 0)) return;
   const now = Date.now();
   if (now - sched.at >= 3 * 60 * 60 * 1000 && (cito.remaining === null || cito.remaining > 60)) {
     sched.at = now;
