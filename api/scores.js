@@ -131,10 +131,15 @@ async function overlayLive(data, keys) {
     // Warn when the feed itself looks behind (its data is old/stale, or no games recorded long after the start).
     {
       const reasons = [];
-      const feedAge = Number(sc.age_seconds) || 0;
+      // age_seconds = time since the score last changed; observed_age_seconds = time since the source last looked at the match.
+      // A feed that is still being observed but whose score has not moved for 5+ minutes means play is paused (timeout, break, delay), not that the feed is behind.
+      const changeAge = Number(sc.age_seconds) || 0;
+      const hasObs = sc.observed_age_seconds !== undefined && sc.observed_age_seconds !== null && Number.isFinite(Number(sc.observed_age_seconds));
+      const feedAge = hasObs ? Number(sc.observed_age_seconds) : changeAge;
       const liveAt = Date.parse(pm.live_at || '');
       const total = sets.reduce((a, x) => a + x.p1 + x.p2, 0);
       if (sc.stale || feedAge > 180) reasons.push('feed data is ' + Math.max(1, Math.round(feedAge / 60)) + ' min old');
+      if (hasObs && !sc.stale && feedAge <= 180 && changeAge >= 300) m.paused = Math.round(changeAge / 60); else delete m.paused;
       if (liveAt && sets.length === 1 && total === 0 && Date.now() - liveAt > 12 * 60 * 1000) reasons.push('no games recorded yet');
       if (reasons.length) m.lag = reasons.join('; '); else delete m.lag;
     }
