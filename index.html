@@ -840,6 +840,15 @@
   .hl .hl-frame{position:relative; width:100%; aspect-ratio:16/9; border-radius:6px; overflow:hidden; background:#000;}
   .hl .hl-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
   .hl .hl-note{font-size:11.5px; opacity:.7; font-style:italic; margin:6px 0 0;}
+  .cm{background:var(--court-blue-dark); color:#fff; border-radius:6px; border-left:5px solid #F4D35E; padding:14px 16px 12px; margin:-8px 0 22px;}
+  .cm .cm-head{font-family:'Oswald',sans-serif; letter-spacing:1.2px; font-size:13px; color:#F4D35E; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+  .cm ul{list-style:none; margin:8px 0 0; padding:0; max-height:300px; overflow-y:auto;}
+  .cm li{display:flex; gap:10px; padding:7px 0; border-top:1px solid rgba(255,255,255,.12); font-size:14px; line-height:1.4;}
+  .cm li:first-child{border-top:0;}
+  .cm li time{flex:0 0 auto; font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.6px; color:#9CC1FF; min-width:48px; padding-top:2px;}
+  .cm li.big{font-weight:700;}
+  .cm li.big span{color:#F4D35E;}
+  .cm .cm-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
 </style>
 </head>
 <body>
@@ -1482,7 +1491,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} try{ watchRender(dd); }catch(e){} try{ highlightsRender(dd); }catch(e){} }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ commentaryUpdate(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} try{ watchRender(dd); }catch(e){} try{ highlightsRender(dd); }catch(e){} }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1835,6 +1844,106 @@
           box.appendChild(btn); panel.appendChild(box);
         });
       });
+    }
+
+    // ---- Live commentary: generated automatically from the score feed by comparing each refresh with the previous one ----
+    function cmSetDone(x){ return (x.p1>=6&&x.p1-x.p2>=2)||x.p1===7||(x.p2>=6&&x.p2-x.p1>=2)||x.p2===7; }
+    function cmLoad(){ try{ return JSON.parse(localStorage.getItem('wtaComm')||'{}'); }catch(e){ return {}; } }
+    function cmSave(st){ try{ localStorage.setItem('wtaComm',JSON.stringify(st)); }catch(e){} }
+    function cmSnap(m){ return {sets:(m.sets||[]).map(function(x){return {p1:x.p1,p2:x.p2};}), server:m.server||null, points:m.points||null}; }
+    function cmPoint(v){ return wpPts(v); }
+    // what is at stake in the current game: break point, set point, match point (current moment only)
+    function cmMoment(m){
+      var sets=m.sets||[]; if(!sets.length||!m.server||!m.points) return null;
+      var cur=sets[sets.length-1]; if(cmSetDone(cur)) return null;
+      var a=cmPoint(m.points[0]), b=cmPoint(m.points[1]); if(a===4) b=3; else if(b===4) a=3;
+      if(cur.p1===6&&cur.p2===6) return null;
+      var wonP1=0, wonP2=0; sets.slice(0,-1).forEach(function(x){ if(x.p1>x.p2) wonP1++; else wonP2++; });
+      function gamePt(side){ return side==='p1' ? (a>=3&&a>b) : (b>=3&&b>a); }
+      function winsSet(side){ var g=side==='p1'?cur.p1:cur.p2, o=side==='p1'?cur.p2:cur.p1; var g2=g+1; return (g2>=6&&g2-o>=2)||g2===7; }
+      var out=[], recv=m.server==='p1'?'p2':'p1';
+      ['p1','p2'].forEach(function(side){
+        if(gamePt(side)){
+          if(winsSet(side)){ var won=side==='p1'?wonP1:wonP2; out.push({k:'mp-'+sets.length+'-'+cur.p1+'-'+cur.p2+'-'+side+'-'+(won===1?'M':'S'), big:true, txt:(won===1?'Match point for ':'Set point for ')+nm(m,side)+(side===recv?' (on the return)':'')}); }
+          else if(side===recv){ out.push({k:'bp-'+sets.length+'-'+cur.p1+'-'+cur.p2+'-'+side, big:false, txt:'Break point for '+nm(m,side)}); }
+        }
+      });
+      return out;
+    }
+    function cmDiff(m,prev){
+      var lines=[], cur=m.sets||[], i, ps=prev.sets||[];
+      if(cur.length<ps.length) return null;                       // feed correction: restart
+      for(i=0;i<ps.length;i++){
+        var p=ps[i], c=cur[i]; if(!c) return null;
+        var d1=c.p1-p.p1, d2=c.p2-p.p2; if(d1<0||d2<0) return null;
+        if(!d1&&!d2) continue;
+        var n=d1+d2, done=cmSetDone(c), ord=(ORD[i]||'Deciding').toLowerCase();
+        var srvNow=(i===cur.length-1)?m.server:null;
+        if(n===1){
+          var w=d1?'p1':'p2', serverOfGame=srvNow?other(srvNow):null;
+          var tb=(c.p1===6&&c.p2===7)||(c.p1===7&&c.p2===6)||(p.p1===6&&p.p2===6);
+          var how=tb?'':(serverOfGame?(serverOfGame===w?' holds serve':' breaks serve'):' wins the game');
+          if(done){ lines.push({k:'set-'+i+'-'+c.p1+'-'+c.p2, big:true, txt:nm(m,w)+(tb?' wins the tiebreak and':(serverOfGame?how+' and':''))+' takes the '+ord+' set '+(c.p1>c.p2?c.p1+'-'+c.p2:c.p2+'-'+c.p1)+(c.p1>c.p2?'':'')}); }
+          else lines.push({k:'g-'+i+'-'+c.p1+'-'+c.p2, big:/breaks/.test(how), txt:nm(m,w)+how+': '+nm(m,'p1')+' '+c.p1+'–'+c.p2+' '+nm(m,'p2')+(c.p1===6&&c.p2===6?'. Tiebreak coming up':'')});
+        } else {
+          if(done){ var w2=c.p1>c.p2?'p1':'p2'; lines.push({k:'set-'+i+'-'+c.p1+'-'+c.p2, big:true, txt:nm(m,w2)+' takes the '+ord+' set '+Math.max(c.p1,c.p2)+'-'+Math.min(c.p1,c.p2)+' ('+n+' games since the last update)'}); }
+          else lines.push({k:'gg-'+i+'-'+c.p1+'-'+c.p2, big:false, txt:n+' games played: '+nm(m,'p1')+' '+c.p1+'–'+c.p2+' '+nm(m,'p2')+' in the '+ord+' set'});
+        }
+      }
+      for(i=ps.length;i<cur.length;i++){                          // new set(s) started
+        var c2=cur[i], o=(ORD[i]||'Deciding').toLowerCase();
+        if(i>0 && ps.length<=i && !cmSetDone(cur[i-1])) continue;
+        lines.push({k:'start-'+i, big:false, txt:'The '+o+' set is under way'+((c2.p1+c2.p2)?': '+nm(m,'p1')+' '+c2.p1+'–'+c2.p2+' '+nm(m,'p2'):'')});
+      }
+      return lines;
+    }
+    function commentaryUpdate(d){
+      var st=cmLoad(), now=Date.now(), changed=false, show=null;
+      // forget matches older than a day
+      Object.keys(st).forEach(function(id){ if(now-(st[id].at||0)>24*3600000){ delete st[id]; changed=true; } });
+      d.matches.forEach(function(m){
+        var e=st[m.id];
+        if(m.status==='final' && e && !e.done){
+          var c1=0,c2=0; (m.sets||[]).forEach(function(x){ if(x.p1>x.p2)c1++; else c2++; });
+          var w=c1>c2?'p1':'p2', l=other(w);
+          e.lines.unshift({t:now,k:'final',big:true,txt:'Full time: '+fn(m,w)+' beats '+fn(m,l)+' '+(m.sets||[]).map(function(x){return sc(x,w);}).join(', ')});
+          e.done=true; e.at=now; changed=true;
+        }
+        if(m.status!=='live' || !(m.sets||[]).length || (m.note&&/finished/i.test(m.note))) return;
+        if(!e){ e=st[m.id]={snap:null,lines:[],keys:{},at:now}; changed=true; }
+        var add=[], snap=cmSnap(m);
+        if(!e.snap){
+          // first time we see this match: catch-up lines from the current score
+          (m.sets||[]).forEach(function(x,i){
+            var ord=(ORD[i]||'Deciding').toLowerCase(), last=(i===m.sets.length-1);
+            if(cmSetDone(x)) add.push({k:'set-'+i+'-'+x.p1+'-'+x.p2,big:true,catchup:true,txt:nm(m,x.p1>x.p2?'p1':'p2')+' won the '+ord+' set '+Math.max(x.p1,x.p2)+'-'+Math.min(x.p1,x.p2)});
+            else if(last) add.push({k:'cur-'+i+'-'+x.p1+'-'+x.p2,big:false,catchup:true,txt:(x.p1===x.p2?'The '+ord+' set is level at '+x.p1+'–'+x.p2:nm(m,x.p1>x.p2?'p1':'p2')+' leads '+Math.max(x.p1,x.p2)+'–'+Math.min(x.p1,x.p2)+' in the '+ord+' set')+(m.server?'; '+nm(m,m.server)+' to serve':'')});
+          });
+        } else {
+          var diff=cmDiff(m,e.snap);
+          if(diff===null){ e.lines.unshift({t:now,k:'reset-'+now,big:false,txt:'Score updated by the feed: '+(m.sets||[]).map(function(x){return x.p1+'-'+x.p2;}).join(', ')}); }
+          else add=add.concat(diff);
+        }
+        var mo=cmMoment(m); if(mo) add=add.concat(mo);
+        var al=(typeof alertTxt==='function')?alertTxt(m):''; if(al) add.push({k:'alert-'+al,big:true,txt:'⚕ '+al});
+        if(m.paused && !al) add.push({k:'pause-'+Math.floor(m.paused/5),big:false,txt:'🕑 Play appears paused ('+m.paused+' min without a point)'});
+        add.forEach(function(a){ if(e.keys[a.k]) return; e.keys[a.k]=1; e.lines.unshift({t:now,k:a.k,big:!!a.big,txt:a.txt,catchup:!!a.catchup}); changed=true; });
+        e.snap=snap; e.at=now; e.lines=e.lines.slice(0,60); changed=true;
+      });
+      if(changed) cmSave(st);
+      // which match to show: the live one, otherwise the one that finished most recently (within 3 hours)
+      var live=d.matches.filter(function(x){return x.status==='live' && st[x.id];})[0];
+      if(live) show=live; else { var fin=d.matches.filter(function(x){return x.status==='final' && st[x.id] && st[x.id].done && now-st[x.id].at<3*3600000;}).sort(function(a,b){return st[b.id].at-st[a.id].at;})[0]; if(fin) show=fin; }
+      [].slice.call(document.querySelectorAll('.cm')).forEach(function(x){ x.remove(); });
+      if(!show) return;
+      var panel=document.querySelector('.sf-preview-panel[data-match="'+show.id+'"]'); if(!panel) return;
+      var anchor=panel; if(panel.nextElementSibling && panel.nextElementSibling.classList.contains('ls')) anchor=panel.nextElementSibling;
+      var box=document.createElement('div'); box.className='cm';
+      var fmt=function(t){ try{ return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit'}).format(new Date(t)); }catch(e){ return ''; } };
+      box.innerHTML='<div class="cm-head"><span>&#128221; LIVE COMMENTARY</span><span>'+nm(show,'p1')+' v '+nm(show,'p2')+'</span></div><ul>'+
+        st[show.id].lines.slice(0,40).map(function(l){ return '<li'+(l.big?' class="big"':'')+'><time>'+(l.catchup?'earlier':fmt(l.t))+'</time><span>'+String(l.txt).replace(/</g,'&lt;')+'</span></li>'; }).join('')+
+        '</ul><p class="cm-note">Written automatically from the live score. It adds a line for each change since the last refresh (about every 2 minutes), so several games can appear together. Times are UAE time. It starts when you first open the page during a match.</p>';
+      anchor.parentNode.insertBefore(box,anchor.nextSibling);
     }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });
