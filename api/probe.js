@@ -8,6 +8,14 @@ async function get(path) {
 const slim = (m) => ({ id: m.id, round: m.round, status: m.match_status, state: m.status_state, live: m.is_live, p1: m.player1 && m.player1.full_name, p2: m.player2 && m.player2.full_name, score: m.score, sets: (m.set_scores || []).map((s) => s.player1_games + '-' + s.player2_games), g1: m.player1_game_score, g2: m.player2_game_score, server: m.server, start: m.start_time || m.date || null, keys: Object.keys(m) });
 module.exports = async (req, res) => {
   const out = { haveKey: !!process.env.BALLDONTLIE_API_KEY };
+  // Key diagnostics WITHOUT revealing it: shape only, then which header format the API accepts.
+  const raw = process.env.BALLDONTLIE_API_KEY || '';
+  const clean = raw.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '');
+  out.keyShape = { length: raw.length, cleanLength: clean.length, hasWhitespaceAtEnds: raw !== raw.trim(), hasQuotes: /["']/.test(raw), startsWithBearer: /^bearer/i.test(raw.trim()), looksLikeUuid: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean), onlyHexAndDashes: /^[0-9a-f-]+$/i.test(clean), hasSpacesInside: /\s/.test(clean) };
+  out.headerVariants = {};
+  for (const [name, val] of [['raw', raw], ['cleaned', clean], ['bearer', 'Bearer ' + clean]]) {
+    try { const r = await fetch(BASE + '/tournaments?season=2026&per_page=1', { headers: { Authorization: val } }); let b = null; try { b = await r.json(); } catch (e) {} out.headerVariants[name] = { http: r.status, error: b && (b.error || b.message) || null }; } catch (e) { out.headerVariants[name] = { error: String(e.message || e) }; }
+  }
   try {
     const t = await get('/tournaments?season=2026&per_page=100');
     out.tournaments = { http: t.http, error: t.body && t.body.error, finals: ((t.body && t.body.data) || []).filter((x) => /finals/i.test(x.name || '')).map((x) => ({ id: x.id, name: x.name, location: x.location, start: x.start_date, end: x.end_date })) };
