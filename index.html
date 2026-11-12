@@ -819,6 +819,13 @@
   .ls .ls-bar{display:flex; height:6px; border-radius:3px; overflow:hidden; background:rgba(255,255,255,.15);}
   .ls .ls-bar i{display:block; height:100%;} .ls .ls-a{background:var(--ball);} .ls .ls-b{background:#6FA0E8;}
   .ls .ls-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
+  .cal-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:12px 0 2px;}
+  .cal-btn{font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:.7px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:7px 14px; cursor:pointer; text-decoration:none; display:inline-block; line-height:1.2;}
+  .cal-btn.alt{background:transparent; color:var(--ball); border:1px solid var(--ball);}
+  .cal-btn:active{opacity:.7;}
+  .cal-note{font-size:11.5px; opacity:.7; font-style:italic; flex-basis:100%; margin:2px 0 0;}
+  .cal-all{margin:6px 0 14px;}
+  .cal-all .cal-btn{background:var(--court-blue-dark); color:var(--ball);}
 </style>
 </head>
 <body>
@@ -1438,7 +1445,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1703,6 +1710,57 @@
           }
         }
       });
+    }
+
+    // ---- Calendar reminders: .ics file (Apple / Outlook / most phones) or Google Calendar link. Alerts at the scheduled start and 15 minutes before. ----
+    var SITE='https://wta-finals-2026.vercel.app';
+    function icsDate(ms){ return new Date(ms).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); }
+    function icsEsc(t){ return String(t).replace(/\\/g,'\\\\').replace(/;/g,'\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n'); }
+    function icsFold(line){ var out=[]; while(line.length>73){ out.push(line.slice(0,73)); line=' '+line.slice(73); } out.push(line); return out.join('\r\n'); }
+    function calTitle(m){ return '\uD83C\uDFBE '+fn(m,'p1')+' vs '+fn(m,'p2')+' \u2014 WTA Finals ('+(m.round||'Group stage')+')'; }
+    function calDesc(m){ return 'WTA Finals 2026, '+(m.round||'Group stage')+', '+m.court+'. Scheduled start '+m.time+(/EST/i.test(m.time||'')?' (the start time is an estimate because it follows another match on court)':'')+'. Live score, stats and any delay on '+SITE; }
+    function icsEvent(m){
+      var st=Date.parse(m.start), en=st+2*3600000, L=[];
+      L.push('BEGIN:VEVENT','UID:'+m.id+'@wta-finals-2026','DTSTAMP:'+icsDate(Date.now()),'DTSTART:'+icsDate(st),'DTEND:'+icsDate(en),
+        'SUMMARY:'+icsEsc(calTitle(m)),'LOCATION:'+icsEsc('Indian Wells Tennis Garden, '+m.court),'DESCRIPTION:'+icsEsc(calDesc(m)),'URL:'+SITE,
+        'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(fn(m,'p1')+' vs '+fn(m,'p2')+' starts in 15 minutes'),'TRIGGER:-PT15M','END:VALARM',
+        'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(fn(m,'p1')+' vs '+fn(m,'p2')+' is scheduled to start now'),'TRIGGER:PT0M','END:VALARM','END:VEVENT');
+      return L.map(icsFold).join('\r\n');
+    }
+    function icsFile(ms){ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//WTA Finals 2026 fan recap//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'].join('\r\n')+'\r\n'+ms.map(icsEvent).join('\r\n')+'\r\nEND:VCALENDAR\r\n'; }
+    function downloadIcs(ms,name){
+      var text=icsFile(ms);
+      try{
+        var blob=new Blob([text],{type:'text/calendar;charset=utf-8'}), url=URL.createObjectURL(blob), a=document.createElement('a');
+        a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); },4000);
+      }catch(e){ window.location.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(text); }
+    }
+    function googleLink(m){ var st=Date.parse(m.start); return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(calTitle(m))+'&dates='+icsDate(st)+'/'+icsDate(st+2*3600000)+'&details='+encodeURIComponent(calDesc(m))+'&location='+encodeURIComponent('Indian Wells Tennis Garden, '+m.court); }
+    function addCalendar(d){
+      var now=Date.now(), up=d.matches.filter(function(m){ return m.status==='upcoming' && m.start && Date.parse(m.start)>now-3600000; });
+      var byId={}; up.forEach(function(m){ byId[m.id]=m; });
+      [].slice.call(document.querySelectorAll('.cal-row')).forEach(function(r){ if(!byId[r.getAttribute('data-for')]) r.remove(); });
+      up.forEach(function(m){
+        var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]'); if(!panel||panel.querySelector('.cal-row')) return;
+        var row=document.createElement('div'); row.className='cal-row'; row.setAttribute('data-for',m.id);
+        var b=document.createElement('button'); b.type='button'; b.className='cal-btn'; b.innerHTML='&#128197; Add to calendar (.ics)';
+        b.addEventListener('click',function(){ downloadIcs([m],m.id+'.ics'); });
+        var g=document.createElement('a'); g.className='cal-btn alt'; g.href=googleLink(m); g.target='_blank'; g.rel='noopener'; g.textContent='Google Calendar';
+        var n=document.createElement('p'); n.className='cal-note'; n.textContent='Reminder at the scheduled start and 15 minutes before. If the match is delayed, check this page.';
+        row.appendChild(b); row.appendChild(g); row.appendChild(n); panel.appendChild(row);
+      });
+      var all=document.getElementById('calAll');
+      if(!all){ var h=[].slice.call(document.querySelectorAll('h2.section-title')).filter(function(x){return /Schedule/i.test(x.textContent);})[0];
+        if(h){ all=document.createElement('div'); all.id='calAll'; all.className='cal-all'; h.parentNode.insertBefore(all,h.nextSibling); } }
+      if(all){
+        if(!up.length){ all.innerHTML=''; return; }
+        if(!all.firstChild || all.getAttribute('data-n')!==String(up.length)){
+          all.setAttribute('data-n',String(up.length)); all.innerHTML='';
+          var ab=document.createElement('button'); ab.type='button'; ab.className='cal-btn'; ab.innerHTML='&#128197; Add all '+up.length+' upcoming matches to calendar';
+          ab.addEventListener('click',function(){ downloadIcs(up,'wta-finals-2026-upcoming.ics'); });
+          all.appendChild(ab);
+        }
+      }
     }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });
