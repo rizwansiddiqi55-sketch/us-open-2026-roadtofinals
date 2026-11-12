@@ -1465,7 +1465,7 @@
         banner.innerHTML=shown.map(seg).join(' <span class="sep">&nbsp;|&nbsp;</span> ');
       }
       if(stamp && d.updated){
-        try{ var anyLive=d.matches.some(function(x){return x.status==='live';}); var lagM=d.matches.filter(function(x){return x.status==='live'&&x.lag;})[0]; var ageMin=Math.round((Date.now()-Date.parse(d.updated))/60000); stamp.textContent=(lagM?'⚠ Feed may be behind ('+lagM.lag+') · ':'')+(ageMin>=6?'last refreshed '+ageMin+' min ago · ':'')+(d.source==='live'?(d.backup?'Backup live feed (about 1 min behind) \u00B7 ':'Live feed \u00B7 '):(anyLive?'Live feed paused \u00B7 showing last confirmed score \u00B7 ':'Scores refresh automatically \u00B7 '))+'updated '+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}).format(new Date(d.updated))+' UAE'; }catch(e){}
+        try{ var anyLive=d.matches.some(function(x){return x.status==='live';}); var lagM=d.matches.filter(function(x){return x.status==='live'&&x.lag;})[0]; var ageMin=Math.round((Date.now()-Date.parse(d.updated))/60000); stamp.textContent=(lagM?'⚠ Feed may be behind ('+lagM.lag+') · ':'')+(ageMin>=6?'last refreshed '+ageMin+' min ago · ':'')+(d.source==='live'?(d.backup==='espn'?'Second backup feed (sets and games only) \u00B7 ':(d.backup?'Backup live feed (about 1 min behind) \u00B7 ':'Live feed \u00B7 ')):(anyLive?'Live feed paused \u00B7 showing last confirmed score \u00B7 ':'Scores refresh automatically \u00B7 '))+'updated '+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}).format(new Date(d.updated))+' UAE'; }catch(e){}
       }
     }
     function fetchFeed(i){

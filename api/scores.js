@@ -413,7 +413,7 @@ function espnSets(c1, c2, notes) {
 async function espnSync(data) {
   const now = Date.now();
   const due = data.matches.some((m) => m.status !== 'final' && m.start && now > Date.parse(m.start) - 20 * 60 * 1000 && now < Date.parse(m.start) + 7 * 3600 * 1000);
-  if (now - espn.at >= (due ? 3 * 60 * 1000 : 30 * 60 * 1000)) {
+  if (now - espn.at >= (due ? 150 * 1000 : 30 * 60 * 1000)) {
     espn.at = now;
     try {
       const r = await fetch(ESPN_URL);
@@ -457,6 +457,31 @@ async function espnSync(data) {
     add.forEach((m) => { if (first[m.label] === undefined) first[m.label] = true; else m.time += ' (EST.)'; m.source = 'espn'; });
     add.forEach((m) => { m.order = ++order; delete m.fromCito; m.fromCito = true; data.matches.push(m); });
   }
+}
+
+// Second backup for LIVE scores (after the main feed and Cito): ESPN reports the sets and games of a match in progress (no points, no serve).
+// It is only applied to matches that no other feed is currently covering.
+function espnLive(data) {
+  if (Date.now() - espn.at > 8 * 60 * 1000) return;           // too old to trust
+  const nameOf = (c) => (c.athlete && (c.athlete.displayName || c.athlete.fullName)) || '';
+  espn.comps.forEach((c) => {
+    const st = c.status && c.status.type, cs = c.competitors || [];
+    if (!st || st.name !== 'STATUS_IN_PROGRESS' || cs.length !== 2) return;
+    const n1 = nameOf(cs[0]), n2 = nameOf(cs[1]);
+    if (!n1 || !n2 || /tbd/i.test(n1 + n2)) return;
+    const rc = ESPN_ROUNDS[String((c.round && c.round.displayName) || '').toLowerCase()] || 'RR';
+    const m = data.matches.find((x) => pairKey(x.p1.name, x.p2.name) === pairKey(n1, n2) && (x.roundCode || 'RR') === rc);
+    if (!m || m.status === 'final' || m.live) return;           // another feed already covers it
+    if (m.pinUntil && Date.now() < Date.parse(m.pinUntil)) return;
+    const same = last(n1) === last(m.p1.name);
+    const sets = espnSets(same ? cs[0] : cs[1], same ? cs[1] : cs[0], '');
+    if (!sets.length) return;
+    m.status = 'live'; m.live = true; m.sets = sets;
+    delete m.note; delete m.server; delete m.points; delete m.lag; delete m.paused;
+    seen[m.id] = { sets: sets.map((x) => Object.assign({}, x)), at: Date.now() };
+    data.source = 'live'; data.updated = new Date().toISOString();
+    if (!data.backup) data.backup = 'espn';
+  });
 }
 
 // Live match stats (aces, serve %, break points ...) from the Cito live feed. One request every 5 minutes while a match is live
@@ -535,12 +560,13 @@ module.exports = async (req, res) => {
   } catch (e) {
     data.source = 'static';
   }
-  try {
-    try { await espnSync(data); } catch (e) { /* optional */ }
-    await citoAssist(data, primaryOk);
-    await citoStats(data);
-    if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
-  } catch (e) { /* Cito is best-effort */ }
+  // Each stage is optional and isolated, so one failing feed never blocks the next: ESPN results and schedule, Cito (first backup),
+  // ESPN live (second backup), Cito stats.
+  try { await espnSync(data); } catch (e) { /* optional */ }
+  try { await citoAssist(data, primaryOk); } catch (e) { /* Cito is best-effort */ }
+  try { espnLive(data); } catch (e) { /* optional */ }
+  try { await citoStats(data); } catch (e) { /* optional */ }
+  if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=20');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).json(data);
