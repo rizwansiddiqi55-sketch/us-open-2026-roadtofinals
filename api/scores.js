@@ -377,6 +377,88 @@ async function citoSchedule(data) {
   add.forEach((m) => { m.order = ++order; data.matches.push(m); });
 }
 
+const setWon = (x, y) => (x >= 6 && x - y >= 2) || (x === 7 && (y === 5 || y === 6));
+// ---------------------------------------------------------------------------------------------
+// ESPN scoreboard (public site feed, no key; unofficial and undocumented, so it is only used inside try/catch):
+//  - official FINAL set scores (with tiebreak points) for finished matches, ahead of the Cito check,
+//  - newly listed matches (semifinals, final, next day's order of play) once both players are known.
+// One request every 3 minutes while a match is due or live, otherwise every 30 minutes.
+// ---------------------------------------------------------------------------------------------
+const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard';
+const espn = { at: 0, comps: [] };
+const ESPN_ROUNDS = { 'group stage': 'RR', 'round robin': 'RR', quarterfinal: 'QF', semifinal: 'SF', final: 'F' };
+
+function espnSets(c1, c2, notes) {
+  const out = [];
+  const n = Math.max((c1.linescores || []).length, (c2.linescores || []).length);
+  const tbs = [];
+  String(notes || '').replace(/\((\d+)-(\d+)\)/g, (m, a, b) => { tbs.push(Math.min(Number(a), Number(b))); return m; });
+  let k = 0;
+  for (let i = 0; i < n; i++) {
+    const a = (c1.linescores || [])[i], b = (c2.linescores || [])[i];
+    if (!a || !b || a.value == null || b.value == null) continue;
+    const set = { p1: a.value, p2: b.value };
+    const tie = (a.value === 7 && b.value === 6) || (a.value === 6 && b.value === 7);
+    if (tie) {
+      const loser = a.value === 6 ? a : b;                 // tiebreak points of the loser, as on the page
+      if (loser.tiebreak != null) set.tb = loser.tiebreak;
+      else if (tbs[k] != null) set.tb = tbs[k];
+      k++;
+    }
+    out.push(set);
+  }
+  return out;
+}
+
+async function espnSync(data) {
+  const now = Date.now();
+  const due = data.matches.some((m) => m.status !== 'final' && m.start && now > Date.parse(m.start) - 20 * 60 * 1000 && now < Date.parse(m.start) + 7 * 3600 * 1000);
+  if (now - espn.at >= (due ? 3 * 60 * 1000 : 30 * 60 * 1000)) {
+    espn.at = now;
+    try {
+      const r = await fetch(ESPN_URL);
+      if (r.ok) {
+        const j = await r.json();
+        const ev = (j.events || []).find((e) => /WTA Finals/i.test(e.name || ''));
+        const grp = ev && (ev.groupings || []).find((g) => /singles/i.test((g.grouping && g.grouping.displayName) || ''));
+        espn.comps = grp ? (grp.competitions || []) : [];
+      }
+    } catch (e) { /* ESPN is optional */ }
+  }
+  const nameOf = (c) => (c.athlete && (c.athlete.displayName || c.athlete.fullName)) || '';
+  let order = Math.max.apply(null, data.matches.map((m) => m.order || 0));
+  const fresh = [];
+  espn.comps.forEach((c) => {
+    const cs = c.competitors || [];
+    if (cs.length !== 2) return;
+    const n1 = nameOf(cs[0]), n2 = nameOf(cs[1]);
+    if (!n1 || !n2 || /tbd/i.test(n1 + n2)) return;
+    const rc = ESPN_ROUNDS[String((c.round && c.round.displayName) || '').toLowerCase()] || 'RR';
+    const key = pairKey(n1, n2);
+    const m = data.matches.find((x) => pairKey(x.p1.name, x.p2.name) === key && (x.roundCode || 'RR') === rc);
+    const st = c.status && c.status.type;
+    if (m) {
+      if (m.status === 'final' || !st || !st.completed) return;
+      const same = last(n1) === last(m.p1.name);
+      const sets = espnSets(same ? cs[0] : cs[1], same ? cs[1] : cs[0], (c.notes && c.notes[0] && c.notes[0].text) || '');
+      const w1 = sets.filter((x) => setWon(x.p1, x.p2)).length, w2 = sets.filter((x) => setWon(x.p2, x.p1)).length;
+      if (!sets.length || Math.max(w1, w2) < 2) return;      // not a complete best-of-three result: leave it to the other feeds
+      m.status = 'final'; m.sets = sets;
+      delete m.note; delete m.live; delete m.server; delete m.points; delete m.lag; delete m.paused; delete m.alert; delete m.alertUntil; delete m.alertSig;
+      finals[m.id] = { sets };
+    } else if (st && st.name !== 'STATUS_FINAL' && c.timeValid !== false) {   // ESPN lists semifinal/final slots with placeholder times until the order of play is set
+      fresh.push({ scheduled_at: c.date || c.startDate, player1: { name: n1 }, player2: { name: n2 }, round: rc, court: null, status: 'SCHEDULED' });
+    }
+  });
+  if (fresh.length) {
+    fresh.sort((a, b) => Date.parse(a.scheduled_at) - Date.parse(b.scheduled_at));
+    const add = fresh.map((it) => fromCito(it, data));
+    const first = {};
+    add.forEach((m) => { if (first[m.label] === undefined) first[m.label] = true; else m.time += ' (EST.)'; m.source = 'espn'; });
+    add.forEach((m) => { m.order = ++order; delete m.fromCito; m.fromCito = true; data.matches.push(m); });
+  }
+}
+
 // Live match stats (aces, serve %, break points ...) from the Cito live feed. One request every 5 minutes while a match is live
 // (the free plan allows 500/month); the last snapshot is kept so the page always has the latest known numbers.
 const statsMemo = {};   // match id -> { at, rows }
@@ -454,6 +536,7 @@ module.exports = async (req, res) => {
     data.source = 'static';
   }
   try {
+    try { await espnSync(data); } catch (e) { /* optional */ }
     await citoAssist(data, primaryOk);
     await citoStats(data);
     if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
