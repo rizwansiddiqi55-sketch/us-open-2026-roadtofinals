@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T20:50:17Z",
+  "updated": "2026-11-12T21:23:33Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -289,7 +289,10 @@
       },
       "sets": [],
       "start": "2026-11-12T20:00:00Z",
-      "dayText": "Day Five of the WTA Finals"
+      "dayText": "Day Five of the WTA Finals",
+      "alert": "Medical timeout — Gauff",
+      "alertUntil": "2026-11-12T21:38:33Z",
+      "alertSig": "4-6,3-0|0-0"
     },
     {
       "id": "pegula-noskova",
