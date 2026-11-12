@@ -1161,7 +1161,7 @@
       </tbody>
     </table>
 
-    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Ranked by round-robin record, then set and game record. Andreeva has won the group. Svitolina and Sabalenka, both 1&ndash;1, play for the No. 2 spot (time to be confirmed).</p>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Ranked by round-robin record, then set and game record. Andreeva has won the group. Svitolina and Sabalenka, both 1&ndash;1, play for the No. 2 spot on Saturday, Nov 14 at about 1:10 AM UAE.</p>
   </section>
 
   <section id="weather">
@@ -1389,14 +1389,13 @@
           up=ms.filter(function(m){return m.status==='upcoming';}).sort(function(a,b){return a.order-b.order;}),
           fin=ms.filter(function(m){return m.status==='final';}).sort(function(a,b){return b.order-a.order;}),
           all=live.concat(up,fin);
-      // Score strip: today's matches first (live, then still to play, then finished), then upcoming days, then earlier results
-      var tdy=new Date(Date.now()+4*3600000).toISOString().slice(0,10);
-      function dayOf(m){ return m.start?new Date(Date.parse(m.start)+4*3600000).toISOString().slice(0,10):''; }
+      // Score strip: the current playing session first (matches that started within the last 9 hours or start within the next 14 hours):
+      // live, then still to play, then just finished. After that: later upcoming matches, then older results (newest first).
+      var nowMs=Date.now();
+      function inSession(m){ var t=Date.parse(m.start); return !!t && t>=nowMs-9*3600000 && t<=nowMs+14*3600000; }
       function stripRank(m){
-        var isToday=dayOf(m)===tdy;
         if(m.status==='live') return 0;
-        // today's matches (UAE date) always stay at the start: live, then still to play, then finished
-        if(isToday) return m.status==='upcoming'?1:2;
+        if(inSession(m)) return m.status==='upcoming'?1:2;
         return m.status==='upcoming'?3:4;
       }
       var strip=all.map(function(m,i){return {m:m,i:i};}).sort(function(a,b){ var ra=stripRank(a.m), rb=stripRank(b.m); return ra!==rb?ra-rb:a.i-b.i; }).map(function(x){return x.m;});
