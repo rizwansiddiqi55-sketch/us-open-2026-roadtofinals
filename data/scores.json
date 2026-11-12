@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T21:58:47Z",
+  "updated": "2026-11-12T22:03:54Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -322,6 +322,56 @@
       "sets": [],
       "start": "2026-11-12T21:10:00Z",
       "dayText": "Day Five of the WTA Finals"
+    },
+    {
+      "id": "andreeva-muchova",
+      "order": 11,
+      "status": "upcoming",
+      "court": "Court 2",
+      "label": "SAT NOV 14",
+      "time": "12:00 AM UAE",
+      "p1": {
+        "name": "Andreeva",
+        "flag": "🇷🇺",
+        "full": "Mirra Andreeva",
+        "rank": 3
+      },
+      "p2": {
+        "name": "Muchová",
+        "flag": "🇨🇿",
+        "full": "Karolína Muchová",
+        "rank": 7
+      },
+      "sets": [],
+      "start": "2026-11-13T20:00:00.000Z",
+      "dayText": "Day Six of the WTA Finals",
+      "roundCode": "RR",
+      "round": "Group stage"
+    },
+    {
+      "id": "sabalenka-svitolina",
+      "order": 12,
+      "status": "upcoming",
+      "court": "Court 2",
+      "label": "SAT NOV 14",
+      "time": "1:10 AM UAE (EST.)",
+      "p1": {
+        "name": "Sabalenka",
+        "flag": "🇧🇾",
+        "full": "Aryna Sabalenka",
+        "rank": 2
+      },
+      "p2": {
+        "name": "Svitolina",
+        "flag": "🇺🇦",
+        "full": "Elina Svitolina",
+        "rank": 6
+      },
+      "sets": [],
+      "start": "2026-11-13T21:10:00.000Z",
+      "dayText": "Day Six of the WTA Finals",
+      "roundCode": "RR",
+      "round": "Group stage"
     }
   ]
 }
