@@ -10,10 +10,17 @@ const PROVIDER = 'https://api.livetennisapi.com/api/public/v1/matches?tour=wta&s
 const blocked = {};            // per-key: epoch ms until which that key must not be used
 let memo = null;               // last good provider response
 let memoAt = 0;
-const MEMO_MS = 150000;        // reuse a provider answer for 2.5 min so the page refreshes about every 3 minutes
+let memoTtl = 150000;          // how long the current provider answer is reused (adaptive, see below)
+// Update rhythm: about every 2 minutes while a match is live, easing to about every 3 minutes once 50 of the day's 95 calls are used
+// (free plan = 100 requests/day), and every 4 minutes while we are only waiting for a match to start.
+function nextTtl(body, calls) {
+  const live = !!(body && Array.isArray(body.data) && body.data.some((x) => !x.is_doubles));
+  if (!live) return 240000;
+  return calls < 50 ? 105000 : 170000;
+}
 let dayKey = '';               // per-instance daily call counter (free plan = 100/day)
 let dayCalls = 0;
-const DAY_LIMIT = 90;
+const DAY_LIMIT = 95;
 const seen = {};               // id -> last live snapshot seen on this instance (kept so a finished match never resets to 'upcoming')
 
 function norm(s) {
@@ -48,7 +55,7 @@ function windowOpen(matches, now) {
 // rate-limited (429) or rejected (401/403) is parked, and the next key is used instead.
 async function fetchProvider(keys) {
   const now = Date.now();
-  if (memo && now - memoAt < MEMO_MS) return memo;
+  if (memo && now - memoAt < memoTtl) return memo;
   const today = new Date(now).toISOString().slice(0, 10);
   if (today !== dayKey) { dayKey = today; dayCalls = 0; }
   if (dayCalls >= DAY_LIMIT) throw new Error('daily call guard');
@@ -75,6 +82,7 @@ async function fetchProvider(keys) {
     if (!r.ok) { lastErr = new Error('provider ' + r.status); continue; }
     memo = await r.json();
     memoAt = now;
+    memoTtl = nextTtl(memo, dayCalls);
     return memo;
   }
   throw lastErr;
@@ -429,7 +437,7 @@ module.exports = async (req, res) => {
     if (keys.length && windowOpen(data.matches, Date.now())) {
       data = await overlayLive(data, keys);
       primaryOk = true;
-      ttl = 180; // 3 minutes (about 20 provider calls/hour per region)
+      ttl = Math.ceil(memoTtl / 1000); // matches the provider memo: about 2 minutes while live
     }
   } catch (e) {
     data.source = 'static';
@@ -439,7 +447,7 @@ module.exports = async (req, res) => {
     await citoStats(data);
     if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
   } catch (e) { /* Cito is best-effort */ }
-  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=20');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).json(data);
 };

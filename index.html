@@ -1461,7 +1461,7 @@
     }
     function fetchFeed(i){
       // The API URL must stay constant so the server/CDN cache protects the provider quota; only the static file is cache-busted.
-      return fetch(i===0?FEEDS[i]+'?b='+Math.floor(Date.now()/180000):FEEDS[i]+'?t='+Date.now(),i===0?{}:{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
+      return fetch(i===0?FEEDS[i]+'?b='+Math.floor(Date.now()/105000):FEEDS[i]+'?t='+Date.now(),i===0?{}:{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('feed'); return r.text(); })
         .catch(function(e){ if(i+1<FEEDS.length) return fetchFeed(i+1); throw e; });
     }
     function setDate(){ try{ var el=document.getElementById('dateline'); if(el) el.innerHTML=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Dubai',weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(new Date())+' &mdash; Dubai &middot; WTA Finals, Indian Wells'; }catch(e){} }
