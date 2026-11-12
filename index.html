@@ -1340,47 +1340,67 @@
       return f(x,y);
     }
     function wpPts(v){ var m={'0':0,'15':1,'30':2,'40':3}; v=String(v==null?'':v).toUpperCase(); return v==='AD'?4:(m[v]!==undefined?m[v]:0); }
-    function wpWin(m){
-      var hold=wpGame(0,0,WP_PS), mem={};
+    // Strength gap from world rankings, turned into a small shift d in the chance of winning a point (0 = evenly matched).
+    function wpPrior(m){ // chance P1 wins the match before a ball is hit, from rankings (about 0.35 per log-rank step)
+      var r1=m.p1&&m.p1.rank, r2=m.p2&&m.p2.rank; if(!r1||!r2) return 0.5;
+      return 1/(1+Math.exp(-0.35*(Math.log(r2)-Math.log(r1))));
+    }
+    function wpModel(d){
+      var hold1=wpGame(0,0,WP_PS+d), hold2=wpGame(0,0,WP_PS-d), memo={};
+      function tb(p){ // race to 7 (win by 2) at point chance p, serves ignored
+        var mm={}; function f(a,b){ if(a>=7&&a-b>=2) return 1; if(b>=7&&b-a>=2) return 0;
+          if(a>=6&&b>=6){ var q=p*p/(p*p+(1-p)*(1-p)); return a===b?q:(a>b?p+(1-p)*q:p*q); }
+          var k=a+','+b; if(mm[k]!==undefined) return mm[k]; return mm[k]=p*f(a+1,b)+(1-p)*f(a,b+1); } return f(0,0); }
+      var tbP=tb(0.5+d);
       function setP(g1,g2,srv){ // chance P1 wins the set, srv = who serves the next game
-        if((g1>=6&&g1-g2>=2)||g1===7) return 1; if((g2>=6&&g2-g1>=2)||g2===7) return 0; if(g1===6&&g2===6) return 0.5;
-        var k=g1+'-'+g2+srv; if(mem[k]!==undefined) return mem[k];
+        if((g1>=6&&g1-g2>=2)||g1===7) return 1; if((g2>=6&&g2-g1>=2)||g2===7) return 0; if(g1===6&&g2===6) return tbP;
+        var k=g1+'-'+g2+srv; if(memo[k]!==undefined) return memo[k];
         var o=srv==='p1'?'p2':'p1', a=setP(g1+1,g2,o), b=setP(g1,g2+1,o);
-        return mem[k]= srv==='p1' ? hold*a+(1-hold)*b : hold*b+(1-hold)*a;
+        return memo[k]= srv==='p1' ? hold1*a+(1-hold1)*b : (1-hold2)*a+hold2*b;
       }
+      var s=(setP(0,0,'p1')+setP(0,0,'p2'))/2;
+      return {setP:setP,s:s,hold1:hold1,hold2:hold2,fresh:s*s*(3-2*s)};
+    }
+    function wpSolve(prior){ // find d so that the pre-match win chance equals the ranking prior
+      var lo=-0.12, hi=0.12, i; for(i=0;i<22;i++){ var mid=(lo+hi)/2; if(wpModel(mid).fresh<prior) lo=mid; else hi=mid; } return (lo+hi)/2;
+    }
+    function wpWin(m,info){
+      var prior=wpPrior(m), d=prior===0.5?0:wpSolve(prior), M=wpModel(d), s=M.s;
+      if(info){ info.prior=prior; info.d=d; }
       var sets=(m.sets||[]).slice(), w1=0, w2=0, cur=sets.length?sets.pop():{p1:0,p2:0};
       function done(x){ return (x.p1>=6&&x.p1-x.p2>=2)||x.p1===7||(x.p2>=6&&x.p2-x.p1>=2)||x.p2===7; }
       sets.forEach(function(x){ if(x.p1>x.p2) w1++; else w2++; });
       var pc;
-      if(done(cur)){ if(cur.p1>cur.p2) w1++; else w2++; pc=0.5; cur=null; }
-      else if(cur.p1===6&&cur.p2===6) pc=0.5;
+      if(done(cur)){ if(cur.p1>cur.p2) w1++; else w2++; pc=s; cur=null; }
+      else if(cur.p1===6&&cur.p2===6) pc=M.setP(6,6,'p1');
       else {
         var srv=m.server, pts=m.points||['0','0'], a=wpPts(pts[0]), b=wpPts(pts[1]);
         if(a===4) b=3; else if(b===4) a=3;
         var inGame=(a+b>0), calc=function(sv){
           var o=sv==='p1'?'p2':'p1', pg;
-          if(!inGame) return setP(cur.p1,cur.p2,sv);
-          pg= sv==='p1' ? wpGame(a,b,WP_PS) : 1-wpGame(b,a,WP_PS);
-          return pg*setP(cur.p1+1,cur.p2,o)+(1-pg)*setP(cur.p1,cur.p2+1,o);
+          if(!inGame) return M.setP(cur.p1,cur.p2,sv);
+          pg= sv==='p1' ? wpGame(a,b,WP_PS+d) : 1-wpGame(b,a,WP_PS-d);
+          return pg*M.setP(cur.p1+1,cur.p2,o)+(1-pg)*M.setP(cur.p1,cur.p2+1,o);
         };
         pc = (srv==='p1'||srv==='p2') ? calc(srv) : (calc('p1')+calc('p2'))/2;
       }
-      if(w1===0&&w2===0) return pc*0.75+(1-pc)*0.25;
-      if(w1===1&&w2===0) return pc+(1-pc)*0.5;
-      if(w1===0&&w2===1) return pc*0.5;
+      if(w1===0&&w2===0) return pc*(1-(1-s)*(1-s))+(1-pc)*(s*s);
+      if(w1===1&&w2===0) return pc+(1-pc)*s;
+      if(w1===0&&w2===1) return pc*s;
       return w1>w2?1:(w2>w1?0:pc);
     }
     function wpRender(d){
       var box=document.getElementById('winPredictor'); if(!box) return;
       var m=(d.matches||[]).filter(function(x){return x.status==='live';})[0];
       if(!m){ box.hidden=true; box.innerHTML=''; return; }
-      var p=wpWin(m), a=Math.min(99,Math.max(1,Math.round(p*100))), b=100-a;
+      var inf={}, p=wpWin(m,inf), a=Math.min(99,Math.max(1,Math.round(p*100))), b=100-a, ranked=!!(m.p1.rank&&m.p2.rank), pre=Math.round(inf.prior*100);
+      function lab(x){ return x.name+(x.rank?' <small style="opacity:.7;font-size:12px;">(WTA #'+x.rank+')</small>':''); }
       var sc=(m.sets||[]).map(function(x){return x.p1+'-'+x.p2;}).join(', ');
       box.innerHTML='<div class="wp-head"><span>&#127919; WIN PREDICTOR &middot; LIVE</span><span class="wp-score">'+(sc?sc+' &middot; ':'')+m.p1.name+' v '+m.p2.name+'</span></div>'+
-        '<div class="wp-row"><span>'+m.p1.name+'</span><b>'+a+'%</b></div>'+
+        '<div class="wp-row"><span>'+lab(m.p1)+'</span><b>'+a+'%</b></div>'+
         '<div class="wp-bar"><i class="wp-a" style="width:'+a+'%"></i><i class="wp-b" style="width:'+b+'%"></i></div>'+
-        '<div class="wp-row"><span>'+m.p2.name+'</span><b>'+b+'%</b></div>'+
-        '<p class="wp-note">Estimate from the live score, games, serve and points, assuming the two players are evenly matched. It updates with each feed refresh. Not betting odds.</p>';
+        '<div class="wp-row"><span>'+lab(m.p2)+'</span><b>'+b+'%</b></div>'+
+        '<p class="wp-note">'+(ranked?'Starts from the world rankings (pre-match estimate '+pre+'% for '+m.p1.name+', '+(100-pre)+'% for '+m.p2.name+') and then moves with the live score, games, serve and points.':'Estimate from the live score, games, serve and points, assuming the two players are evenly matched.')+' It updates with each feed refresh. Not betting odds.</p>';
       box.hidden=false;
     }
     function render(d){

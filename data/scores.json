@@ -12,12 +12,14 @@
       "p1": {
         "name": "Kostyuk",
         "flag": "🇺🇦",
-        "full": "Marta Kostyuk"
+        "full": "Marta Kostyuk",
+        "rank": 10
       },
       "p2": {
         "name": "Noskova",
         "flag": "🇨🇿",
-        "full": "Linda Noskova"
+        "full": "Linda Noskova",
+        "rank": 8
       },
       "sets": [
         {
@@ -42,12 +44,14 @@
       "p1": {
         "name": "Gauff",
         "flag": "🇺🇸",
-        "full": "Coco Gauff"
+        "full": "Coco Gauff",
+        "rank": 4
       },
       "p2": {
         "name": "Pegula",
         "flag": "🇺🇸",
-        "full": "Jessica Pegula"
+        "full": "Jessica Pegula",
+        "rank": 5
       },
       "sets": [
         {
@@ -77,12 +81,14 @@
       "p1": {
         "name": "Sabalenka",
         "flag": "🇧🇾",
-        "full": "Aryna Sabalenka"
+        "full": "Aryna Sabalenka",
+        "rank": 2
       },
       "p2": {
         "name": "Muchová",
         "flag": "🇨🇿",
-        "full": "Karolina Muchová"
+        "full": "Karolina Muchová",
+        "rank": 7
       },
       "sets": [
         {
@@ -108,12 +114,14 @@
       "p1": {
         "name": "Andreeva",
         "flag": "🇷🇺",
-        "full": "Mirra Andreeva"
+        "full": "Mirra Andreeva",
+        "rank": 3
       },
       "p2": {
         "name": "Svitolina",
         "flag": "🇺🇦",
-        "full": "Elina Svitolina"
+        "full": "Elina Svitolina",
+        "rank": 6
       },
       "sets": [
         {
@@ -138,12 +146,14 @@
       "p1": {
         "name": "Kostyuk",
         "flag": "🇺🇦",
-        "full": "Marta Kostyuk"
+        "full": "Marta Kostyuk",
+        "rank": 10
       },
       "p2": {
         "name": "Pegula",
         "flag": "🇺🇸",
-        "full": "Jessica Pegula"
+        "full": "Jessica Pegula",
+        "rank": 5
       },
       "sets": [
         {
@@ -168,12 +178,14 @@
       "p1": {
         "name": "Gauff",
         "flag": "🇺🇸",
-        "full": "Coco Gauff"
+        "full": "Coco Gauff",
+        "rank": 4
       },
       "p2": {
         "name": "Noskova",
         "flag": "🇨🇿",
-        "full": "Linda Noskova"
+        "full": "Linda Noskova",
+        "rank": 8
       },
       "sets": [
         {
@@ -198,12 +210,14 @@
       "p1": {
         "name": "Svitolina",
         "flag": "🇺🇦",
-        "full": "Elina Svitolina"
+        "full": "Elina Svitolina",
+        "rank": 6
       },
       "p2": {
         "name": "Muchová",
         "flag": "🇨🇿",
-        "full": "Karolína Muchová"
+        "full": "Karolína Muchová",
+        "rank": 7
       },
       "sets": [
         {
@@ -232,12 +246,14 @@
       "p1": {
         "name": "Sabalenka",
         "flag": "🇧🇾",
-        "full": "Aryna Sabalenka"
+        "full": "Aryna Sabalenka",
+        "rank": 2
       },
       "p2": {
         "name": "Andreeva",
         "flag": "🇷🇺",
-        "full": "Mirra Andreeva"
+        "full": "Mirra Andreeva",
+        "rank": 3
       },
       "sets": [
         {
@@ -262,12 +278,14 @@
       "p1": {
         "name": "Kostyuk",
         "flag": "🇺🇦",
-        "full": "Marta Kostyuk"
+        "full": "Marta Kostyuk",
+        "rank": 10
       },
       "p2": {
         "name": "Gauff",
         "flag": "🇺🇸",
-        "full": "Coco Gauff"
+        "full": "Coco Gauff",
+        "rank": 4
       },
       "sets": [],
       "start": "2026-11-12T20:00:00Z",
@@ -283,12 +301,14 @@
       "p1": {
         "name": "Pegula",
         "flag": "🇺🇸",
-        "full": "Jessica Pegula"
+        "full": "Jessica Pegula",
+        "rank": 5
       },
       "p2": {
         "name": "Noskova",
         "flag": "🇨🇿",
-        "full": "Linda Noskova"
+        "full": "Linda Noskova",
+        "rank": 8
       },
       "sets": [],
       "start": "2026-11-12T21:10:00Z",
