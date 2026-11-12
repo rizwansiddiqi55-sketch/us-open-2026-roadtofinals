@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T21:25:42Z",
+  "updated": "2026-11-12T21:58:47Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -271,7 +271,7 @@
     {
       "id": "kostyuk-gauff",
       "order": 9,
-      "status": "upcoming",
+      "status": "final",
       "court": "Court 2",
       "label": "FRI NOV 13",
       "time": "12:00 AM UAE (EST.)",
@@ -287,7 +287,16 @@
         "full": "Coco Gauff",
         "rank": 4
       },
-      "sets": [],
+      "sets": [
+        {
+          "p1": 4,
+          "p2": 6
+        },
+        {
+          "p1": 5,
+          "p2": 7
+        }
+      ],
       "start": "2026-11-12T20:00:00Z",
       "dayText": "Day Five of the WTA Finals"
     },
