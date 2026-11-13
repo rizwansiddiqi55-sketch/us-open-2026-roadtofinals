@@ -1742,7 +1742,6 @@
     function ensureElements(d){
       var panels=[].slice.call(document.querySelectorAll('.sf-preview-panel[data-match]'));
       d.matches.forEach(function(m){
-        if(m.status==='final' && !m.fromCito) return;
         var ms=Date.parse(m.start); if(!ms) return;
         var uae=wall(ms,4), pt=wall(ms,-8), ny=wall(ms,-5), est=/EST/i.test(m.time||'');
         var rnd=m.round||'Group stage', badge=(m.roundCode==='F'?'FINAL':(m.roundCode==='SF'?'SEMI':'GROUP'));
