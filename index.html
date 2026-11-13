@@ -1190,12 +1190,13 @@
       <tbody>
         <tr><td>1</td><td>Mirra Andreeva (3) &mdash; <strong>advances as group winner</strong></td><td>1&ndash;0</td><td>2&ndash;0 (100%)</td><td>12&ndash;4 (75%)</td></tr>
         <tr><td>2</td><td>Aryna Sabalenka (2)</td><td>1&ndash;0</td><td>2&ndash;0 (100%)</td><td>14&ndash;11 (56%)</td></tr>
-        <tr><td>3</td><td>Karol&iacute;na Muchov&aacute; (7) &mdash; <strong>eliminated</strong></td><td>0&ndash;1</td><td>0&ndash;2 (0%)</td><td>11&ndash;14 (44%)</td></tr>
+        <tr><td>3</td><td>Karol&iacute;na Muchov&aacute; (7) &mdash; <strong>withdrew (illness)</strong></td><td>0&ndash;1</td><td>0&ndash;2 (0%)</td><td>11&ndash;14 (44%)</td></tr>
         <tr><td>4</td><td>Elina Svitolina (6)</td><td>0&ndash;1</td><td>0&ndash;2 (0%)</td><td>4&ndash;12 (25%)</td></tr>
+              <tr><td>5</td><td>Diana Shnaider (alt) &mdash; <strong>replaces Muchov&aacute;</strong></td><td>0&ndash;0</td><td>0&ndash;0 (0%)</td><td>0&ndash;0 (0%)</td></tr>
       </tbody>
     </table>
 
-    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Ranked by round-robin record, then set and game record. Andreeva has won the group. Svitolina and Sabalenka, both 1&ndash;1, play for the No. 2 spot on Saturday, Nov 14 at about 1:10 AM UAE.</p>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">Ranked by round-robin record, then set and game record. Andreeva has won the group. Svitolina and Sabalenka, both 1&ndash;1, play for the No. 2 spot on Saturday, Nov 14 at about 1:10 AM UAE. Karol&iacute;na Muchov&aacute; has withdrawn from the WTA Finals with an illness and alternate Diana Shnaider takes her place, starting with Saturday&rsquo;s match against Andreeva.</p>
   </section>
 
   <section id="weather">
@@ -1288,6 +1289,11 @@
       <span class="badge badge-us">FRIDAY &middot; NOV 13</span>
       <h3>Pegula Faces Group Leader Noskova</h3>
       <p>Jessica Pegula plays Group 1 leader Linda Noskova on Court 2 at an estimated 1:10 AM UAE on Friday, November 13.</p>
+    </div>
+    <div class="watch-item">
+      <span class="badge badge-story">WITHDRAWAL &middot; GROUP 2</span>
+      <h3>Muchov&aacute; Withdraws With Illness; Shnaider Steps In</h3>
+      <p>Karol&iacute;na Muchov&aacute; has withdrawn from the WTA Finals because of illness, and alternate Diana Shnaider replaces her in Group 2. Shnaider plays Mirra Andreeva on Court 2 at 12:00 AM UAE on Saturday, November 14. Muchov&aacute; had lost her first two group matches, to Sabalenka and Svitolina.</p>
     </div>
   </section>
 
@@ -1632,7 +1638,7 @@
       [].slice.call(document.querySelectorAll('table.standings')).forEach(function(tb){
         var body=tb.querySelector('tbody'); if(!body) return;
         var rows=[].slice.call(body.querySelectorAll('tr')).map(function(tr){
-          var tds=tr.querySelectorAll('td'), txt=plainName(tds[1].textContent), key=null;
+          var tds=tr.querySelectorAll('td'), txt=plainName(tds[1].textContent.split('\u2014')[0]), key=null;   // match on the player's own name, not on notes after the dash
           Object.keys(st).forEach(function(k){ if(txt.indexOf(k)>=0) key=k; });
           return {tr:tr,key:key,name:tds[1].innerHTML};
         }).filter(function(r){return r.key;});

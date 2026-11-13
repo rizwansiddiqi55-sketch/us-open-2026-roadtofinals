@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T22:03:54Z",
+  "updated": "2026-11-13T20:12:50Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -324,7 +324,7 @@
       "dayText": "Day Five of the WTA Finals"
     },
     {
-      "id": "andreeva-muchova",
+      "id": "andreeva-shnaider",
       "order": 11,
       "status": "upcoming",
       "court": "Court 2",
@@ -337,10 +337,11 @@
         "rank": 3
       },
       "p2": {
-        "name": "Muchová",
-        "flag": "🇨🇿",
-        "full": "Karolína Muchová",
-        "rank": 7
+        "name": "Shnaider",
+        "flag": "🇷🇺",
+        "full": "Diana Shnaider",
+        "ioc": "RUS",
+        "country": "Russia"
       },
       "sets": [],
       "start": "2026-11-13T20:00:00.000Z",
