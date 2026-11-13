@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T20:41:55Z",
+  "updated": "2026-11-14T00:10:00Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -340,7 +340,7 @@
     {
       "id": "andreeva-shnaider",
       "order": 11,
-      "status": "live",
+      "status": "final",
       "court": "Court 2",
       "label": "SAT NOV 14",
       "time": "12:00 AM UAE",
@@ -359,8 +359,12 @@
       },
       "sets": [
         {
-          "p1": 0,
-          "p2": 0
+          "p1": 6,
+          "p2": 2
+        },
+        {
+          "p1": 6,
+          "p2": 1
         }
       ],
       "start": "2026-11-13T20:00:00.000Z",
@@ -371,7 +375,7 @@
     {
       "id": "sabalenka-svitolina",
       "order": 12,
-      "status": "upcoming",
+      "status": "final",
       "court": "Court 2",
       "label": "SAT NOV 14",
       "time": "1:10 AM UAE (EST.)",
@@ -387,7 +391,20 @@
         "full": "Elina Svitolina",
         "rank": 6
       },
-      "sets": [],
+      "sets": [
+        {
+          "p1": 3,
+          "p2": 6
+        },
+        {
+          "p1": 6,
+          "p2": 3
+        },
+        {
+          "p1": 1,
+          "p2": 6
+        }
+      ],
       "start": "2026-11-13T21:10:00.000Z",
       "dayText": "Day Six of the WTA Finals",
       "roundCode": "RR",
@@ -418,10 +435,35 @@
       "dayText": "Day Seven of the WTA Finals",
       "roundCode": "SF",
       "round": "Semifinal"
+    },
+    {
+      "id": "noskova-svitolina-sf",
+      "order": 14,
+      "status": "upcoming",
+      "court": "Court 2",
+      "label": "SUN NOV 15",
+      "time": "Time to be confirmed",
+      "timeTbc": true,
+      "p1": {
+        "name": "Noskova",
+        "flag": "🇨🇿",
+        "full": "Linda Noskova",
+        "rank": 8
+      },
+      "p2": {
+        "name": "Svitolina",
+        "flag": "🇺🇦",
+        "full": "Elina Svitolina",
+        "rank": 6
+      },
+      "sets": [],
+      "start": "2026-11-15T00:00:00.000Z",
+      "dayText": "Day Seven of the WTA Finals",
+      "roundCode": "SF",
+      "round": "Semifinal"
     }
   ],
-  "headline": "Diana Shnaider Replaces Karolína Muchová at the WTA Finals",
-  "dekLead": "Karolína Muchová withdrew from the tournament with an illness, and alternate Diana Shnaider takes her place in Group 2, playing Mirra Andreeva first.",
-  "headlineUntil": "2026-11-14T12:00:00Z",
-  "headlineUntilSetOf": "andreeva-shnaider"
+  "headline": "Svitolina Knocks Out Sabalenka as Andreeva Tops Group 2",
+  "dekLead": "Elina Svitolina beat Aryna Sabalenka 6-3, 3-6, 6-1 to take the second semifinal place from Group 2. Mirra Andreeva won the group with a 6-2, 6-1 win over Diana Shnaider.",
+  "headlineUntil": "2026-11-14T12:00:00Z"
 }
