@@ -1906,7 +1906,9 @@
       }
       return lines;
     }
+    var SHOW_COMMENTARY=false;   // switched off for now; set to true to bring the live commentary card back
     function commentaryUpdate(d){
+      if(!SHOW_COMMENTARY){ [].slice.call(document.querySelectorAll('.cm')).forEach(function(x){ x.remove(); }); return; }
       var st=cmLoad(), now=Date.now(), changed=false, show=null;
       // forget matches older than a day
       Object.keys(st).forEach(function(id){ if(now-(st[id].at||0)>24*3600000){ delete st[id]; changed=true; } });
