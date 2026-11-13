@@ -1539,7 +1539,10 @@
       } else return;
       // Hand-set headline and lead-in sentence (data/scores.json: headline, dekLead, headlineUntil) take priority until they expire.
       var ovr=d.headline && (!d.headlineUntil || Date.now()<Date.parse(d.headlineUntil));
-      if(ovr){ head=d.headline; title=d.headline; }
+      // the hand-set headline gives way to the live headline once the first set of the named match is over
+      var setOf=d.headlineUntilSetOf && d.matches.filter(function(x){return x.id===d.headlineUntilSetOf;})[0];
+      var headOk=ovr && !(setOf && (setOf.status==='final' || (setOf.sets&&setOf.sets[0]&&cmSetDone(setOf.sets[0]))));
+      if(headOk){ head=d.headline; title=d.headline; }
       var hl=document.getElementById('mainHeadline'); if(hl) hl.textContent=head;
       document.title='WTA Finals 2026 — '+title;
       var parts=['The season-ending WTA Finals run November 8–15 at Indian Wells.'];
