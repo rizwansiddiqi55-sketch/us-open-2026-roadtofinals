@@ -190,18 +190,38 @@ const CITO_TOURNAMENT = 'wta_2026_808'; // Indian Wells Finals
 const finals = {};                       // id -> confirmed final (kept for the life of the instance)
 const cito = { blockedUntil: 0, remaining: null, done: null, doneAt: 0, live: null, liveAt: 0 };
 
+// Two Cito keys (CITO_API_KEY, CITO_API_KEY2) share the work: each has its own monthly budget and block timer, and the one with the most budget left is used first.
+const citoKeyState = [{ remaining: null, blockedUntil: 0 }, { remaining: null, blockedUntil: 0 }];
+function citoKeyList() { return [process.env.CITO_API_KEY, process.env.CITO_API_KEY2].map((k, i) => ({ key: k, st: citoKeyState[i] })).filter((x) => x.key); }
+function citoSummary() {   // cito.remaining / blockedUntil describe the best usable key, so the budget guards elsewhere keep working
+  const list = citoKeyList(); if (!list.length) return;
+  const now = Date.now(), usable = list.filter((x) => now >= x.st.blockedUntil);
+  cito.blockedUntil = usable.length ? 0 : Math.min.apply(null, list.map((x) => x.st.blockedUntil));
+  const pool = usable.length ? usable : list;
+  cito.remaining = pool.some((x) => x.st.remaining === null) ? null : Math.max.apply(null, pool.map((x) => x.st.remaining));
+}
+
 async function citoGet(path) {
-  const key = process.env.CITO_API_KEY;
-  if (!key) throw new Error('no cito key');
-  if (Date.now() < cito.blockedUntil) throw new Error('cito blocked');
-  if (cito.remaining !== null && cito.remaining < 30) throw new Error('cito monthly budget protected');
-  const r = await fetch(CITO + path, { headers: { 'x-api-key': key } });
-  const rem = r.headers && r.headers.get ? r.headers.get('x-ratelimit-monthly-remaining') : null;
-  if (rem !== null && rem !== undefined && rem !== '') cito.remaining = Number(rem);
-  if (r.status === 429) { cito.blockedUntil = Date.now() + 30 * 60 * 1000; throw new Error('cito rate limited'); }
-  if (r.status === 401 || r.status === 403) { cito.blockedUntil = Date.now() + 60 * 60 * 1000; throw new Error('cito key rejected'); }
-  if (!r.ok) throw new Error('cito ' + r.status);
-  return r.json();
+  const list = citoKeyList();
+  if (!list.length) throw new Error('no cito key');
+  const now = Date.now();
+  const order = list.filter((x) => now >= x.st.blockedUntil && (x.st.remaining === null || x.st.remaining >= 30))
+    .sort((a, b) => (b.st.remaining === null ? 1e9 : b.st.remaining) - (a.st.remaining === null ? 1e9 : a.st.remaining));
+  if (!order.length) { citoSummary(); throw new Error(list.every((x) => now < x.st.blockedUntil) ? 'cito blocked' : 'cito monthly budget protected'); }
+  let lastErr = new Error('cito failed');
+  for (const x of order) {
+    try {
+      const r = await fetch(CITO + path, { headers: { 'x-api-key': x.key } });
+      const rem = r.headers && r.headers.get ? r.headers.get('x-ratelimit-monthly-remaining') : null;
+      if (rem !== null && rem !== undefined && rem !== '') x.st.remaining = Number(rem);
+      if (r.status === 429) { x.st.blockedUntil = Date.now() + 30 * 60 * 1000; lastErr = new Error('cito rate limited'); continue; }
+      if (r.status === 401 || r.status === 403) { x.st.blockedUntil = Date.now() + 60 * 60 * 1000; lastErr = new Error('cito key rejected'); continue; }
+      if (!r.ok) { lastErr = new Error('cito ' + r.status); continue; }
+      const j = await r.json(); citoSummary(); return j;
+    } catch (e) { lastErr = e; }
+  }
+  citoSummary();
+  throw lastErr;
 }
 
 async function citoCompleted() {
@@ -238,7 +258,7 @@ function findMatch(data, item) {
 }
 
 async function citoAssist(data, primaryOk) {
-  if (!process.env.CITO_API_KEY) return;
+  if (!citoKeyList().length) return;
   const now = Date.now();
   const stale = data.matches.filter((m) => m.status === 'live' && !m.live); // shown live, not confirmed live by main feed
   // Started long ago (or seen live earlier) but still not final: ask Cito whether it has finished.
@@ -348,7 +368,7 @@ function fromCito(it, data) {
 }
 
 async function citoSchedule(data) {
-  if (!process.env.CITO_API_KEY) return;
+  if (!citoKeyList().length) return;
   // ESPN already supplies the schedule; spend Cito's limited monthly requests only if ESPN was tried and returned nothing.
   if (!(espn.at > 0 && espn.comps.length === 0)) return;
   const now = Date.now();
@@ -587,7 +607,7 @@ function statRows(item, same) {
   return rows;
 }
 async function citoStats(data) {
-  if (!process.env.CITO_API_KEY) return;
+  if (!citoKeyList().length) return;
   const live = data.matches.filter((m) => m.status === 'live' && m.live);
   if (live.length) {
     const now = Date.now();
