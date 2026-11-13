@@ -627,6 +627,10 @@ async function citoStats(data) {
     }
   }
   data.matches.forEach((m) => { if (m.status === 'live' && m.live && statsMemo[m.id]) m.stats = statsMemo[m.id]; });
+  // Keep the last live stats on the finished match until the next match goes live.
+  if (!data.matches.some((m) => m.status === 'live')) {
+    data.matches.forEach((m) => { if (m.status === 'final' && statsMemo[m.id] && !m.matchStats) m.stats = statsMemo[m.id]; });
+  }
 }
 
 module.exports = async (req, res) => {

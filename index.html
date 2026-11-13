@@ -1718,7 +1718,19 @@
     // ---- Live match stats card (from the Cito live feed, refreshed by the server about every 5 minutes) ----
     function statsRender(d){
       [].slice.call(document.querySelectorAll('.ls')).forEach(function(x){ x.remove(); });
-      var m=(d.matches||[]).filter(function(x){return x.status==='live' && x.stats && x.stats.rows && x.stats.rows.length;})[0];
+      var hasStats=function(x){ return x && x.stats && x.stats.rows && x.stats.rows.length; };
+      var anyLive=(d.matches||[]).some(function(x){ return x.status==='live'; });
+      var m=(d.matches||[]).filter(function(x){return x.status==='live' && hasStats(x);})[0], old=false;
+      if(m){ try{ localStorage.setItem('wtaStatsLast',JSON.stringify({id:m.id,p1:m.p1,p2:m.p2,stats:m.stats})); }catch(e){} }
+      else if(!anyLive){
+        // No match is live: keep the last live stats on the finished match until the next match goes live
+        var fin=(d.matches||[]).filter(function(x){ return x.status==='final' && hasStats(x) && !x.matchStats; });
+        m=fin.length?fin.reduce(function(a,c){ return String(c.stats.at)>String(a.stats.at)?c:a; }):null;
+        if(!m){ try{ var sv=JSON.parse(localStorage.getItem('wtaStatsLast')||'null'); var fm=sv&&(d.matches||[]).filter(function(x){return x.id===sv.id && x.status==='final' && !x.matchStats;})[0]; if(fm&&hasStats(sv)){ m={id:sv.id,p1:fm.p1,p2:fm.p2,stats:sv.stats}; } }catch(e){} }
+        old=!!m;
+        if(m && document.querySelector('.sf-preview-panel[data-match="'+m.id+'"] .fsx')) return;   // the official final-stats card already covers this match
+      }
+      else { try{ localStorage.removeItem('wtaStatsLast'); }catch(e){} }
       if(!m) return;
       var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]'); if(!panel) return;
       var rows=m.stats.rows, byLabel={}; rows.forEach(function(r){ byLabel[r.label]=r; });
@@ -1728,11 +1740,11 @@
       var df=byLabel['Double faults']; if(df){ var f1=parseInt(df.p1,10)||0, f2=parseInt(df.p2,10)||0; if(Math.abs(f1-f2)>=2) parts.push((f1>f2?nm(m,'p1'):nm(m,'p2'))+' has '+Math.max(f1,f2)+' double faults'); }
       var when=''; try{ when=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit'}).format(new Date(m.stats.at))+' UAE'; }catch(e){}
       var box=document.createElement('div'); box.className='ls';
-      box.innerHTML='<div class="ls-head"><span>&#128202; LIVE MATCH STATS</span><span>'+(when?'updated '+when:'')+'</span></div>'+
+      box.innerHTML='<div class="ls-head"><span>&#128202; '+(old?'LAST MATCH STATS (FINAL)':'LIVE MATCH STATS')+'</span><span>'+(when?'updated '+when:'')+'</span></div>'+
         (parts.length?'<p class="ls-sum">'+parts.join('; ')+'.</p>':'')+
         '<div class="ls-names"><span>'+nm(m,'p1')+'</span><span>'+nm(m,'p2')+'</span></div>'+
         rows.map(function(r){ return '<div class="ls-row"><div class="ls-lab">'+r.label+'</div><div class="ls-vals"><span>'+r.p1+'</span><span>'+r.p2+'</span></div><div class="ls-bar"><i class="ls-a" style="width:'+r.w1+'%"></i><i class="ls-b" style="width:'+(100-r.w1)+'%"></i></div></div>'; }).join('')+
-        '<p class="ls-note">Match statistics from the Cito live feed. They refresh about every 5 minutes and can run about a minute behind the score.</p>';
+        '<p class="ls-note">'+(old?'Last live statistics for this match. They stay here until the next match goes live.':'Match statistics from the Cito live feed. They refresh about every 5 minutes and can run about a minute behind the score.')+'</p>';
       panel.parentNode.insertBefore(box,panel.nextSibling);
     }
 
