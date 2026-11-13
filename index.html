@@ -1640,6 +1640,7 @@
         var rows=[].slice.call(body.querySelectorAll('tr')).map(function(tr){
           var tds=tr.querySelectorAll('td'), txt=plainName(tds[1].textContent.split('\u2014')[0]), key=null;   // match on the player's own name, not on notes after the dash
           Object.keys(st).forEach(function(k){ if(txt.indexOf(k)>=0) key=k; });
+          if(!key){ var tk=txt.replace(/\([^)]*\)/g,' ').trim().split(/\s+/); key=tk[tk.length-1]||null; }   // a player with no match yet (e.g. a late replacement)
           return {tr:tr,key:key,name:tds[1].innerHTML};
         }).filter(function(r){return r.key;});
         if(rows.length<2) return;
