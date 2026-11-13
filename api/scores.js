@@ -19,7 +19,7 @@ function nextTtl(body, calls) {
   return calls < 50 ? 105000 : 170000;
 }
 let dayKey = '';               // per-instance daily call counter (free plan = 100/day)
-let dayCalls = 0;
+let dayCalls = [];             // calls made today, per key (each key has its own daily allowance)
 const DAY_LIMIT = 95;
 const seen = {};               // id -> last live snapshot seen on this instance (kept so a finished match never resets to 'upcoming')
 
@@ -51,21 +51,21 @@ function windowOpen(matches, now) {
   });
 }
 
-// Tries each configured key in order (TENNIS_API_KEY, then TENNIS_API_KEY2). A key that is
+// Tries each configured key in order (TENNIS_API_KEY, then TENNIS_API_KEY2). A key that has used its daily allowance or is
 // rate-limited (429) or rejected (401/403) is parked, and the next key is used instead.
 async function fetchProvider(keys) {
   const now = Date.now();
   if (memo && now - memoAt < memoTtl) return memo;
   const today = new Date(now).toISOString().slice(0, 10);
-  if (today !== dayKey) { dayKey = today; dayCalls = 0; }
-  if (dayCalls >= DAY_LIMIT) throw new Error('daily call guard');
-  let lastErr = new Error('no usable key');
+  if (today !== dayKey) { dayKey = today; dayCalls = []; }
+  let lastErr = new Error('daily call guard');
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
     if (now < (blocked[i] || 0)) continue;
+    if ((dayCalls[i] || 0) >= DAY_LIMIT) continue;            // this key has used its allowance; try the next one
     let r;
     try {
-      dayCalls++;
+      dayCalls[i] = (dayCalls[i] || 0) + 1;
       r = await fetch(PROVIDER, { headers: { Authorization: 'Bearer ' + key } });
     } catch (e) { lastErr = e; continue; }
     if (r.status === 429) {
@@ -82,7 +82,7 @@ async function fetchProvider(keys) {
     if (!r.ok) { lastErr = new Error('provider ' + r.status); continue; }
     memo = await r.json();
     memoAt = now;
-    memoTtl = nextTtl(memo, dayCalls);
+    memoTtl = nextTtl(memo, dayCalls[i]);
     return memo;
   }
   throw lastErr;
