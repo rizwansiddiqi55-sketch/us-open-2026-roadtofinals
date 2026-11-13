@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T20:15:43Z",
+  "updated": "2026-11-13T20:18:45Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -393,5 +393,8 @@
       "roundCode": "RR",
       "round": "Group stage"
     }
-  ]
+  ],
+  "headline": "Diana Shnaider Replaces Karolína Muchová at the WTA Finals",
+  "dekLead": "Karolína Muchová withdrew from the tournament with an illness, and alternate Diana Shnaider takes her place in Group 2, playing Mirra Andreeva first.",
+  "headlineUntil": "2026-11-14T12:00:00Z"
 }

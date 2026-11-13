@@ -1537,9 +1537,13 @@
       } else if(last){
         head=lastTxt+(last.dayText?' on '+last.dayText:''); title=lastTxt;
       } else return;
+      // Hand-set headline and lead-in sentence (data/scores.json: headline, dekLead, headlineUntil) take priority until they expire.
+      var ovr=d.headline && (!d.headlineUntil || Date.now()<Date.parse(d.headlineUntil));
+      if(ovr){ head=d.headline; title=d.headline; }
       var hl=document.getElementById('mainHeadline'); if(hl) hl.textContent=head;
       document.title='WTA Finals 2026 — '+title;
       var parts=['The season-ending WTA Finals run November 8–15 at Indian Wells.'];
+      if(ovr && d.dekLead) parts.push(d.dekLead);
       if(live) parts.push(live.body);
       var all=d.matches.slice().sort(function(a,b){return a.order-b.order;}), labels=[];
       all.forEach(function(x){ if(labels.indexOf(x.label)<0) labels.push(x.label); });
