@@ -1519,7 +1519,7 @@
 
     var DOWS={MON:'Monday',TUE:'Tuesday',WED:'Wednesday',THU:'Thursday',FRI:'Friday',SAT:'Saturday',SUN:'Sunday'};
     function dayName(label){ var p=label.split(' '); return (DOWS[p[0]]||p[0])+', November '+p[2]; }
-    function atTime(m){ var t=String(m.time||'').replace(/\s*UAE.*$/i,''); return (/EST/i.test(m.time||'')?'at about ':'at ')+t; }
+    function atTime(m){ if(m.timeTbc) return '(time to be confirmed)'; var t=String(m.time||'').replace(/\s*UAE.*$/i,''); return (/EST/i.test(m.time||'')?'at about ':'at ')+t; }
     function finalLine(m){
       var c1=0,c2=0; m.sets.forEach(function(x){ if(x.p1>x.p2)c1++; else c2++; });
       var w=c1>c2?'p1':'p2', l=other(w);
@@ -1749,11 +1749,11 @@
         if(!document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]')){
           var pn=document.createElement('div'); pn.className='sf-preview-panel'; pn.setAttribute('data-match',m.id);
           pn.innerHTML='<h2><span class="live-badge" style="background:var(--court-blue-mid);animation:none;">'+badge+'</span> &#127934; '+m.p1.name.toUpperCase()+' vs '+m.p2.name.toUpperCase()+'</h2>'+
-            '<p class="panel-sub">'+m.court+' &middot; '+uae.dow+' '+uae.mon+' '+uae.day+', '+(est?'about ':'')+uae.t+' UAE'+(est?' (estimated)':'')+' &middot; '+pt.dow+' '+(est?'about ':'')+pt.t+' Indian Wells &middot; '+ny.dow+' '+(est?'about ':'')+ny.t+' New York</p>'+
+            '<p class="panel-sub">'+m.court+' &middot; '+(m.timeTbc? uae.dow+' '+uae.mon+' '+uae.day+' (UAE date) &middot; time to be confirmed' : uae.dow+' '+uae.mon+' '+uae.day+', '+(est?'about ':'')+uae.t+' UAE'+(est?' (estimated)':'')+' &middot; '+pt.dow+' '+(est?'about ':'')+pt.t+' Indian Wells &middot; '+ny.dow+' '+(est?'about ':'')+ny.t+' New York')+'</p>'+
             '<div class="sf-matchup-row"><div class="sf-side"><div><span class="sf-flag">'+m.p1.flag+'</span><span class="sf-seed">'+(m.p1.country||m.p1.ioc||'')+'</span></div><div class="sf-player">'+fn(m,'p1')+'</div></div>'+
             '<div class="sf-vs">VS</div>'+
             '<div class="sf-side" style="text-align:right;"><div><span class="sf-seed">'+(m.p2.country||m.p2.ioc||'')+'</span><span class="sf-flag"> '+m.p2.flag+'</span></div><div class="sf-player">'+fn(m,'p2')+'</div></div>'+
-            '<div class="sf-meta"><span>'+rnd+' &middot; '+m.court+'</span><span class="uae">'+uae.dow+' '+uae.mon+' '+uae.day+', '+(est?'about ':'')+uae.t+' UAE</span></div></div>'+
+            '<div class="sf-meta"><span>'+rnd+' &middot; '+m.court+'</span><span class="uae">'+(m.timeTbc? uae.dow+' '+uae.mon+' '+uae.day+', time to be confirmed' : uae.dow+' '+uae.mon+' '+uae.day+', '+(est?'about ':'')+uae.t+' UAE')+'</span></div></div>'+
             (est?'<p style="font-size:12.5px;color:var(--ink-soft);font-style:italic;margin:10px 0 0;">The start time is an estimate, since it follows the earlier match on the same court.</p>':'');
           var lastP=panels.length?panels[panels.length-1]:null;
           if(lastP) lastP.parentNode.insertBefore(pn,lastP.nextSibling);
@@ -1765,7 +1765,7 @@
             var head=(DOWS[uae.dow.toUpperCase()]||uae.dow).toUpperCase()+', '+uae.mon.toUpperCase()+' '+uae.day, hdr=null;
             [].slice.call(tb.querySelectorAll('tr.day-row')).forEach(function(r){ if(r.textContent.indexOf(head)===0) hdr=r; });
             var tr=document.createElement('tr'); tr.setAttribute('data-match',m.id);
-            tr.innerHTML='<td>'+uae.dow+', '+uae.mon+' '+uae.day+' &middot; '+uae.t+(est?' (est.)':'')+'</td><td>'+pt.dow+' '+(est?'about ':'')+pt.t+'</td><td>'+m.court+': '+nm(m,'p1')+' vs '+nm(m,'p2')+(m.roundCode&&m.roundCode!=='RR'?' &mdash; '+rnd:'')+'</td>';
+            tr.innerHTML='<td>'+uae.dow+', '+uae.mon+' '+uae.day+' &middot; '+(m.timeTbc?'time TBC':uae.t+(est?' (est.)':''))+'</td><td>'+(m.timeTbc?'&mdash;':pt.dow+' '+(est?'about ':'')+pt.t)+'</td><td>'+m.court+': '+nm(m,'p1')+' vs '+nm(m,'p2')+(m.roundCode&&m.roundCode!=='RR'?' &mdash; '+rnd:'')+'</td>';
             if(!hdr){ hdr=document.createElement('tr'); hdr.className='day-row'; hdr.innerHTML='<td colspan="3">'+head+'</td>'; tb.appendChild(hdr); tb.appendChild(tr); }
             else { var after=hdr; while(after.nextElementSibling && !after.nextElementSibling.classList.contains('day-row')) after=after.nextElementSibling; after.parentNode.insertBefore(tr,after.nextSibling); }
           }
@@ -1775,7 +1775,7 @@
           if(items.length){
             var st=document.createElement('div'); st.className='watch-item'; st.setAttribute('data-match',m.id);
             var sub=m.roundCode==='F'?'Title match':(m.roundCode==='SF'?'Semifinal':rnd);
-            st.innerHTML='<span class="badge badge-us">'+uae.dow.toUpperCase()+' &middot; '+uae.mon.toUpperCase()+' '+uae.day+'</span><h3>'+nm(m,'p1')+' Meets '+nm(m,'p2')+' &mdash; '+sub+'</h3><p>'+fn(m,'p1')+' and '+fn(m,'p2')+' meet in the '+(m.roundCode&&m.roundCode!=='RR'?sub.toLowerCase():'group stage')+' on '+m.court+' '+atTime(m)+' UAE on '+dayName(m.label)+'.</p>';
+            st.innerHTML='<span class="badge badge-us">'+uae.dow.toUpperCase()+' &middot; '+uae.mon.toUpperCase()+' '+uae.day+'</span><h3>'+nm(m,'p1')+' Meets '+nm(m,'p2')+' &mdash; '+sub+'</h3><p>'+fn(m,'p1')+' and '+fn(m,'p2')+' meet in the '+(m.roundCode&&m.roundCode!=='RR'?sub.toLowerCase():'group stage')+' on '+m.court+' '+(m.timeTbc?'on '+dayName(m.label)+' (UAE date), time to be confirmed':atTime(m)+' UAE on '+dayName(m.label))+'.</p>';
             var lastS=items[items.length-1]; lastS.parentNode.insertBefore(st,lastS.nextSibling);
           }
         }
@@ -1807,7 +1807,7 @@
     }
     function googleLink(m){ var st=Date.parse(m.start); return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(calTitle(m))+'&dates='+icsDate(st)+'/'+icsDate(st+2*3600000)+'&details='+encodeURIComponent(calDesc(m))+'&location='+encodeURIComponent('Indian Wells Tennis Garden, '+m.court); }
     function addCalendar(d){
-      var now=Date.now(), up=d.matches.filter(function(m){ return m.status==='upcoming' && m.start && Date.parse(m.start)>now-3600000; });
+      var now=Date.now(), up=d.matches.filter(function(m){ return m.status==='upcoming' && m.start && !m.timeTbc && Date.parse(m.start)>now-3600000; });
       var byId={}; up.forEach(function(m){ byId[m.id]=m; });
       [].slice.call(document.querySelectorAll('.cal-row')).forEach(function(r){ if(!byId[r.getAttribute('data-for')]) r.remove(); });
       up.forEach(function(m){
@@ -1920,7 +1920,7 @@
       }
       return lines;
     }
-    var SHOW_COMMENTARY=false;   // switched off for now; set to true to bring the live commentary card back
+    var SHOW_COMMENTARY=true;    // live commentary card (set to false to hide it)
     function commentaryUpdate(d){
       if(!SHOW_COMMENTARY){ [].slice.call(document.querySelectorAll('.cm')).forEach(function(x){ x.remove(); }); return; }
       var st=cmLoad(), now=Date.now(), changed=false, show=null;

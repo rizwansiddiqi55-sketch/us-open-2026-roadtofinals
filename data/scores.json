@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T20:18:45Z",
+  "updated": "2026-11-13T20:41:55Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -392,6 +392,32 @@
       "dayText": "Day Six of the WTA Finals",
       "roundCode": "RR",
       "round": "Group stage"
+    },
+    {
+      "id": "pegula-andreeva-sf",
+      "order": 13,
+      "status": "upcoming",
+      "court": "Court 2",
+      "label": "SUN NOV 15",
+      "time": "Time to be confirmed",
+      "timeTbc": true,
+      "p1": {
+        "name": "Pegula",
+        "flag": "🇺🇸",
+        "full": "Jessica Pegula",
+        "rank": 5
+      },
+      "p2": {
+        "name": "Andreeva",
+        "flag": "🇷🇺",
+        "full": "Mirra Andreeva",
+        "rank": 3
+      },
+      "sets": [],
+      "start": "2026-11-15T00:00:00.000Z",
+      "dayText": "Day Seven of the WTA Finals",
+      "roundCode": "SF",
+      "round": "Semifinal"
     }
   ],
   "headline": "Diana Shnaider Replaces Karolína Muchová at the WTA Finals",
