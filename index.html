@@ -849,6 +849,15 @@
   .cm li.big{font-weight:700;}
   .cm li.big span{color:#F4D35E;}
   .cm .cm-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
+  .fsx{margin:14px 0 2px; padding:10px 12px; background:rgba(255,255,255,.05); border-left:3px solid #6FA0E8; border-radius:4px;}
+  .fsx summary{cursor:pointer; font-family:'Oswald',sans-serif; letter-spacing:1px; font-size:13px; color:#9CC1FF;}
+  .fsx .fx-names{display:flex; justify-content:space-between; font-family:'Oswald',sans-serif; font-size:15px; margin:10px 0 2px;}
+  .fsx .fx-row{margin:9px 0 0;}
+  .fsx .fx-lab{text-align:center; font-size:11.5px; letter-spacing:.8px; text-transform:uppercase; opacity:.75; font-family:'Oswald',sans-serif;}
+  .fsx .fx-vals{display:flex; justify-content:space-between; font-family:'Oswald',sans-serif; font-size:16px; margin:1px 0 3px;}
+  .fsx .fx-bar{display:flex; height:6px; border-radius:3px; overflow:hidden; background:rgba(255,255,255,.15);}
+  .fsx .fx-bar i{display:block; height:100%;} .fsx .fx-a{background:var(--ball);} .fsx .fx-b{background:#6FA0E8;}
+  .fsx .fx-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
 </style>
 </head>
 <body>
@@ -1491,7 +1500,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ commentaryUpdate(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} try{ watchRender(dd); }catch(e){} try{ highlightsRender(dd); }catch(e){} }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ commentaryUpdate(dd); }catch(e){} try{ finalStatsRender(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} try{ watchRender(dd); }catch(e){} try{ highlightsRender(dd); }catch(e){} }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1943,6 +1952,21 @@
         st[show.id].lines.slice(0,40).map(function(l){ return '<li'+(l.big?' class="big"':'')+'><time>'+(l.catchup?'earlier':fmt(l.t))+'</time><span>'+String(l.txt).replace(/</g,'&lt;')+'</span></li>'; }).join('')+
         '</ul><p class="cm-note">Written automatically from the live score. It adds a line for each change since the last refresh (about every 2 minutes), so several games can appear together. Times are UAE time. It starts when you first open the page during a match.</p>';
       wpBox.parentNode.insertBefore(box,wpBox);
+    }
+
+    // ---- Final match statistics (from the server, once the match is over): a collapsed card under each finished match ----
+    function finalStatsRender(d){
+      d.matches.forEach(function(m){
+        if(m.status!=='final' || !m.matchStats || !m.matchStats.rows || !m.matchStats.rows.length) return;
+        var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]'); if(!panel) return;
+        var old=panel.querySelector('.fsx'), open=old&&old.open; if(old) old.remove();
+        var det=document.createElement('details'); det.className='fsx'; if(open) det.open=true;
+        det.innerHTML='<summary>&#128202; MATCH STATS'+(m.matchStats.minutes?' &middot; '+Math.floor(m.matchStats.minutes/60)+'h '+('0'+(m.matchStats.minutes%60)).slice(-2)+'m':'')+' &middot; tap to open</summary>'+
+          '<div class="fx-names"><span>'+nm(m,'p1')+'</span><span>'+nm(m,'p2')+'</span></div>'+
+          m.matchStats.rows.map(function(r){ return '<div class="fx-row"><div class="fx-lab">'+r.label+'</div><div class="fx-vals"><span>'+r.p1+'</span><span>'+r.p2+'</span></div><div class="fx-bar"><i class="fx-a" style="width:'+r.w1+'%"></i><i class="fx-b" style="width:'+(100-r.w1)+'%"></i></div></div>'; }).join('')+
+          '<p class="fx-note">Full-match statistics, published after the match from the Tennis Database API.</p>';
+        panel.appendChild(det);
+      });
     }
     function arrange(d){
       var byId={}; d.matches.forEach(function(m){ byId[m.id]=m; });

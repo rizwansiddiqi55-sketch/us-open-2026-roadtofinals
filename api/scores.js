@@ -486,6 +486,79 @@ function espnLive(data) {
   });
 }
 
+// ---------------------------------------------------------------------------------------------
+// Tennis Database API (free key: 50 requests a day, 10 a minute; reads stats only for MATCHES ALREADY PLAYED).
+// Used to attach full match statistics (aces, serve/return points, break points, winners, unforced errors ...) to finished matches.
+// Cheap by design: one match list per day, one statistics call per finished match, results kept for the life of the instance.
+// ---------------------------------------------------------------------------------------------
+const TDB = 'https://api.tennisdatabaseapi.com/v1';
+const tdb = { lists: {}, stats: {}, tried: {}, blockedUntil: 0, day: '', calls: 0 };
+const TDB_ROWS = [
+  ['aces', 'Aces', 'count'], ['double_faults', 'Double faults', 'count'], ['first_serve_in', '1st serve in', 'pct'],
+  ['first_serve_points_won', '1st serve points won', 'ratio'], ['second_serve_points_won', '2nd serve points won', 'ratio'],
+  ['break_points_won', 'Break points won', 'frac'], ['service_games_won', 'Service games won', 'ratio'],
+  ['return_points_won', 'Return points won', 'ratio'], ['total_points_won', 'Points won', 'ratio'],
+  ['winners', 'Winners', 'count'], ['unforced_errors', 'Unforced errors', 'count'], ['net_points_won', 'Net points won', 'ratio'],
+];
+async function tdbGet(path) {
+  const key = process.env.TENNISDB_API_KEY;
+  if (!key || Date.now() < tdb.blockedUntil) throw new Error('tdb unavailable');
+  const today = new Date().toISOString().slice(0, 10);
+  if (today !== tdb.day) { tdb.day = today; tdb.calls = 0; }
+  if (tdb.calls >= 30) throw new Error('tdb daily guard');
+  tdb.calls++;
+  const r = await fetch(TDB + path, { headers: { Authorization: 'Bearer ' + key, Accept: 'application/json' } });
+  if (r.status === 429 || r.status === 403) { tdb.blockedUntil = Date.now() + 15 * 60 * 1000; throw new Error('tdb limited'); }
+  if (!r.ok) throw new Error('tdb ' + r.status);
+  return r.json();
+}
+const sur = (n) => norm(n).split(/[\s,]+/)[0].replace(/[^a-z]/g, '');
+const fmtStat = (v, kind) => {
+  if (v == null) return null;
+  if (kind === 'count') return String(v);
+  if (kind === 'pct') return v.pct != null ? v.pct + '%' : null;
+  if (kind === 'frac') return v.of != null ? v.won + '/' + v.of : null;
+  return v.of != null ? v.won + '/' + v.of + (v.pct != null ? ' (' + v.pct + '%)' : '') : (v.pct != null ? v.pct + '%' : null);
+};
+function tdbRows(stats, winnerIsP1) {
+  const rows = [];
+  TDB_ROWS.forEach(([key, label, kind]) => {
+    const e = stats && stats[key]; if (!e) return;
+    const a = winnerIsP1 ? e.winner : e.loser, b = winnerIsP1 ? e.loser : e.winner;
+    const s1 = fmtStat(a, kind), s2 = fmtStat(b, kind);
+    if (s1 == null || s2 == null) return;
+    const n1 = kind === 'count' ? Number(a) : (a.pct != null && b.pct != null ? a.pct : a.won), n2 = kind === 'count' ? Number(b) : (a.pct != null && b.pct != null ? b.pct : b.won);
+    const tot = (n1 || 0) + (n2 || 0);
+    rows.push({ label, p1: s1, p2: s2, w1: tot ? Math.round((n1 || 0) / tot * 100) : 50 });
+  });
+  return rows;
+}
+async function tennisDbStats(data) {
+  if (!process.env.TENNISDB_API_KEY) return;
+  const now = Date.now();
+  // the free key reads yesterday and today (UTC) only; newest finished matches first
+  const earliest = new Date(now - 86400000).toISOString().slice(0, 10);
+  const cand = data.matches.filter((m) => m.status === 'final' && m.start && !tdb.stats[m.id] && new Date(Date.parse(m.start)).toISOString().slice(0, 10) >= earliest && now - (tdb.tried[m.id] || 0) > 4 * 60 * 1000)
+    .sort((x, y) => Date.parse(y.start) - Date.parse(x.start)).slice(0, 2);
+  for (const m of cand) {
+    tdb.tried[m.id] = now;
+    try {
+      const date = new Date(Date.parse(m.start)).toISOString().slice(0, 10);
+      let list = tdb.lists[date];
+      if (!list || now - list.at > 4 * 60 * 1000) { const j = await tdbGet('/matches?date=' + date + '&tour=women&tier=tour&per_page=50'); list = tdb.lists[date] = { at: now, items: j.data || [] }; }
+      const a = sur(m.p1.name), b = sur(m.p2.name);
+      const hit = list.items.find((x) => /masters cup|wta finals/i.test((x.tournament && x.tournament.name) || '') && x.status === 'completed' && [sur(x.winner && x.winner.name), sur(x.loser && x.loser.name)].sort().join('|') === [a, b].sort().join('|'));
+      if (!hit) continue;
+      const j = await tdbGet('/matches/' + hit.id + '/statistics');
+      const d = j.data || {};
+      const winnerIsP1 = sur(hit.winner.name) === a;
+      const rows = tdbRows(d.stats && d.stats.match, winnerIsP1);
+      if (rows.length) tdb.stats[m.id] = { rows, minutes: d.duration_minutes || null, at: new Date().toISOString() };
+    } catch (e) { /* optional */ }
+  }
+  data.matches.forEach((m) => { if (m.status === 'final' && tdb.stats[m.id]) m.matchStats = tdb.stats[m.id]; });
+}
+
 // Live match stats (aces, serve %, break points ...) from the Cito live feed. One request every 5 minutes while a match is live
 // (the free plan allows 500/month); the last snapshot is kept so the page always has the latest known numbers.
 const statsMemo = {};   // match id -> { at, rows }
@@ -568,6 +641,7 @@ module.exports = async (req, res) => {
   try { await citoAssist(data, primaryOk); } catch (e) { /* Cito is best-effort */ }
   try { espnLive(data); } catch (e) { /* optional */ }
   try { await citoStats(data); } catch (e) { /* optional */ }
+  try { await tennisDbStats(data); } catch (e) { /* optional */ }
   if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=20');
   res.setHeader('Access-Control-Allow-Origin', '*');
