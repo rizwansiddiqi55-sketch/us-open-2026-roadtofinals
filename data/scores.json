@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T20:12:50Z",
+  "updated": "2026-11-13T20:15:43Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -303,7 +303,7 @@
     {
       "id": "pegula-noskova",
       "order": 10,
-      "status": "upcoming",
+      "status": "final",
       "court": "Court 2",
       "label": "FRI NOV 13",
       "time": "1:10 AM UAE (EST.)",
@@ -319,14 +319,28 @@
         "full": "Linda Noskova",
         "rank": 8
       },
-      "sets": [],
+      "sets": [
+        {
+          "p1": 7,
+          "p2": 6,
+          "tb": 2
+        },
+        {
+          "p1": 4,
+          "p2": 6
+        },
+        {
+          "p1": 7,
+          "p2": 5
+        }
+      ],
       "start": "2026-11-12T21:10:00Z",
       "dayText": "Day Five of the WTA Finals"
     },
     {
       "id": "andreeva-shnaider",
       "order": 11,
-      "status": "upcoming",
+      "status": "live",
       "court": "Court 2",
       "label": "SAT NOV 14",
       "time": "12:00 AM UAE",
@@ -343,7 +357,12 @@
         "ioc": "RUS",
         "country": "Russia"
       },
-      "sets": [],
+      "sets": [
+        {
+          "p1": 0,
+          "p2": 0
+        }
+      ],
       "start": "2026-11-13T20:00:00.000Z",
       "dayText": "Day Six of the WTA Finals",
       "roundCode": "RR",
