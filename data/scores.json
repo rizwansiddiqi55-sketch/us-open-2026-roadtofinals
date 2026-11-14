@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14T00:10:00Z",
+  "updated": "2026-11-14T00:30:00Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -416,8 +416,7 @@
       "status": "upcoming",
       "court": "Court 2",
       "label": "SUN NOV 15",
-      "time": "Time to be confirmed",
-      "timeTbc": true,
+      "time": "12:00 AM UAE",
       "p1": {
         "name": "Pegula",
         "flag": "🇺🇸",
@@ -431,7 +430,7 @@
         "rank": 3
       },
       "sets": [],
-      "start": "2026-11-15T00:00:00.000Z",
+      "start": "2026-11-14T20:00:00.000Z",
       "dayText": "Day Seven of the WTA Finals",
       "roundCode": "SF",
       "round": "Semifinal"
@@ -442,8 +441,7 @@
       "status": "upcoming",
       "court": "Court 2",
       "label": "SUN NOV 15",
-      "time": "Time to be confirmed",
-      "timeTbc": true,
+      "time": "1:30 AM UAE (EST.)",
       "p1": {
         "name": "Noskova",
         "flag": "🇨🇿",
@@ -457,7 +455,7 @@
         "rank": 6
       },
       "sets": [],
-      "start": "2026-11-15T00:00:00.000Z",
+      "start": "2026-11-14T21:30:00.000Z",
       "dayText": "Day Seven of the WTA Finals",
       "roundCode": "SF",
       "round": "Semifinal"
