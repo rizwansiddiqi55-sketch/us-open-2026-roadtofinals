@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14T00:30:00Z",
+  "updated": "2026-11-14T20:15:00Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -413,10 +413,10 @@
     {
       "id": "pegula-andreeva-sf",
       "order": 13,
-      "status": "upcoming",
+      "status": "live",
       "court": "Court 2",
       "label": "SUN NOV 15",
-      "time": "12:00 AM UAE",
+      "time": "12:10 AM UAE",
       "p1": {
         "name": "Pegula",
         "flag": "🇺🇸",
@@ -429,8 +429,13 @@
         "full": "Mirra Andreeva",
         "rank": 3
       },
-      "sets": [],
-      "start": "2026-11-14T20:00:00.000Z",
+      "sets": [
+        {
+          "p1": 0,
+          "p2": 0
+        }
+      ],
+      "start": "2026-11-14T20:10:00.000Z",
       "dayText": "Day Seven of the WTA Finals",
       "roundCode": "SF",
       "round": "Semifinal"
@@ -463,5 +468,6 @@
   ],
   "headline": "Svitolina Knocks Out Sabalenka as Andreeva Tops Group 2",
   "dekLead": "Elina Svitolina beat Aryna Sabalenka 6-3, 3-6, 6-1 to take the second semifinal place from Group 2. Mirra Andreeva won the group with a 6-2, 6-1 win over Diana Shnaider.",
-  "headlineUntil": "2026-11-14T12:00:00Z"
+  "headlineUntil": "2026-11-14T12:00:00Z",
+  "headlineUntilSetOf": "pegula-andreeva-sf"
 }
