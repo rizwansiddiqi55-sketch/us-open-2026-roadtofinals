@@ -806,6 +806,7 @@
   .wp .wp-bar i{display:block; height:100%; transition:width .6s ease;}
   .wp .wp-a{background:var(--ball);} .wp .wp-b{background:#6FA0E8;}
   .wp .wp-note{font-size:11.5px; line-height:1.4; opacity:.7; margin:9px 0 0; font-style:italic;}
+  .sf-rank{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:0.5px; color:#9CC1FF; margin-top:2px;}
   .sf-photo{display:block; width:64px; height:64px; border-radius:50%; object-fit:cover; object-position:50% 20%; border:2px solid var(--ball); background:var(--court-blue-mid); margin:0 0 6px;}
   .sf-side[style*="right"] .sf-photo{margin-left:auto;}
   .photo-credits{font-size:11px; line-height:1.45; opacity:.7;}
@@ -1511,7 +1512,7 @@
     }
     function refresh(){
       setDate();
-      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ statsRender(dd); }catch(e){} try{ commentaryUpdate(dd); }catch(e){} try{ finalStatsRender(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} try{ watchRender(dd); }catch(e){} try{ highlightsRender(dd); }catch(e){} }).catch(function(){});
+      return fetchFeed(0).then(function(t){ if(t===last) return; last=t; var dd=keepLive(JSON.parse(t)); render(dd); try{ ensureElements(dd); }catch(e){} narrate(dd); try{ settle(dd); }catch(e){} arrange(dd); try{ addPhotos(); }catch(e){} try{ addRanks(dd); }catch(e){} try{ statsRender(dd); }catch(e){} try{ commentaryUpdate(dd); }catch(e){} try{ finalStatsRender(dd); }catch(e){} try{ addCalendar(dd); }catch(e){} try{ watchRender(dd); }catch(e){} try{ highlightsRender(dd); }catch(e){} }).catch(function(){});
     }
 
     var ORD=['First','Second','Third'];
@@ -1717,6 +1718,18 @@
         var img=document.createElement('img'); img.className='sf-photo'; img.src='players/'+key+'.jpg'; img.alt=PHOTOS[key]; img.width=64; img.height=64; img.loading='lazy';
         img.onerror=function(){ img.remove(); };
         side.insertBefore(img,side.firstChild);
+      });
+    }
+
+    // WTA ranking under each player's name on every match panel
+    function addRanks(d){
+      var R={};
+      (d.matches||[]).forEach(function(m){ ['p1','p2'].forEach(function(k){ if(m[k]&&m[k].rank) R[lastKey(m,k)]=m[k].rank; }); });
+      [].slice.call(document.querySelectorAll('.sf-preview-panel .sf-side')).forEach(function(side){
+        var pl=side.querySelector('.sf-player'); if(!pl) return;
+        var parts=plainName(pl.textContent).trim().split(/\s+/), key=parts[parts.length-1], old=side.querySelector('.sf-rank');
+        if(R[key]){ if(!old){ old=document.createElement('div'); old.className='sf-rank'; pl.parentNode.insertBefore(old,pl.nextSibling); } old.textContent='WTA No. '+R[key]; }
+        else if(old) old.remove();
       });
     }
 
