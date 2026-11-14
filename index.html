@@ -819,6 +819,9 @@
   .ls .ls-vals{display:flex; justify-content:space-between; font-family:'Oswald',sans-serif; font-size:16px; margin:1px 0 3px;}
   .ls .ls-bar{display:flex; height:6px; border-radius:3px; overflow:hidden; background:rgba(255,255,255,.15);}
   .ls .ls-bar i{display:block; height:100%;} .ls .ls-a{background:var(--ball);} .ls .ls-b{background:#6FA0E8;}
+  .ls-saved details>summary{cursor:pointer; list-style:none;}
+  .ls-saved details>summary::-webkit-details-marker{display:none;}
+  .ls-saved details[open]>summary{margin-bottom:8px;}
   .ls .ls-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
   .cal-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:12px 0 2px;}
   .cal-btn{font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:.7px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:7px 14px; cursor:pointer; text-decoration:none; display:inline-block; line-height:1.2;}
@@ -1736,34 +1739,38 @@
     // ---- Live match stats card (from the Cito live feed, refreshed by the server about every 5 minutes) ----
     function statsRender(d){
       [].slice.call(document.querySelectorAll('.ls')).forEach(function(x){ x.remove(); });
-      var hasStats=function(x){ return x && x.stats && x.stats.rows && x.stats.rows.length; };
-      var anyLive=(d.matches||[]).some(function(x){ return x.status==='live'; });
-      var m=(d.matches||[]).filter(function(x){return x.status==='live' && hasStats(x);})[0], old=false;
-      if(m){ try{ localStorage.setItem('wtaStatsLast',JSON.stringify({id:m.id,p1:m.p1,p2:m.p2,stats:m.stats})); }catch(e){} }
-      else if(!anyLive){
-        // No match is live: keep the last live stats on the finished match until the next match goes live
-        var fin=(d.matches||[]).filter(function(x){ return x.status==='final' && hasStats(x) && !x.matchStats; });
-        m=fin.length?fin.reduce(function(a,c){ return String(c.stats.at)>String(a.stats.at)?c:a; }):null;
-        if(!m){ try{ var sv=JSON.parse(localStorage.getItem('wtaStatsLast')||'null'); var fm=sv&&(d.matches||[]).filter(function(x){return x.id===sv.id && x.status==='final' && !x.matchStats;})[0]; if(fm&&hasStats(sv)){ m={id:sv.id,p1:fm.p1,p2:fm.p2,stats:sv.stats}; } }catch(e){} }
-        old=!!m;
-        if(m && document.querySelector('.sf-preview-panel[data-match="'+m.id+'"] .fsx')) return;   // the official final-stats card already covers this match
+      var hasStats=function(st){ return st && st.rows && st.rows.length; };
+      var store={}; try{ store=JSON.parse(localStorage.getItem('wtaStatsSaved')||'{}')||{}; }catch(e){ store={}; }
+      var dirty=false;
+      var ms=d.matches||[];
+      // Save the latest live stats of every match on this device, so they can be shown after the match has finished
+      ms.forEach(function(m){ if((m.status==='live'||m.status==='final') && hasStats(m.stats)){ var o=store[m.id]; if(!o || String(m.stats.at)>=String(o.at||'')){ store[m.id]={at:m.stats.at,rows:m.stats.rows}; dirty=true; } } });
+      if(dirty){ try{ localStorage.setItem('wtaStatsSaved',JSON.stringify(store)); }catch(e){} }
+      function build(m,st,saved){
+        var rows=st.rows, byLabel={}; rows.forEach(function(r){ byLabel[r.label]=r; });
+        var parts=[], pts=byLabel['Points won'];
+        if(pts){ var lead=pts.w1>=50?'p1':'p2', pc=lead==='p1'?pts.w1:100-pts.w1; if(pc!==50) parts.push(nm(m,lead)+(saved?' won ':' has won ')+pc+'% of the points'); }
+        var ac=byLabel['Aces']; if(ac){ var a1=parseInt(ac.p1,10)||0, a2=parseInt(ac.p2,10)||0; if(Math.abs(a1-a2)>=2) parts.push((a1>a2?nm(m,'p1'):nm(m,'p2'))+(saved?' led the aces ':' leads the aces ')+Math.max(a1,a2)+'\u2013'+Math.min(a1,a2)); }
+        var df=byLabel['Double faults']; if(df){ var f1=parseInt(df.p1,10)||0, f2=parseInt(df.p2,10)||0; if(Math.abs(f1-f2)>=2) parts.push((f1>f2?nm(m,'p1'):nm(m,'p2'))+(saved?' had ':' has ')+Math.max(f1,f2)+' double faults'); }
+        var when=''; try{ when=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit'}).format(new Date(st.at))+' UAE'; }catch(e){}
+        var body=(parts.length?'<p class="ls-sum">'+parts.join('; ')+'.</p>':'')+
+          '<div class="ls-names"><span>'+nm(m,'p1')+'</span><span>'+nm(m,'p2')+'</span></div>'+
+          rows.map(function(r){ return '<div class="ls-row"><div class="ls-lab">'+r.label+'</div><div class="ls-vals"><span>'+r.p1+'</span><span>'+r.p2+'</span></div><div class="ls-bar"><i class="ls-a" style="width:'+r.w1+'%"></i><i class="ls-b" style="width:'+(100-r.w1)+'%"></i></div></div>'; }).join('')+
+          '<p class="ls-note">'+(saved?'Last live statistics captured during the match, saved on this device. The official final statistics replace them if they become available.':'Match statistics from the Cito live feed. They refresh about every 5 minutes and can run about a minute behind the score.')+'</p>';
+        var box=document.createElement('div'); box.className='ls'+(saved?' ls-saved':'');
+        box.innerHTML=saved
+          ? '<details><summary class="ls-head"><span>&#128202; LIVE STATS SAVED &middot; tap to open</span><span>'+(when?'last update '+when:'')+'</span></summary>'+body+'</details>'
+          : '<div class="ls-head"><span>&#128202; LIVE MATCH STATS</span><span>'+(when?'updated '+when:'')+'</span></div>'+body;
+        return box;
       }
-      else { try{ localStorage.removeItem('wtaStatsLast'); }catch(e){} }
-      if(!m) return;
-      var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]'); if(!panel) return;
-      var rows=m.stats.rows, byLabel={}; rows.forEach(function(r){ byLabel[r.label]=r; });
-      var parts=[], pts=byLabel['Points won'];
-      if(pts){ var lead=pts.w1>=50?'p1':'p2', pc=lead==='p1'?pts.w1:100-pts.w1; if(pc!==50) parts.push(nm(m,lead)+' has won '+pc+'% of the points'); }
-      var ac=byLabel['Aces']; if(ac){ var a1=parseInt(ac.p1,10)||0, a2=parseInt(ac.p2,10)||0; if(Math.abs(a1-a2)>=2) parts.push((a1>a2?nm(m,'p1'):nm(m,'p2'))+' leads the aces '+Math.max(a1,a2)+'–'+Math.min(a1,a2)); }
-      var df=byLabel['Double faults']; if(df){ var f1=parseInt(df.p1,10)||0, f2=parseInt(df.p2,10)||0; if(Math.abs(f1-f2)>=2) parts.push((f1>f2?nm(m,'p1'):nm(m,'p2'))+' has '+Math.max(f1,f2)+' double faults'); }
-      var when=''; try{ when=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit'}).format(new Date(m.stats.at))+' UAE'; }catch(e){}
-      var box=document.createElement('div'); box.className='ls';
-      box.innerHTML='<div class="ls-head"><span>&#128202; '+(old?'LAST MATCH STATS (FINAL)':'LIVE MATCH STATS')+'</span><span>'+(when?'updated '+when:'')+'</span></div>'+
-        (parts.length?'<p class="ls-sum">'+parts.join('; ')+'.</p>':'')+
-        '<div class="ls-names"><span>'+nm(m,'p1')+'</span><span>'+nm(m,'p2')+'</span></div>'+
-        rows.map(function(r){ return '<div class="ls-row"><div class="ls-lab">'+r.label+'</div><div class="ls-vals"><span>'+r.p1+'</span><span>'+r.p2+'</span></div><div class="ls-bar"><i class="ls-a" style="width:'+r.w1+'%"></i><i class="ls-b" style="width:'+(100-r.w1)+'%"></i></div></div>'; }).join('')+
-        '<p class="ls-note">'+(old?'Last live statistics for this match. They stay here until the next match goes live.':'Match statistics from the Cito live feed. They refresh about every 5 minutes and can run about a minute behind the score.')+'</p>';
-      panel.parentNode.insertBefore(box,panel.nextSibling);
+      ms.forEach(function(m){
+        var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]'); if(!panel) return;
+        if(m.status==='live' && hasStats(m.stats)){ panel.parentNode.insertBefore(build(m,m.stats,false),panel.nextSibling); return; }
+        if(m.status==='final' && !(m.matchStats && m.matchStats.rows && m.matchStats.rows.length)){
+          var st=hasStats(m.stats)?m.stats:(hasStats(store[m.id])?store[m.id]:null);
+          if(st) panel.parentNode.insertBefore(build(m,st,true),panel.nextSibling);
+        }
+      });
     }
 
     // ---- Matches that are not in the page yet (new order of play from the schedule feed): build their panel, schedule row and storyline ----
