@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
   try {
     const d = await getData(req);
     if (d && d.matches) {
-      const p = preview(d), url = 'https://' + host + '/atp-finals-2026/';
+      const p = preview(d), url = 'https://' + host + (/^atp-finals-2026\./.test(host) ? '/' : '/atp-finals-2026/');
       const tags =
         '<meta name="description" content="' + esc(p.description) + '">\n' +
         '<meta property="og:type" content="website">\n' +

@@ -2,6 +2,16 @@
   "routes": [
     {
       "src": "^/$",
+      "has": [
+        {
+          "type": "host",
+          "value": "atp-finals-2026.vercel.app"
+        }
+      ],
+      "dest": "/api/atp-page"
+    },
+    {
+      "src": "^/$",
       "dest": "/api/page"
     },
     {

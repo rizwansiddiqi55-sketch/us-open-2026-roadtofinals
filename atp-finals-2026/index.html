@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WTA Finals">
-<link rel="manifest" href="/manifest.webmanifest">
+<link rel="manifest" href="/atp.webmanifest">
 <link rel="icon" type="image/png" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta property="og:image" content="https://wta-finals-2026.vercel.app/icons/icon-512.png">
@@ -875,7 +875,7 @@
   <div class="wrap">
     <p class="masthead-title">NITTO <span>ATP FINALS 2026</span></p>
     <p class="masthead-sub">Inalpi Arena, Turin, Italy &middot; Nov 15&ndash;22 &middot; Indoor hard</p>
-    <p class="masthead-sub" style="width:100%;margin-top:6px;"><a href="/" style="color:var(--ball);font-family:'Oswald',sans-serif;letter-spacing:.6px;text-decoration:none;">&larr; WTA Finals 2026 &middot; champion Andreeva</a></p>
+    <p class="masthead-sub" style="width:100%;margin-top:6px;"><a href="https://wta-finals-2026.vercel.app/" style="color:var(--ball);font-family:'Oswald',sans-serif;letter-spacing:.6px;text-decoration:none;">WTA Finals 2026 (archive) &middot; champion Andreeva &rarr;</a></p>
   </div>
 </header>
 
@@ -927,7 +927,7 @@
     <div class="watch-item">
       <span class="badge badge-us">WTA FINALS 2026</span>
       <h3>Andreeva Wins the WTA Finals Title</h3>
-      <p>Mirra Andreeva beat Elina Svitolina 7-5, 6-3 in the final at Indian Wells. <a href="/">Read the WTA Finals page &rarr;</a></p>
+      <p>Mirra Andreeva beat Elina Svitolina 7-5, 6-3 in the final at Indian Wells. <a href="https://wta-finals-2026.vercel.app/">Read the WTA Finals page &rarr;</a></p>
     </div>
     <div class="watch-item">
       <span class="badge badge-us">ARCHIVED</span>
@@ -1153,7 +1153,7 @@
   function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return; last=t; render(JSON.parse(t)); }).catch(function(){ var h=document.getElementById('mainHeadline'); if(/Loading/.test(h.textContent)) h.textContent='Scores are temporarily unavailable'; }); }
   document.getElementById('refreshBtn').addEventListener('click',function(){ last=''; load(); });
   document.getElementById('shareBtn').addEventListener('click',function(){
-    var head=document.getElementById('mainHeadline').textContent, url=location.origin+'/atp-finals-2026/?v='+Date.now().toString(36), msg=document.getElementById('shareMsg');
+    var head=document.getElementById('mainHeadline').textContent, url=location.origin+location.pathname+'?v='+Date.now().toString(36), msg=document.getElementById('shareMsg');
     function say(t){ msg.textContent=t; setTimeout(function(){ msg.textContent=''; },3500); }
     var data={title:document.title,text:head+'\nLive scores, groups and schedule:',url:url};
     if(navigator.share){ navigator.share(data).catch(function(){}); return; }
