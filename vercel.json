@@ -5,12 +5,22 @@
       "dest": "/api/page"
     },
     {
+      "src": "^/atp-finals-2026/?$",
+      "dest": "/api/atp-page"
+    },
+    {
       "src": "^/atp-finals/?$",
-      "dest": "/atp-finals/index.html"
+      "status": 301,
+      "headers": {
+        "Location": "/atp-finals-2026/"
+      }
     },
     {
       "src": "^/wta-finals/?$",
-      "dest": "/wta-finals/index.html"
+      "status": 301,
+      "headers": {
+        "Location": "/"
+      }
     },
     {
       "handle": "filesystem"

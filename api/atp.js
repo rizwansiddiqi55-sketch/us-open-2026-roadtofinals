@@ -1,5 +1,5 @@
 // Nitto ATP Finals (Turin): singles schedule, live scores and results, shaped from ESPN's public scoreboard.
-// The page /atp-finals/ reads this. Cached briefly at the edge; every stage fails soft.
+// The page /atp-finals-2026/ reads this. Cached briefly at the edge; every stage fails soft.
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard';
 
 function sets(c1, c2, notes) {
