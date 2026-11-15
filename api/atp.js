@@ -23,7 +23,7 @@ function sets(c1, c2, notes) {
 function player(c) {
   const a = c.athlete || {};
   const flag = a.flag && a.flag.href ? (a.flag.href.match(/\/([a-z]{3})\.png/i) || [])[1] : '';
-  return { name: a.displayName || 'TBD', short: a.shortName || a.displayName || 'TBD', rank: (c.curatedRank && c.curatedRank.current) || null, ioc: flag ? flag.toUpperCase() : '' };
+  return { name: a.displayName || 'TBD', short: a.shortName || a.displayName || 'TBD', rank: (c.curatedRank && c.curatedRank.current) || null, ioc: flag ? flag.toUpperCase() : '', country: (a.flag && a.flag.alt) || '' };
 }
 const ROUND = { 'group stage': 'RR', semifinal: 'SF', final: 'F' };
 
