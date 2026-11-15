@@ -949,11 +949,17 @@
 <footer>
   <div class="wrap">
     <p class="byline">Nitto ATP Finals 2026 &middot; Turin &middot; Group Stage</p>
+    <p><button class="install-link" id="installLink" type="button">Install this page as a phone app</button></p>
     <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
     <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the ATP. Scores and the schedule come from ESPN&rsquo;s public scoreboard and can run a minute or two behind the court.</p>
   </div>
 </footer>
 
+<div class="install-banner" id="installBanner" role="dialog" aria-label="Install this app">
+  <div class="ib-text"><strong>GET THE APP</strong><br><span id="ibMsg">Add this page to your home screen.</span></div>
+  <button class="ib-go" id="ibGo" type="button" hidden>Install</button>
+  <button class="ib-x" id="ibX" type="button" aria-label="Dismiss">&times;</button>
+</div>
 <script>
 (function(){
   var FLAG={GER:'DE',USA:'US',FRA:'FR',ESP:'ES',ITA:'IT',RUS:'RU',SRB:'RS',GBR:'GB',CAN:'CA',AUS:'AU',NOR:'NO',DEN:'DK',GRE:'GR',BRA:'BR',ARG:'AR',CZE:'CZ',POL:'PL',JPN:'JP',CHN:'CN',BUL:'BG',FIN:'FI',SUI:'CH',AUT:'AT',NED:'NL',BEL:'BE',CRO:'HR',KAZ:'KZ',CHI:'CL',MON:'MC',POR:'PT',SWE:'SE',UKR:'UA',TUN:'TN',HUN:'HU',SVK:'SK',BLR:'BY',MEX:'MX',COL:'CO',PER:'PE',RSA:'ZA',IRL:'IE',ISR:'IL',LAT:'LV',EST:'EE',GEO:'GE',ROU:'RO',TUR:'TR',IND:'IN',KOR:'KR',THA:'TH',NZL:'NZ',TPE:'TW'};
@@ -1179,6 +1185,43 @@
     if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(data.text+' '+url).then(function(){ say('Link copied. Paste it into a chat.'); },function(){ say(url); }); } else say(url);
   });
   load(); setInterval(function(){ if(!document.hidden) load(); },30000);
+  (function(){
+    var banner=document.getElementById('installBanner'), msg=document.getElementById('ibMsg'),
+        go=document.getElementById('ibGo'), x=document.getElementById('ibX'), deferred=null;
+    function safeGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+    function safeSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+    var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    var ua = navigator.userAgent || '';
+    var isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+    var isSafari = /safari/i.test(ua) && !/crios|fxios|edgios|chrome|android/i.test(ua);
+    var isMobile = /android|iphone|ipad|ipod|mobile/i.test(ua) || isIOS;
+    function show(){ if(!standalone && isMobile && !safeGet('installDismissed')) banner.classList.add('show'); }
+    function hide(permanent){ banner.classList.remove('show'); if(permanent) safeSet('installDismissed','1'); }
+    x.addEventListener('click', function(){ hide(true); });
+    window.addEventListener('beforeinstallprompt', function(e){
+      e.preventDefault(); deferred=e;
+      msg.textContent='Install ATP Finals on your phone for quick access.';
+      go.hidden=false; show();
+    });
+    go.addEventListener('click', function(){
+      if(!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.then(function(){ deferred=null; hide(true); });
+    });
+    window.addEventListener('appinstalled', function(){ hide(true); });
+    if(isIOS){
+      msg.innerHTML = isSafari
+        ? 'Tap <strong>Share</strong> <span aria-hidden="true">&#x2B06;&#xFE0E;</span> then <strong>Add to Home Screen</strong>.'
+        : 'Open this page in <strong>Safari</strong>, tap Share, then <strong>Add to Home Screen</strong>.';
+      show();
+    } else if(isMobile){
+      setTimeout(function(){
+        if(!deferred){ msg.innerHTML='Open the browser menu <strong>&#8942;</strong> and tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.'; show(); }
+      }, 2500);
+    }
+    var link=document.getElementById('installLink');
+    if(link){ link.addEventListener('click', function(){ try{ localStorage.removeItem('installDismissed'); }catch(e){} standalone=false; isMobile=true; show(); }); }
+  })();
   if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
 })();
 </script>
