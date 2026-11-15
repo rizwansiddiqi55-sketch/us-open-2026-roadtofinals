@@ -1147,19 +1147,19 @@
 
   // ---------- where to watch ----------
   var BROADCASTERS=[
-    {reg:'Worldwide streaming (ATP&rsquo;s own service)',name:'Tennis TV',url:'https://www.tennistv.com'},
-    {reg:'UAE &amp; Middle East (beIN SPORTS usually holds ATP rights; check the current schedule)',name:'beIN SPORTS',url:'https://www.beinsports.com'},
+    {reg:'Live &amp; replays worldwide (the ATP&rsquo;s own streaming service)',name:'Tennis TV',url:'https://www.tennistv.com'},
+    {reg:'UAE &amp; Middle East (beIN holds the ATP Tour rights in the region, including the Nitto ATP Finals, through 2028)',name:'beIN SPORTS',url:'https://www.beinsports.com/en-mena/tennis'},
+    {reg:'United States (match pages list &ldquo;Watch on Tennis Channel&rdquo;)',name:'Tennis Channel',url:'https://www.tennis.com/tournaments/nitto-atp-finals'},
     {reg:'United Kingdom',name:'Sky Sports Tennis',url:'https://www.skysports.com/tennis'},
-    {reg:'United States (carried the 2025 event; confirm for 2026)',name:'Tennis Channel',url:'https://www.tennischannel.com'},
     {reg:'Italy (free-to-air)',name:'Mediaset',url:'https://www.mediasetinfinity.mediaset.it'},
-    {reg:'Official tournament information',name:'ATP Tour',url:'https://www.atptour.com'}
+    {reg:'Extra footage and the daily TikTok LIVE show (ATP)',name:'ATP Unlocked',url:'https://www.atptour.com/en/news/nitto-atp-finals-2026-practice-atp-unlocked'}
   ];
   function wwRender(d){
     var box=document.getElementById('whereToWatch'); if(!box) return;
     var live=(d.matches||[]).filter(function(m){return m.status==='live';})[0];
     box.innerHTML='<div class="ww-head"><span>&#128250; WHERE TO WATCH</span>'+(live?'<span class="ww-live">&#128308; LIVE NOW: '+esc(live.p1.name)+' v '+esc(live.p2.name)+'</span>':'')+'</div>'+
       '<ul>'+BROADCASTERS.map(function(b){ return '<li><span class="reg">'+b.reg+'</span><a class="ww-btn" href="'+b.url+'" target="_blank" rel="noopener">'+b.name+' &rarr;</a></li>'; }).join('')+'</ul>'+
-      '<p class="ww-note">Broadcasters only. Rights and subscriptions differ by country and can change, so please check the ATP website or your TV guide for the broadcaster in your country. This page does not stream any matches.</p>';
+      '<p class="ww-note">Broadcasters only. Rights and subscriptions differ by country and can change, so please check the ATP website, beIN SPORTS or your TV guide for exact channels and times in your country. This page does not stream any matches.</p>';
   }
 
   var last='', FEED='/api/atp';
