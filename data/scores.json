@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14T23:30:00Z",
+  "updated": "2026-11-15T00:30:00Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -483,9 +483,8 @@
       "order": 15,
       "status": "upcoming",
       "court": "Court 2",
-      "label": "SUN NOV 15",
-      "time": "Time to be confirmed",
-      "timeTbc": true,
+      "label": "MON NOV 16",
+      "time": "12:00 AM UAE",
       "p1": {
         "name": "Andreeva",
         "flag": "🇷🇺",
@@ -499,7 +498,7 @@
         "rank": 6
       },
       "sets": [],
-      "start": "2026-11-15T05:00:00.000Z",
+      "start": "2026-11-15T20:00:00.000Z",
       "dayText": "Day Eight of the WTA Finals",
       "roundCode": "F",
       "round": "Final"
