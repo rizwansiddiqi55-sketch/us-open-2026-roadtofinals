@@ -9,6 +9,10 @@
       "dest": "/atp-finals/index.html"
     },
     {
+      "src": "^/wta-finals/?$",
+      "dest": "/wta-finals/index.html"
+    },
+    {
       "handle": "filesystem"
     }
   ]

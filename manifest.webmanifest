@@ -1,7 +1,7 @@
 {
-  "name": "WTA Finals 2026 — Indian Wells",
-  "short_name": "WTA Finals",
-  "description": "Independent fan recap: WTA Finals 2026 schedule, results and storylines in Dubai time.",
+  "name": "Nitto ATP Finals 2026 — Turin",
+  "short_name": "ATP Finals",
+  "description": "Independent fan page: Nitto ATP Finals 2026 live scores, groups and schedule in Dubai time.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -9,8 +9,23 @@
   "background_color": "#0F2350",
   "theme_color": "#0F2350",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
