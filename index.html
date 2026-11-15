@@ -2061,7 +2061,7 @@
       var sl=[].slice.call(document.querySelectorAll('.watch-item[data-match]'));
       if(sl.length){
         var sec=sl[0].parentNode, h2=sec.querySelector('h2.section-title');
-        function srank(id){ var m=byId[id]; return !m?2:(m.status==='live'?0:(m.status==='final'?1:2)); }
+        function srank(id){ var m=byId[id]; return !m?2:(m.roundCode==='F'?-1:(m.status==='live'?0:(m.status==='final'?1:2))); }   // the championship match story always stays on top
         sl.sort(function(a,b){ var ia=a.getAttribute('data-match'), ib=b.getAttribute('data-match'), ra=srank(ia), rb=srank(ib); if(ra!==rb) return ra-rb; return ra===1?ord(ib)-ord(ia):ord(ia)-ord(ib); });
         var anchor=h2||null; sl.forEach(function(x){ if(anchor){ sec.insertBefore(x,anchor.nextSibling); anchor=x; } });
       }
