@@ -10,6 +10,7 @@ const PROVIDER = 'https://api.livetennisapi.com/api/public/v1/matches?tour=wta&s
 const blocked = {};            // per-key: epoch ms until which that key must not be used
 let memo = null;               // last good provider response
 let memoAt = 0;
+let keyShape = [];             // shape of the configured keys (lengths and flags only, never the key)
 let providerNote = [];         // last failure per key (status only, never the key), shown in primaryError
 let memoTtl = 150000;          // how long the current provider answer is reused (adaptive, see below)
 // Update rhythm: about every 2 minutes while a match is live, easing to about every 3 minutes once 50 of the day's 95 calls are used
@@ -682,7 +683,11 @@ module.exports = async (req, res) => {
   data.matches.forEach((m) => { if (finals[m.id] && m.status !== 'final') { m.status = 'final'; m.sets = finals[m.id].sets; delete m.note; delete m.live; delete m.server; } });
   let primaryOk = false;
   try {
-    const keys = [process.env.TENNIS_API_KEY, process.env.TENNIS_API_KEY2].filter(Boolean);
+    // Keys pasted into Vercel sometimes carry stray quotes, spaces, a new line or the word "Bearer": clean them before use.
+    const cleanKey = (k) => String(k || '').trim().replace(/^["'`]+|["'`]+$/g, '').replace(/^bearer\s+/i, '').trim();
+    const rawKeys = [process.env.TENNIS_API_KEY, process.env.TENNIS_API_KEY2];
+    keyShape = rawKeys.map((k) => (k ? { len: String(k).length, cleanLen: cleanKey(k).length, ws: /\s/.test(String(k)), quote: /["'`]/.test(String(k)), bearer: /^\s*bearer/i.test(String(k)), prefixOk: /^twjp_/.test(cleanKey(k)) } : null));
+    const keys = rawKeys.map(cleanKey).filter(Boolean);
     if (keys.length && windowOpen(data.matches, Date.now())) {
       data = await overlayLive(data, keys);
       primaryOk = true;
@@ -691,7 +696,7 @@ module.exports = async (req, res) => {
   } catch (e) {
     data.source = 'static';
     // Why the main feed is not in use (no keys or secrets): lets us see at a glance whether it is a daily limit, a rejected key or a provider error.
-    data.primaryError = String((e && e.message) || e) + ' | per key: ' + JSON.stringify(providerNote) + ' | ' +' | calls today per key: ' + JSON.stringify(dayCalls) + ' | parked until: ' + JSON.stringify(Object.keys(blocked).map((k) => (blocked[k] > Date.now() ? new Date(blocked[k]).toISOString() : null)));
+    data.primaryError = String((e && e.message) || e) + ' | per key: ' + JSON.stringify(providerNote) + ' | shape: ' + JSON.stringify(keyShape) + ' | ' +' | calls today per key: ' + JSON.stringify(dayCalls) + ' | parked until: ' + JSON.stringify(Object.keys(blocked).map((k) => (blocked[k] > Date.now() ? new Date(blocked[k]).toISOString() : null)));
   }
   // Each stage is optional and isolated, so one failing feed never blocks the next: ESPN results and schedule, Cito (first backup),
   // ESPN live (second backup), Cito stats.
