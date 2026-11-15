@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15T00:30:00Z",
+  "updated": "2026-11-15T20:20:00Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -481,10 +481,10 @@
     {
       "id": "andreeva-svitolina-final",
       "order": 15,
-      "status": "upcoming",
+      "status": "live",
       "court": "Court 2",
       "label": "MON NOV 16",
-      "time": "12:00 AM UAE",
+      "time": "12:10 AM UAE",
       "p1": {
         "name": "Andreeva",
         "flag": "🇷🇺",
@@ -497,8 +497,13 @@
         "full": "Elina Svitolina",
         "rank": 6
       },
-      "sets": [],
-      "start": "2026-11-15T20:00:00.000Z",
+      "sets": [
+        {
+          "p1": 1,
+          "p2": 0
+        }
+      ],
+      "start": "2026-11-15T20:10:00.000Z",
       "dayText": "Day Eight of the WTA Finals",
       "roundCode": "F",
       "round": "Final"
@@ -506,5 +511,6 @@
   ],
   "headline": "Andreeva and Svitolina Meet in the WTA Finals Championship Match",
   "dekLead": "Mirra Andreeva beat Jessica Pegula 6-3, 6-4 and Elina Svitolina beat Linda Noskova 6-2, 6-1 to set up the final. Andreeva beat Svitolina 6-4, 6-0 in the group stage.",
-  "headlineUntil": "2026-11-16T12:00:00Z"
+  "headlineUntil": "2026-11-16T12:00:00Z",
+  "headlineUntilSetOf": "andreeva-svitolina-final"
 }
