@@ -18,11 +18,11 @@ let memoTtl = 150000;          // how long the current provider answer is reused
 function nextTtl(body, calls) {
   const live = !!(body && Array.isArray(body.data) && body.data.some((x) => !x.is_doubles));
   if (!live) return 240000;
-  return calls < 40 ? 80000 : (calls < 70 ? 105000 : 170000);
+  return 90000;   // paid plan (1,000 requests a day): one provider call about every 90 seconds while a match is live
 }
 let dayKey = '';               // per-instance daily call counter (free plan = 100/day)
 let dayCalls = [];             // calls made today, per key (each key has its own daily allowance)
-const DAY_LIMIT = 95;
+const DAY_LIMIT = Number(process.env.TENNIS_DAY_LIMIT) || 900;   // per key; the paid plan allows 1,000 a day (set TENNIS_DAY_LIMIT=95 on the free plan)
 const seen = {};               // id -> last live snapshot seen on this instance (kept so a finished match never resets to 'upcoming')
 
 function norm(s) {
@@ -703,7 +703,7 @@ module.exports = async (req, res) => {
   try { await espnSync(data); } catch (e) { /* optional */ }
   try { await citoAssist(data, primaryOk); } catch (e) { /* Cito is best-effort */ }
   try { espnLive(data); } catch (e) { /* optional */ }
-  try { espnCatchUp(data); } catch (e) { /* optional */ }
+  if (!primaryOk) { try { espnCatchUp(data); } catch (e) { /* optional */ } }   // the main feed is authoritative while it works
   try { await citoStats(data); } catch (e) { /* optional */ }
   try { await tennisDbStats(data); } catch (e) { /* optional */ }
   if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
