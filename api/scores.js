@@ -68,6 +68,11 @@ async function fetchProvider(keys) {
     try {
       dayCalls[i] = (dayCalls[i] || 0) + 1;
       r = await fetch(PROVIDER, { headers: { Authorization: 'Bearer ' + key } });
+      // The API accepts the key either as a Bearer token or in an X-API-Key header; if one form is refused, try the other once.
+      if (r.status === 401 || r.status === 403) {
+        const r2 = await fetch(PROVIDER, { headers: { 'X-API-Key': key } });
+        if (r2.ok || (r2.status !== 401 && r2.status !== 403)) r = r2;
+      }
     } catch (e) { lastErr = e; continue; }
     if (r.status === 429) {
       let until = now + 15 * 60 * 1000;
