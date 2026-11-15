@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
         '<meta property="og:title" content="' + esc(p.title) + '">\n' +
         '<meta property="og:description" content="' + esc(p.description) + '">\n' +
         '<meta property="og:url" content="' + esc(url) + '">\n' +
-        '<meta property="og:image" content="' + esc('https://' + host + '/icons/icon-512.png') + '">\n' +
+        '<meta property="og:image" content="' + esc('https://' + host + '/icons/atp-icon-512.png') + '">\n' +
         '<meta name="twitter:card" content="summary">\n' +
         '<meta name="twitter:title" content="' + esc(p.title) + '">\n' +
         '<meta name="twitter:description" content="' + esc(p.description) + '">';
