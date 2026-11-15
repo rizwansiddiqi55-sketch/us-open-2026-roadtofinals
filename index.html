@@ -823,6 +823,10 @@
   .ls-saved details>summary::-webkit-details-marker{display:none;}
   .ls-saved details[open]>summary{margin-bottom:8px;}
   .ls .ls-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
+  .share-row{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:14px 0 0;}
+  .share-btn{font-family:'Oswald',sans-serif; font-size:14px; letter-spacing:.8px; color:#fff; background:var(--court-blue-mid,#1d3f8f); border:0; border-radius:999px; padding:9px 18px; cursor:pointer;}
+  .share-btn:active{opacity:.75;}
+  .share-msg{font-size:13px; color:var(--ink-soft);}
   .cal-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:12px 0 2px;}
   .cal-btn{font-family:'Oswald',sans-serif; font-size:12.5px; letter-spacing:.7px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:7px 14px; cursor:pointer; text-decoration:none; display:inline-block; line-height:1.2;}
   .cal-btn.alt{background:transparent; color:var(--ball); border:1px solid var(--ball);}
@@ -929,6 +933,7 @@
     <p class="dateline" id="dateline">Tuesday, November 10, 2026 &mdash; Dubai &middot; WTA Finals, Indian Wells</p>
     <h1 class="headline" id="mainHeadline">Andreeva Beats Svitolina 6-4, 6-0 on Day Two of the WTA Finals; Sabalenka Beats Muchov&aacute; 7-6(2), 7-5</h1>
     <p class="dek" id="mainDek">The season-ending WTA Finals run November 8&ndash;15 at Indian Wells. On Tuesday, November 10, Mirra Andreeva beat Elina Svitolina 6-4, 6-0 and Aryna Sabalenka beat Karolina Muchov&aacute; 7-6(2), 7-5. On Monday, November 9, Linda Noskova beat Marta Kostyuk 6-2, 6-4 and Coco Gauff beat Jessica Pegula 6-4, 6-7(5), 6-2. Wednesday, November 11 brings Marta Kostyuk against Jessica Pegula at 12:00 AM and Coco Gauff against Linda Noskova at about 1:10 AM, both on Court 2. Thursday, November 12 has Elina Svitolina against Karol&iacute;na Muchov&aacute; at 12:00 AM and Aryna Sabalenka against Mirra Andreeva at about 1:10 AM. Friday, November 13 brings Marta Kostyuk against Coco Gauff at about 12:00 AM and Jessica Pegula against Linda Noskova at about 1:10 AM.</p>
+    <div class="share-row"><button type="button" class="share-btn" id="shareBtn">&#8599; Share this page</button><span class="share-msg" id="shareMsg" aria-live="polite"></span></div>
   </section>
 
   <div id="winPredictor" class="wp" hidden aria-live="polite"></div>
@@ -2061,6 +2066,20 @@
         var anchor=h2||null; sl.forEach(function(x){ if(anchor){ sec.insertBefore(x,anchor.nextSibling); anchor=x; } });
       }
     }
+    // Share button: opens the phone's share sheet. The link carries a changing ?v= value so WhatsApp and others build a fresh preview instead of reusing an old one.
+    (function(){
+      var b=document.getElementById('shareBtn'), msg=document.getElementById('shareMsg'); if(!b) return;
+      function say(t){ if(msg){ msg.textContent=t; setTimeout(function(){ msg.textContent=''; },3500); } }
+      b.addEventListener('click',function(){
+        var hl=document.getElementById('mainHeadline'), head=(hl&&hl.textContent)||document.title;
+        var url=location.origin+'/?v='+Date.now().toString(36);
+        var data={title:document.title, text:head+'\nLive scores, stories and win predictor:', url:url};
+        if(navigator.share){ navigator.share(data).catch(function(){}); return; }
+        var full=data.text+' '+url;
+        if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(full).then(function(){ say('Link copied. Paste it into a chat.'); },function(){ say(url); }); }
+        else { say(url); }
+      });
+    })();
     window.refreshScores=refresh;
     try{ addPhotos(); }catch(e){}
     // Home-screen apps are frozen in the background and are not reloaded when reopened. A watchdog detects that the page
