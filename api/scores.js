@@ -684,6 +684,8 @@ module.exports = async (req, res) => {
     }
   } catch (e) {
     data.source = 'static';
+    // Why the main feed is not in use (no keys or secrets): lets us see at a glance whether it is a daily limit, a rejected key or a provider error.
+    data.primaryError = String((e && e.message) || e) + ' | calls today per key: ' + JSON.stringify(dayCalls) + ' | parked until: ' + JSON.stringify(Object.keys(blocked).map((k) => (blocked[k] > Date.now() ? new Date(blocked[k]).toISOString() : null)));
   }
   // Each stage is optional and isolated, so one failing feed never blocks the next: ESPN results and schedule, Cito (first backup),
   // ESPN live (second backup), Cito stats.
