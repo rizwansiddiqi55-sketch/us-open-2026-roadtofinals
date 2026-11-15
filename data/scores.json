@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15T21:54:40Z",
+  "updated": "2026-11-15T22:03:00Z",
   "tournament": "WTA Finals 2026",
   "matches": [
     {
@@ -481,7 +481,7 @@
     {
       "id": "andreeva-svitolina-final",
       "order": 15,
-      "status": "live",
+      "status": "final",
       "court": "Court 2",
       "label": "MON NOV 16",
       "time": "12:10 AM UAE",
@@ -503,7 +503,7 @@
           "p2": 5
         },
         {
-          "p1": 4,
+          "p1": 6,
           "p2": 3
         }
       ],

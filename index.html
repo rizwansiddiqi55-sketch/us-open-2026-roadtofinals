@@ -1642,8 +1642,9 @@
         var w=c1>c2?'p1':'p2', l=other(w), score=m.sets.map(function(x){return sc(x,w);}).join(', ');
         var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]');
         if(panel){ var bdg=panel.querySelector('h2 .live-badge');
-          if(bdg && bdg.textContent.trim()!=='FINAL'){
-            panel.querySelector('h2').innerHTML='<span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> &#127934; '+(nm(m,w)+' BEATS '+nm(m,l)).toUpperCase();
+          if(bdg && (bdg.textContent.trim()!=='FINAL' || (m.roundCode==='F' && panel.getAttribute('data-settled')!=='1'))){
+            panel.setAttribute('data-settled','1');
+            panel.querySelector('h2').innerHTML='<span class="live-badge" style="background:var(--green-result);animation:none;">FINAL</span> '+(m.roundCode==='F'?'&#127942; ':'&#127934; ')+(nm(m,w)+' BEATS '+nm(m,l)).toUpperCase()+(m.roundCode==='F'?' &mdash; WTA FINALS CHAMPION':'');
             panel.style.borderLeftColor='var(--green-result)';
             var strip=panel.querySelector('.live-score-strip');
             if(!strip){ strip=document.createElement('div'); strip.className='live-score-strip';
@@ -1653,7 +1654,7 @@
             var pl=strip.querySelectorAll('.live-score-player'); pl[0].textContent=m[w].flag+' '+fn(m,w); pl[1].textContent=m[l].flag+' '+fn(m,l);
             var mainEl=strip.querySelector('.live-score-main'), capEl=strip.querySelector('.live-score-caption');
             mainEl.textContent=score; mainEl.style.color='var(--green-result)';
-            capEl.textContent='FINAL · '+nm(m,w).toUpperCase()+' WINS'; capEl.style.color='var(--green-result)';
+            capEl.textContent=(m.roundCode==='F'?'CHAMPION · '+nm(m,w).toUpperCase()+' WINS THE TITLE':'FINAL · '+nm(m,w).toUpperCase()+' WINS'); capEl.style.color='var(--green-result)';
             var uae=panel.querySelector('.sf-meta .uae'); if(uae){ uae.className=''; uae.setAttribute('style','color:var(--green-result);font-weight:700;'); uae.textContent='FINAL · '+nm(m,w)+' wins '+score; }
             [].slice.call(panel.children).forEach(function(c){ if(c.tagName==='P' && /italic/.test(c.getAttribute('style')||'') && !c.classList.contains('panel-sub')) c.remove(); });
           } }
