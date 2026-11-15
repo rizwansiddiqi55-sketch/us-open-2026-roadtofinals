@@ -10,6 +10,7 @@ const PROVIDER = 'https://api.livetennisapi.com/api/public/v1/matches?tour=wta&s
 const blocked = {};            // per-key: epoch ms until which that key must not be used
 let memo = null;               // last good provider response
 let memoAt = 0;
+let providerNote = [];         // last failure per key (status only, never the key), shown in primaryError
 let memoTtl = 150000;          // how long the current provider answer is reused (adaptive, see below)
 // Update rhythm: about every 2 minutes while a match is live, easing to about every 3 minutes once 50 of the day's 95 calls are used
 // (free plan = 100 requests/day), and every 4 minutes while we are only waiting for a match to start.
@@ -74,12 +75,12 @@ async function fetchProvider(keys) {
         const j = await r.json();
         if (j && j.resets_at) until = Math.max(until, Date.parse(j.resets_at) + 30000);
       } catch (e) {}
-      blocked[i] = until;
+      blocked[i] = until; providerNote[i] = 'rate limited';
       lastErr = new Error('rate limited');
       continue;
     }
-    if (r.status === 401 || r.status === 403) { blocked[i] = now + 60 * 60 * 1000; lastErr = new Error('key rejected'); continue; }
-    if (!r.ok) { lastErr = new Error('provider ' + r.status); continue; }
+    if (r.status === 401 || r.status === 403) { blocked[i] = now + 10 * 60 * 1000; providerNote[i] = 'rejected ' + r.status; lastErr = new Error('key rejected ' + r.status); continue; }
+    if (!r.ok) { providerNote[i] = 'http ' + r.status; lastErr = new Error('provider ' + r.status); continue; }
     memo = await r.json();
     memoAt = now;
     memoTtl = nextTtl(memo, dayCalls[i]);
@@ -685,7 +686,7 @@ module.exports = async (req, res) => {
   } catch (e) {
     data.source = 'static';
     // Why the main feed is not in use (no keys or secrets): lets us see at a glance whether it is a daily limit, a rejected key or a provider error.
-    data.primaryError = String((e && e.message) || e) + ' | calls today per key: ' + JSON.stringify(dayCalls) + ' | parked until: ' + JSON.stringify(Object.keys(blocked).map((k) => (blocked[k] > Date.now() ? new Date(blocked[k]).toISOString() : null)));
+    data.primaryError = String((e && e.message) || e) + ' | per key: ' + JSON.stringify(providerNote) + ' | ' +' | calls today per key: ' + JSON.stringify(dayCalls) + ' | parked until: ' + JSON.stringify(Object.keys(blocked).map((k) => (blocked[k] > Date.now() ? new Date(blocked[k]).toISOString() : null)));
   }
   // Each stage is optional and isolated, so one failing feed never blocks the next: ESPN results and schedule, Cito (first backup),
   // ESPN live (second backup), Cito stats.
