@@ -1,6 +1,15 @@
 {
   "routes": [
-    { "src": "^/$", "dest": "/api/page" },
-    { "handle": "filesystem" }
+    {
+      "src": "^/$",
+      "dest": "/api/page"
+    },
+    {
+      "src": "^/atp-finals/?$",
+      "dest": "/atp-finals/index.html"
+    },
+    {
+      "handle": "filesystem"
+    }
   ]
 }
