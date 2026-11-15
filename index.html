@@ -1301,7 +1301,7 @@
 </div>
 <script>
   (function(){
-    var FEEDS=['/api/scores','/data/scores.json'], EVERY=60000, last='';
+    var FEEDS=['/api/scores','/data/scores.json'], EVERY=30000, last='';
     var row=document.querySelector('.ticker-row'), banner=document.querySelector('.alert-band'), stamp=document.getElementById('feedStamp');
     if(!row) return;
     function won(m){ var a=0,b=0; (m.sets||[]).forEach(function(x){ if(x.p1>x.p2)a++; else if(x.p2>x.p1)b++; }); return a>b?'p1':(b>a?'p2':null); }

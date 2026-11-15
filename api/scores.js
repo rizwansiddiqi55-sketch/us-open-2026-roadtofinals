@@ -16,7 +16,7 @@ let memoTtl = 150000;          // how long the current provider answer is reused
 function nextTtl(body, calls) {
   const live = !!(body && Array.isArray(body.data) && body.data.some((x) => !x.is_doubles));
   if (!live) return 240000;
-  return calls < 50 ? 105000 : 170000;
+  return calls < 40 ? 80000 : (calls < 70 ? 105000 : 170000);
 }
 let dayKey = '';               // per-instance daily call counter (free plan = 100/day)
 let dayCalls = [];             // calls made today, per key (each key has its own daily allowance)
@@ -435,7 +435,8 @@ function espnSets(c1, c2, notes) {
 async function espnSync(data) {
   const now = Date.now();
   const due = data.matches.some((m) => m.status !== 'final' && m.start && now > Date.parse(m.start) - 20 * 60 * 1000 && now < Date.parse(m.start) + 7 * 3600 * 1000);
-  if (now - espn.at >= (due ? 150 * 1000 : 30 * 60 * 1000)) {
+  const anyLive = data.matches.some((m) => m.status === 'live');
+  if (now - espn.at >= (anyLive ? 40 * 1000 : (due ? 150 * 1000 : 30 * 60 * 1000))) {
     espn.at = now;
     try {
       const r = await fetch(ESPN_URL);
@@ -503,6 +504,31 @@ function espnLive(data) {
     seen[m.id] = { sets: sets.map((x) => Object.assign({}, x)), at: Date.now() };
     data.source = 'live'; data.updated = new Date().toISOString();
     if (!data.backup) data.backup = 'espn';
+  });
+}
+
+// ESPN is often a minute or two ahead of the other feeds. When it shows MORE games than the feed already covering a live match,
+// take ESPN's sets/games (a score never goes backwards). The point score and serve of the other feed are then stale, so they are dropped.
+function espnCatchUp(data) {
+  if (Date.now() - espn.at > 4 * 60 * 1000) return;
+  const nameOf = (c) => (c.athlete && (c.athlete.displayName || c.athlete.fullName)) || '';
+  const total = (sets) => (sets || []).reduce((a, x) => a + (x.p1 || 0) + (x.p2 || 0), 0);
+  espn.comps.forEach((c) => {
+    const st = c.status && c.status.type, cs = c.competitors || [];
+    if (!st || st.name !== 'STATUS_IN_PROGRESS' || cs.length !== 2) return;
+    const n1 = nameOf(cs[0]), n2 = nameOf(cs[1]);
+    if (!n1 || !n2 || /tbd/i.test(n1 + n2)) return;
+    const rc = ESPN_ROUNDS[String((c.round && c.round.displayName) || '').toLowerCase()] || 'RR';
+    const m = data.matches.find((x) => pairKey(x.p1.name, x.p2.name) === pairKey(n1, n2) && (x.roundCode || 'RR') === rc);
+    if (!m || m.status !== 'live' || !m.live) return;
+    if (m.pinUntil && Date.now() < Date.parse(m.pinUntil)) return;
+    const same = last(n1) === last(m.p1.name);
+    const sets = espnSets(same ? cs[0] : cs[1], same ? cs[1] : cs[0], '');
+    if (!sets.length || sets.length < (m.sets || []).length || total(sets) <= total(m.sets)) return;
+    m.sets = sets;
+    delete m.note; delete m.server; delete m.points; delete m.lag;
+    seen[m.id] = { sets: sets.map((x) => Object.assign({}, x)), at: Date.now() };
+    data.updated = new Date().toISOString();
   });
 }
 
@@ -664,9 +690,11 @@ module.exports = async (req, res) => {
   try { await espnSync(data); } catch (e) { /* optional */ }
   try { await citoAssist(data, primaryOk); } catch (e) { /* Cito is best-effort */ }
   try { espnLive(data); } catch (e) { /* optional */ }
+  try { espnCatchUp(data); } catch (e) { /* optional */ }
   try { await citoStats(data); } catch (e) { /* optional */ }
   try { await tennisDbStats(data); } catch (e) { /* optional */ }
   if (data.matches.some((m) => finals[m.id])) { data.updated = new Date().toISOString(); }
+  if (data.matches.some((m) => m.status === 'live')) ttl = Math.min(ttl, 20);   // the provider answers are already reused server-side; keep the edge cache short while live
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + ttl + ', stale-while-revalidate=20');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).json(data);
