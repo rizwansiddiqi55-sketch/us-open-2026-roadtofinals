@@ -901,6 +901,8 @@
 
   <div id="winPredictor" class="wp" hidden aria-live="polite"></div>
 
+  <div id="whereToWatch" class="ww"></div>
+
   <div id="panels"></div>
 
   <section>
@@ -1143,10 +1145,27 @@
     document.getElementById('stories').innerHTML=items.join('')||'<p class="empty">Stories appear once the first matches are played.</p>';
   }
 
+  // ---------- where to watch ----------
+  var BROADCASTERS=[
+    {reg:'Worldwide streaming (ATP&rsquo;s own service)',name:'Tennis TV',url:'https://www.tennistv.com'},
+    {reg:'UAE &amp; Middle East (beIN SPORTS usually holds ATP rights; check the current schedule)',name:'beIN SPORTS',url:'https://www.beinsports.com'},
+    {reg:'United Kingdom',name:'Sky Sports Tennis',url:'https://www.skysports.com/tennis'},
+    {reg:'United States (carried the 2025 event; confirm for 2026)',name:'Tennis Channel',url:'https://www.tennischannel.com'},
+    {reg:'Italy (free-to-air)',name:'Mediaset',url:'https://www.mediasetinfinity.mediaset.it'},
+    {reg:'Official tournament information',name:'ATP Tour',url:'https://www.atptour.com'}
+  ];
+  function wwRender(d){
+    var box=document.getElementById('whereToWatch'); if(!box) return;
+    var live=(d.matches||[]).filter(function(m){return m.status==='live';})[0];
+    box.innerHTML='<div class="ww-head"><span>&#128250; WHERE TO WATCH</span>'+(live?'<span class="ww-live">&#128308; LIVE NOW: '+esc(live.p1.name)+' v '+esc(live.p2.name)+'</span>':'')+'</div>'+
+      '<ul>'+BROADCASTERS.map(function(b){ return '<li><span class="reg">'+b.reg+'</span><a class="ww-btn" href="'+b.url+'" target="_blank" rel="noopener">'+b.name+' &rarr;</a></li>'; }).join('')+'</ul>'+
+      '<p class="ww-note">Broadcasters only. Rights and subscriptions differ by country and can change, so please check the ATP website or your TV guide for the broadcaster in your country. This page does not stream any matches.</p>';
+  }
+
   var last='', FEED='/api/atp';
   function render(d){
     if(!d||!d.matches) return;
-    var rec=renderStandings(d); try{ wpRender(d); }catch(e){}
+    var rec=renderStandings(d); try{ wpRender(d); }catch(e){} try{ wwRender(d); }catch(e){}
     renderStrip(d); renderHero(d); renderPanels(d); renderSchedule(d); renderStories(d,rec);
     var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'; }
   }
