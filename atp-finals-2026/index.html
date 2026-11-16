@@ -1154,6 +1154,20 @@
     document.getElementById('panels').innerHTML=h;
   }
 
+  // ---------- player photos (cropped Wikimedia Commons portraits in /players, credited in the footer; a missing photo is simply skipped) ----------
+  var PHOTOS={zverev:'Alexander Zverev',alcaraz:'Carlos Alcaraz',shelton:'Ben Shelton',medvedev:'Daniil Medvedev',fils:'Arthur Fils',cobolli:'Flavio Cobolli',tiafoe:'Frances Tiafoe',jodar:'Rafael Jodar'};
+  function addPhotos(){
+    [].slice.call(document.querySelectorAll('.sf-preview-panel .sf-side')).forEach(function(side){
+      if(side.querySelector('.sf-photo')) return;
+      var pl=side.querySelector('.sf-player'); if(!pl) return;
+      var key=String(pl.textContent).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().split(/\s+/).pop();
+      if(!PHOTOS[key]) return;
+      var img=document.createElement('img'); img.className='sf-photo'; img.src='/players/'+key+'.jpg'; img.alt=PHOTOS[key]; img.width=64; img.height=64; img.loading='lazy';
+      img.onerror=function(){ img.remove(); };
+      side.insertBefore(img,side.firstChild);
+    });
+  }
+
   // ---------- live match stats (from the Cito live feed, about every 5 minutes); the last numbers stay on the finished match ----------
   function statsRender(d){
     [].slice.call(document.querySelectorAll('.ls')).forEach(function(x){ x.remove(); });
@@ -1230,7 +1244,7 @@
   function render(d){
     if(!d||!d.matches) return;
     var rec=renderStandings(d); try{ wpRender(d); }catch(e){} try{ wwRender(d); }catch(e){}
-    renderStrip(d); renderHero(d); renderPanels(d); try{ statsRender(d); }catch(e){} renderSchedule(d); renderStories(d,rec);
+    renderStrip(d); renderHero(d); renderPanels(d); try{ addPhotos(); }catch(e){} try{ statsRender(d); }catch(e){} renderSchedule(d); renderStories(d,rec);
     var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'+(d.feed==='livetennis'?' \u00B7 live feed: Live Tennis API':' \u00B7 live feed: ESPN'); }
   }
   function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return; last=t; render(JSON.parse(t)); }).catch(function(){ var h=document.getElementById('mainHeadline'); if(/Loading/.test(h.textContent)) h.textContent='Scores are temporarily unavailable'; }); }
