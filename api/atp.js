@@ -27,6 +27,64 @@ function player(c) {
 }
 const ROUND = { 'group stage': 'RR', semifinal: 'SF', final: 'F' };
 
+// ---------------------------------------------------------------------------------------------
+// Live Tennis API (free plan: 100 requests a day, resetting at 22:00 UTC). Adds the point score, who is serving and fresher games for matches
+// ESPN shows live. One request about every 2 minutes at most (4 minutes after the first 45 requests of the day), and none when no match is on.
+// ---------------------------------------------------------------------------------------------
+const LT = 'https://api.livetennisapi.com/api/public/v1/matches?tour=atp&status=live&limit=50';
+const LT_LIMIT = Number(process.env.TENNIS_DAY_LIMIT) || 95;
+const lt = { memo: null, at: 0, ttl: 120000, day: -1, calls: 0, blockedUntil: 0, note: '' };
+const norm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+const lastName = (n) => norm(n).split(/\s+/).pop();
+const pairKey = (a, b) => [lastName(a), lastName(b)].sort().join('|');
+const cleanKey = (k) => String(k || '').trim().replace(/^["'`]+|["'`]+$/g, '').replace(/^bearer\s+/i, '').trim();
+
+async function liveFeed() {
+  const key = cleanKey(process.env.TENNIS_API_KEY);
+  if (!key) { lt.note = 'no key'; return null; }
+  const now = Date.now(), day = Math.floor((now - 22 * 3600000) / 86400000);
+  if (day !== lt.day) { lt.day = day; lt.calls = 0; }
+  if (lt.memo && now - lt.at < lt.ttl) return lt.memo;
+  if (now < lt.blockedUntil) return lt.memo && now - lt.at < 10 * 60000 ? lt.memo : null;
+  if (lt.calls >= LT_LIMIT) { lt.note = 'daily limit reached'; return null; }
+  lt.calls++;
+  try {
+    let r = await fetch(LT, { headers: { Authorization: 'Bearer ' + key } });
+    if (r.status === 401 || r.status === 403) { const r2 = await fetch(LT, { headers: { 'X-API-Key': key } }); if (r2.ok || (r2.status !== 401 && r2.status !== 403)) r = r2; }
+    if (r.status === 429) { let until = now + 15 * 60000; try { const j = await r.json(); if (j && j.resets_at) until = Math.max(until, Date.parse(j.resets_at) + 30000); } catch (e) { /* keep the default */ } lt.blockedUntil = until; lt.note = 'rate limited'; return null; }
+    if (r.status === 401 || r.status === 403) { lt.blockedUntil = now + 10 * 60000; lt.note = 'key rejected ' + r.status; return null; }
+    if (!r.ok) { lt.note = 'http ' + r.status; return null; }
+    lt.memo = await r.json(); lt.at = now; lt.ttl = lt.calls < 45 ? 120000 : 240000; lt.note = '';
+    return lt.memo;
+  } catch (e) { lt.note = 'unreachable'; return null; }
+}
+
+async function overlayLive(matches) {
+  const now = Date.now();
+  const active = matches.some((m) => m.status === 'live' || (m.status === 'upcoming' && m.timeValid && now >= Date.parse(m.start) - 15 * 60000 && now <= Date.parse(m.start) + 5 * 3600000));
+  if (!active) return false;
+  const body = await liveFeed();
+  if (!body || !Array.isArray(body.data)) return false;
+  const byPair = new Map();
+  body.data.forEach((pm) => { if (!pm.is_doubles && pm.players && pm.players.p1 && pm.players.p2) byPair.set(pairKey(pm.players.p1.name, pm.players.p2.name), pm); });
+  let used = false;
+  matches.forEach((m) => {
+    if (m.status === 'final') return;
+    const pm = byPair.get(pairKey(m.p1.name, m.p2.name));
+    if (!pm) return;
+    const sc = pm.score || {}, g = sc.games || [[], []], same = lastName(pm.players.p1.name) === lastName(m.p1.name);
+    const a = same ? g[0] : g[1], b = same ? g[1] : g[0], sets = [];
+    for (let i = 0; i < Math.max(a.length, b.length); i++) sets.push({ p1: a[i] || 0, p2: b[i] || 0 });
+    if (!sets.length) return;
+    const total = (x) => x.reduce((t, y) => t + y.p1 + y.p2, 0);
+    if (m.status === 'live' && (sets.length < m.sets.length || total(sets) < total(m.sets))) return;   // a score never goes backwards
+    m.status = 'live'; m.sets = sets; m.feed = 'livetennis'; used = true;
+    if (sc.server === 1 || sc.server === 2) { const srv = sc.server === 1 ? 'p1' : 'p2'; m.server = same ? srv : (srv === 'p1' ? 'p2' : 'p1'); }
+    if (Array.isArray(sc.points) && sc.points.length === 2) { const pp = same ? sc.points : [sc.points[1], sc.points[0]]; m.points = pp.map((x) => (String(x).toUpperCase() === 'A' ? 'AD' : String(x).toUpperCase())); m.note = (sc.is_tiebreak ? 'Tiebreak: ' : 'Game: ') + m.points[0] + '-' + m.points[1]; }
+  });
+  return used;
+}
+
 module.exports = async (req, res) => {
   let j;
   try {
@@ -56,6 +114,8 @@ module.exports = async (req, res) => {
     });
   });
   matches.sort((a, b) => Date.parse(a.start) - Date.parse(b.start) || Number(a.id) - Number(b.id));
+  let feed = 'espn';
+  try { if (await overlayLive(matches)) feed = 'livetennis'; } catch (e) { /* ESPN alone is fine */ }
   // Groups: players linked by round-robin matches (ESPN does not name the groups)
   const parent = {};
   const find = (x) => { while (parent[x] !== x) x = parent[x] = parent[parent[x]]; return x; };
@@ -71,5 +131,5 @@ module.exports = async (req, res) => {
     .map((players, i) => ({ name: 'Group ' + 'AB'[i], players }));
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + (matches.some((m) => m.status === 'live') ? 20 : 120) + ', stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.status(200).json({ updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', matches, groups });
+  res.status(200).json({ updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, feedNote: lt.note || undefined, feedCalls: lt.calls, matches, groups });
 };

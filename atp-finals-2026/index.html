@@ -951,7 +951,7 @@
     <p class="byline">Nitto ATP Finals 2026 &middot; Turin &middot; Group Stage</p>
     <p><button class="install-link" id="installLink" type="button">Install this page as a phone app</button></p>
     <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
-    <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the ATP. Scores and the schedule come from ESPN&rsquo;s public scoreboard and can run a minute or two behind the court.</p>
+    <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the ATP. Scores and the schedule come from ESPN&rsquo;s public scoreboard, with the point score and server from the Live Tennis API when available (checked about every 2 minutes), so they can run a minute or two behind the court.</p>
   </div>
 </footer>
 
@@ -1008,6 +1008,7 @@
   // ---------- win predictor (copied from the WTA page, ATP serve average) ----------
   var WP_PS=0.60;
   function wpGame(x,y,q){ var mem={}; function f(a,b){ if(a>=4&&a-b>=2) return 1; if(b>=4&&b-a>=2) return 0; if(a>=3&&b>=3){ if(a===b) return q*q/(q*q+(1-q)*(1-q)); return a>b ? q+(1-q)*(q*q/(q*q+(1-q)*(1-q))) : q*(q*q/(q*q+(1-q)*(1-q))); } var k=a+','+b; if(mem[k]!==undefined) return mem[k]; return mem[k]=q*f(a+1,b)+(1-q)*f(a,b+1); } return f(x,y); }
+  function wpPts(v){ var m={'0':0,'15':1,'30':2,'40':3}; v=String(v==null?'':v).toUpperCase(); return v==='AD'?4:(m[v]!==undefined?m[v]:0); }
   function wpPrior(m){ var r1=m.p1&&m.p1.rank, r2=m.p2&&m.p2.rank; if(!r1||!r2) return 0.5; return 1/(1+Math.exp(-0.35*(Math.log(r2)-Math.log(r1)))); }
   function wpModel(d){
     var hold1=wpGame(0,0,WP_PS+d), hold2=wpGame(0,0,WP_PS-d), memo={};
@@ -1025,7 +1026,17 @@
     var pc;
     if(done(cur)){ if(cur.p1>cur.p2) w1++; else w2++; pc=s; cur=null; }
     else if(cur.p1===6&&cur.p2===6) pc=M.setP(6,6,'p1');
-    else { var calc=function(sv){ return M.setP(cur.p1,cur.p2,sv); }; pc=(calc('p1')+calc('p2'))/2; }
+    else {
+      var srv=m.server, pts=m.points||['0','0'], pa=wpPts(pts[0]), pb=wpPts(pts[1]);
+      if(pa===4) pb=3; else if(pb===4) pa=3;
+      var inGame=(pa+pb>0), calc=function(sv){
+        var o=sv==='p1'?'p2':'p1', pg;
+        if(!inGame) return M.setP(cur.p1,cur.p2,sv);
+        pg= sv==='p1' ? wpGame(pa,pb,WP_PS+d) : 1-wpGame(pb,pa,WP_PS-d);
+        return pg*M.setP(cur.p1+1,cur.p2,o)+(1-pg)*M.setP(cur.p1,cur.p2+1,o);
+      };
+      pc=(srv==='p1'||srv==='p2')?calc(srv):(calc('p1')+calc('p2'))/2;
+    }
     if(w1===0&&w2===0) return pc*(1-(1-s)*(1-s))+(1-pc)*(s*s);
     if(w1===1&&w2===0) return pc+(1-pc)*s;
     if(w1===0&&w2===1) return pc*s;
@@ -1039,7 +1050,7 @@
     var sc=(m.sets||[]).map(function(x){return x.p1+'-'+x.p2;}).join(', ');
     box.innerHTML='<div class="wp-head"><span>&#127919; WIN PREDICTOR &middot; LIVE</span><span class="wp-score">'+(sc?sc+' &middot; ':'')+esc(nm(m.p1))+' v '+esc(nm(m.p2))+'</span></div>'+
       '<div class="wp-row"><span>'+lab(m.p1)+'</span><b>'+a+'%</b></div><div class="wp-bar"><i class="wp-a" style="width:'+a+'%"></i><i class="wp-b" style="width:'+b+'%"></i></div><div class="wp-row"><span>'+lab(m.p2)+'</span><b>'+b+'%</b></div>'+
-      '<p class="wp-note">'+(ranked?'Starts from the ATP rankings (pre-match estimate '+pre+'% for '+esc(nm(m.p1))+', '+(100-pre)+'% for '+esc(nm(m.p2))+') and then moves with the live score and games.':'Estimate from the live score and games.')+' It is a statistical guide, not a betting tip.</p>';
+      '<p class="wp-note">'+(ranked?'Starts from the ATP rankings (pre-match estimate '+pre+'% for '+esc(nm(m.p1))+', '+(100-pre)+'% for '+esc(nm(m.p2))+') and then moves with the live score'+(m.server||m.points?', serve and points':' and games')+'.':'Estimate from the live score and games.')+' It is a statistical guide, not a betting tip.</p>';
     box.hidden=false;
   }
 
@@ -1047,9 +1058,9 @@
   function card(m){
     var tour=m.court||'Inalpi Arena';
     if(m.status==='live') return '<div class="sb-card matchday"><div class="sb-tour">&#128308; LIVE &middot; '+roundName(m)+' &middot; '+esc(tour)+'</div>'+
-      '<div class="sb-name"><span><span class="nmw">'+pFlag(m.p1)+' '+esc(nm(m.p1))+'</span><strong class="gms">'+(m.sets||[]).map(function(x){return x.p1;}).join(' &nbsp; ')+'</strong></span></div>'+
-      '<div class="sb-name"><span><span class="nmw">'+pFlag(m.p2)+' '+esc(nm(m.p2))+'</span><strong class="gms">'+(m.sets||[]).map(function(x){return x.p2;}).join(' &nbsp; ')+'</strong></span></div>'+
-      '<div class="sb-status tonight">Live &mdash; '+line(m,false)+'</div></div>';
+      '<div class="sb-name"><span><span class="nmw">'+pFlag(m.p1)+' '+esc(nm(m.p1))+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+(m.sets||[]).map(function(x){return x.p1;}).join(' &nbsp; ')+'</strong></span></div>'+
+      '<div class="sb-name"><span><span class="nmw">'+pFlag(m.p2)+' '+esc(nm(m.p2))+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+(m.sets||[]).map(function(x){return x.p2;}).join(' &nbsp; ')+'</strong></span></div>'+
+      '<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note?' &middot; '+esc(m.note):'')+'</div></div>';
     if(m.status==='final'){ var w=won(m)||'p1', l=other(w); return '<div class="sb-card result"><div class="sb-tour">&#10003; FINAL &middot; '+roundName(m)+' &middot; '+esc(tour)+'</div>'+
       '<div class="sb-name"><span class="sb-winner">'+pFlag(m[w])+' '+esc(nm(m[w]))+' &#10003;</span></div><div class="sb-name"><span style="opacity:0.6;">'+pFlag(m[l])+' '+esc(nm(m[l]))+'</span></div><div class="sb-status completed">'+line(m,w==='p2')+'</div></div>'; }
     return '<div class="sb-card upcoming-sf"><div class="sb-tour">'+roundName(m)+(tour?' &middot; '+esc(tour):'')+'</div><div class="sb-name"><span>'+pFlag(m.p1)+' '+esc(nm(m.p1))+'</span></div><div class="sb-name"><span>'+pFlag(m.p2)+' '+esc(nm(m.p2))+'</span></div>'+
@@ -1104,7 +1115,7 @@
     var sub=esc(m.court||'Inalpi Arena')+' &middot; '+(m.timeValid?dayShort(u).replace(/ (\w+) (\d+)$/,', $1 $2')+', '+clock(u)+' UAE &middot; '+DOW[t.getUTCDay()]+' '+clock(t)+' Turin':label(m).replace(/^(\w)(\w+)/,function(_,a,b){return a+b.toLowerCase();})+' (time to be confirmed)');
     var strip='';
     if(live||fin){
-      var cap=live?'LIVE &middot; '+(m.sets&&m.sets.length?'SET '+m.sets.length:''):'FINAL &middot; '+esc(nm(m[w])).toUpperCase()+' WINS'+(m.roundCode==='F'?' THE TITLE':'');
+      var cap=live?'LIVE &middot; '+(m.sets&&m.sets.length?'SET '+m.sets.length:'')+(m.note?' &middot; '+esc(m.note.toUpperCase()):'')+(m.server?' &middot; '+esc(nm(m[m.server]).toUpperCase())+' SERVING':''):'FINAL &middot; '+esc(nm(m[w])).toUpperCase()+' WINS'+(m.roundCode==='F'?' THE TITLE':'');
       var main=fin&&w?line(m,w==='p2'):line(m,false), c=live?'var(--red-live)':'var(--green-result)';
       var left=fin&&w?m[w]:m.p1, right=fin&&w?m[other(w)]:m.p2;
       strip='<div class="live-score-strip" style="'+(fin?'background:rgba(26,107,58,0.10);border-color:rgba(26,107,58,0.55);':'')+'"><div class="live-score-player">'+pFlag(left)+' '+esc(left.name)+'</div><div class="live-score-sets"><div class="live-score-main" style="color:'+c+';">'+main+'</div><div class="live-score-caption" style="color:'+c+';">'+cap+'</div></div><div class="live-score-player right">'+pFlag(right)+' '+esc(right.name)+'</div></div>';
@@ -1113,7 +1124,7 @@
       var fl='<span class="sf-flag">'+pFlag(p)+'</span>', sd='<span class="sf-seed">'+esc(p.country||p.ioc||'')+'</span>';
       return '<div class="sf-side"'+(right?' style="text-align:right;"':'')+'><div>'+(right?sd+' '+fl:fl+sd)+'</div><div class="sf-player">'+esc(p.name)+'</div>'+(p.rank?'<div class="sf-rank">ATP No. '+p.rank+'</div>':'')+'</div>';
     }
-    var meta='<span>'+roundName(m)+' &middot; '+esc(m.court||'Inalpi Arena')+'</span><span'+(fin?' style="color:var(--green-result);font-weight:700;"':'')+'>'+(fin&&w?'FINAL &middot; '+esc(nm(m[w]))+' wins '+line(m,w==='p2'):(live?'LIVE &mdash; '+line(m,false):(m.timeValid?dayShort(u)+', '+clock(u)+' UAE':'time TBC')))+'</span>';
+    var meta='<span>'+roundName(m)+' &middot; '+esc(m.court||'Inalpi Arena')+'</span><span'+(fin?' style="color:var(--green-result);font-weight:700;"':'')+'>'+(fin&&w?'FINAL &middot; '+esc(nm(m[w]))+' wins '+line(m,w==='p2'):(live?'LIVE &mdash; '+line(m,false)+(m.note?' &middot; '+esc(m.note):''):(m.timeValid?dayShort(u)+', '+clock(u)+' UAE':'time TBC')))+'</span>';
     return '<div class="sf-preview-panel" data-match="'+esc(m.id)+'" style="border-left-color:'+color+';"><h2>'+badge+' &#127934; '+esc(title)+'</h2><p class="panel-sub">'+sub+'</p>'+strip+'<div class="sf-matchup-row">'+side(m.p1,false)+'<div class="sf-vs">VS</div>'+side(m.p2,true)+'<div class="sf-meta">'+meta+'</div></div></div>';
   }
   function renderPanels(d){
@@ -1173,7 +1184,7 @@
     if(!d||!d.matches) return;
     var rec=renderStandings(d); try{ wpRender(d); }catch(e){} try{ wwRender(d); }catch(e){}
     renderStrip(d); renderHero(d); renderPanels(d); renderSchedule(d); renderStories(d,rec);
-    var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'; }
+    var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'+(d.feed==='livetennis'?' \u00B7 live feed: Live Tennis API':' \u00B7 live feed: ESPN'); }
   }
   function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return; last=t; render(JSON.parse(t)); }).catch(function(){ var h=document.getElementById('mainHeadline'); if(/Loading/.test(h.textContent)) h.textContent='Scores are temporarily unavailable'; }); }
   document.getElementById('refreshBtn').addEventListener('click',function(){ last=''; load(); });

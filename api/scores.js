@@ -18,11 +18,11 @@ let memoTtl = 150000;          // how long the current provider answer is reused
 function nextTtl(body, calls) {
   const live = !!(body && Array.isArray(body.data) && body.data.some((x) => !x.is_doubles));
   if (!live) return 240000;
-  return 90000;   // paid plan (1,000 requests a day): one provider call about every 90 seconds while a match is live
+  return calls < 45 ? 120000 : 240000;   // free plan (100 requests a day): about every 2 minutes while a match is live, easing off later in the day
 }
 let dayKey = '';               // per-instance daily call counter (free plan = 100/day)
 let dayCalls = [];             // calls made today, per key (each key has its own daily allowance)
-const DAY_LIMIT = Number(process.env.TENNIS_DAY_LIMIT) || 900;   // per key; the paid plan allows 1,000 a day (set TENNIS_DAY_LIMIT=95 on the free plan)
+const DAY_LIMIT = Number(process.env.TENNIS_DAY_LIMIT) || 95;   // per key; the free plan allows 100 a day
 const seen = {};               // id -> last live snapshot seen on this instance (kept so a finished match never resets to 'upcoming')
 
 function norm(s) {
