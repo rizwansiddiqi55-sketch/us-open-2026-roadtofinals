@@ -1085,6 +1085,24 @@
     document.getElementById('alertBand').innerHTML=shown.length?shown.map(seg).join(' <span class="sep">&nbsp;|&nbsp;</span> '):'&#127934; NITTO ATP FINALS 2026 &mdash; TURIN';
   }
 
+  // ---------- headline for a live match ----------
+  function setDone(x){ return (x.p1>=6&&x.p1-x.p2>=2)||x.p1===7||(x.p2>=6&&x.p2-x.p1>=2)||x.p2===7; }
+  function liveHead(m){
+    var sets=m.sets||[], A=nm(m.p1), B=nm(m.p2); if(!sets.length) return A+' v '+B+' Under Way';
+    var cur=sets[sets.length-1], n=sets.length, ord=['First','Second','Deciding'][n-1]||('Set '+n), w1=0, w2=0;
+    sets.forEach(function(x){ if(setDone(x)){ if(x.p1>x.p2) w1++; else w2++; } });
+    if(setDone(cur)){
+      if(n===1){ var w=cur.p1>cur.p2?'p1':'p2'; return nm(m[w])+' Wins the First Set '+(w==='p1'?cur.p1+'-'+cur.p2:cur.p2+'-'+cur.p1)+' Against '+nm(m[other(w)]); }
+      if(w1===w2) return A+' and '+B+' Level at One Set All';
+      var w3=w1>w2?'p1':'p2'; return nm(m[w3])+' Leads '+nm(m[other(w3)])+' by a Set';
+    }
+    var g1=cur.p1, g2=cur.p2;
+    if(n===1){ if(g1===g2) return A+' and '+B+' Level at '+g1+'-'+g2+' in the First Set'; var w4=g1>g2?'p1':'p2'; return nm(m[w4])+' Leads '+nm(m[other(w4)])+' '+(w4==='p1'?g1+'-'+g2:g2+'-'+g1)+' in the First Set'; }
+    var lead=w1>w2?'p1':(w2>w1?'p2':(g1===g2?null:(g1>g2?'p1':'p2')));
+    if(!lead) return A+' and '+B+' Level at '+line(m,false)+' in the '+ord+' Set';
+    return nm(m[lead])+' Leads '+nm(m[other(lead)])+' '+line(m,lead==='p2')+' in the '+ord+' Set';
+  }
+
   // ---------- hero ----------
   function renderHero(d){
     var ms=d.matches, live=ms.filter(function(m){return m.status==='live';}), fin=ms.filter(function(m){return m.status==='final'&&m.winner;}), up=ms.filter(function(m){return m.status==='upcoming';});
@@ -1092,7 +1110,7 @@
         lastF=fin[fin.length-1];
     function res(m){ var w=m.winner, l=other(w); return nm(m[w])+' Beats '+nm(m[l])+' '+line(m,w==='p2'); }
     if(final&&final.status==='final'&&final.winner) head='CHAMPION · '+final[final.winner].name.toUpperCase()+' WINS THE TITLE';
-    else if(live.length){ var m=live[0]; head=nm(m.p1)+' v '+nm(m.p2)+' Live: '+line(m,false)+(lastF?'; '+res(lastF)+' earlier':''); }
+    else if(live.length){ head=liveHead(live[0]); }
     else if(lastF) head=res(lastF)+(up[0]&&up[0].timeValid?'; '+nm(up[0].p1)+' v '+nm(up[0].p2)+' Next':'');
     else head='Nitto ATP Finals 2026 Starts in Turin';
     document.getElementById('mainHeadline').textContent=head;
@@ -1134,6 +1152,35 @@
     if(up.length) h+='<h3 class="panel-day">UPCOMING</h3>'+up.map(panel).join('');
     if(fin.length) h+='<h3 class="panel-day">COMPLETED</h3>'+fin.map(panel).join('');
     document.getElementById('panels').innerHTML=h;
+  }
+
+  // ---------- live match stats (from the Cito live feed, about every 5 minutes); the last numbers stay on the finished match ----------
+  function statsRender(d){
+    [].slice.call(document.querySelectorAll('.ls')).forEach(function(x){ x.remove(); });
+    var has=function(st){ return st && st.rows && st.rows.length; };
+    var store={}; try{ store=JSON.parse(localStorage.getItem('atpStatsSaved')||'{}')||{}; }catch(e){ store={}; }
+    var dirty=false;
+    d.matches.forEach(function(m){ if((m.status==='live'||m.status==='final') && has(m.stats)){ var o=store[m.id]; if(!o||String(m.stats.at)>=String(o.at||'')){ store[m.id]={at:m.stats.at,rows:m.stats.rows}; dirty=true; } } });
+    if(dirty){ try{ localStorage.setItem('atpStatsSaved',JSON.stringify(store)); }catch(e){} }
+    function build(m,st,saved){
+      var rows=st.rows, by={}; rows.forEach(function(r){ by[r.label]=r; });
+      var parts=[], pts=by['Points won'];
+      if(pts){ var lead=pts.w1>=50?'p1':'p2', pc=lead==='p1'?pts.w1:100-pts.w1; if(pc!==50) parts.push(nm(m[lead])+(saved?' won ':' has won ')+pc+'% of the points'); }
+      var ac=by['Aces']; if(ac){ var a1=parseInt(ac.p1,10)||0, a2=parseInt(ac.p2,10)||0; if(Math.abs(a1-a2)>=2) parts.push((a1>a2?nm(m.p1):nm(m.p2))+(saved?' led the aces ':' leads the aces ')+Math.max(a1,a2)+'\u2013'+Math.min(a1,a2)); }
+      var df=by['Double faults']; if(df){ var f1=parseInt(df.p1,10)||0, f2=parseInt(df.p2,10)||0; if(Math.abs(f1-f2)>=2) parts.push((f1>f2?nm(m.p1):nm(m.p2))+(saved?' had ':' has ')+Math.max(f1,f2)+' double faults'); }
+      var when=''; try{ when=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Dubai',hour:'2-digit',minute:'2-digit'}).format(new Date(st.at))+' UAE'; }catch(e){}
+      var body=(parts.length?'<p class="ls-sum">'+parts.join('; ')+'.</p>':'')+'<div class="ls-names"><span>'+esc(nm(m.p1))+'</span><span>'+esc(nm(m.p2))+'</span></div>'+
+        rows.map(function(r){ return '<div class="ls-row"><div class="ls-lab">'+esc(r.label)+'</div><div class="ls-vals"><span>'+esc(r.p1)+'</span><span>'+esc(r.p2)+'</span></div><div class="ls-bar"><i class="ls-a" style="width:'+r.w1+'%"></i><i class="ls-b" style="width:'+(100-r.w1)+'%"></i></div></div>'; }).join('')+
+        '<p class="ls-note">'+(saved?'Last live statistics captured during the match, saved on this device.':'Match statistics from the Cito live feed. They refresh about every 5 minutes and can run about a minute behind the score.')+'</p>';
+      var box=document.createElement('div'); box.className='ls'+(saved?' ls-saved':'');
+      box.innerHTML=saved?'<details><summary class="ls-head"><span>&#128202; LIVE STATS SAVED &middot; tap to open</span><span>'+(when?'last update '+when:'')+'</span></summary>'+body+'</details>':'<div class="ls-head"><span>&#128202; LIVE MATCH STATS</span><span>'+(when?'updated '+when:'')+'</span></div>'+body;
+      return box;
+    }
+    d.matches.forEach(function(m){
+      var panel=document.querySelector('.sf-preview-panel[data-match="'+m.id+'"]'); if(!panel) return;
+      if(m.status==='live'){ if(has(m.stats)) panel.parentNode.insertBefore(build(m,m.stats,false),panel.nextSibling); else { var n=document.createElement('div'); n.className='ls'; n.innerHTML='<div class="ls-head"><span>&#128202; LIVE MATCH STATS</span><span></span></div><p class="ls-note" style="margin-top:8px;">Live statistics appear here once the feed has them for this match (checked about every 5 minutes).</p>'; panel.parentNode.insertBefore(n,panel.nextSibling); } }
+      else if(m.status==='final'){ var st=has(m.stats)?m.stats:(has(store[m.id])?store[m.id]:null); if(st) panel.parentNode.insertBefore(build(m,st,true),panel.nextSibling); }
+    });
   }
 
   // ---------- schedule ----------
@@ -1183,7 +1230,7 @@
   function render(d){
     if(!d||!d.matches) return;
     var rec=renderStandings(d); try{ wpRender(d); }catch(e){} try{ wwRender(d); }catch(e){}
-    renderStrip(d); renderHero(d); renderPanels(d); renderSchedule(d); renderStories(d,rec);
+    renderStrip(d); renderHero(d); renderPanels(d); try{ statsRender(d); }catch(e){} renderSchedule(d); renderStories(d,rec);
     var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'+(d.feed==='livetennis'?' \u00B7 live feed: Live Tennis API':' \u00B7 live feed: ESPN'); }
   }
   function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return; last=t; render(JSON.parse(t)); }).catch(function(){ var h=document.getElementById('mainHeadline'); if(/Loading/.test(h.textContent)) h.textContent='Scores are temporarily unavailable'; }); }

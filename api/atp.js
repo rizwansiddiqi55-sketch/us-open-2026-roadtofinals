@@ -59,6 +59,62 @@ async function liveFeed() {
   } catch (e) { lt.note = 'unreachable'; return null; }
 }
 
+// ---------------------------------------------------------------------------------------------
+// Live match statistics from Cito's live feed (monthly request budget): at most one request every 5 minutes while an ATP match is live.
+// The last numbers are kept so they can be shown after the match.
+// ---------------------------------------------------------------------------------------------
+const CITO_LIVE = 'https://api.citoapi.com/api/v1/tennis/live';
+const cito = [{ remaining: null, blockedUntil: 0 }, { remaining: null, blockedUntil: 0 }];
+const statsMemo = {};   // match id -> { at, rows }
+let statsTriedAt = 0, statsNote = '';
+const STAT_KEYS = [['total_points_won', 'Points won'], ['aces', 'Aces'], ['double_faults', 'Double faults'], ['first_serve_points_won', '1st serve points won'], ['second_serve_points_won', '2nd serve points won'], ['break_points_won', 'Break points won'], ['service_games_won', 'Service games won'], ['max_points_in_a_row', 'Longest run of points']];
+function statRows(item, same) {
+  const by = {};
+  (item.stats || []).forEach((x) => { (by[x.key] = by[x.key] || {})[x.side] = x; });
+  const rows = [];
+  STAT_KEYS.forEach(([key, label]) => {
+    const e = by[key]; if (!e || !e[1] || !e[2]) return;
+    const a = same ? e[1] : e[2], b = same ? e[2] : e[1];
+    const share = (a.pct != null && b.pct != null) ? [a.pct, b.pct] : [Number(a.numerator) || 0, Number(b.numerator) || 0];
+    const tot = share[0] + share[1];
+    rows.push({ label, p1: a.display, p2: b.display, w1: tot ? Math.round(share[0] / tot * 100) : 50 });
+  });
+  return rows;
+}
+async function citoLive() {
+  const keys = [process.env.CITO_API_KEY, process.env.CITO_API_KEY2];
+  const order = keys.map((k, i) => ({ k: cleanKey(k), st: cito[i] })).filter((x) => x.k && Date.now() >= x.st.blockedUntil && (x.st.remaining === null || x.st.remaining > 40))
+    .sort((a, b) => (b.st.remaining === null ? 1e9 : b.st.remaining) - (a.st.remaining === null ? 1e9 : a.st.remaining));
+  for (const x of order) {
+    try {
+      const r = await fetch(CITO_LIVE, { headers: { 'x-api-key': x.k } });
+      const rem = r.headers && r.headers.get ? r.headers.get('x-ratelimit-monthly-remaining') : null;
+      if (rem !== null && rem !== undefined && rem !== '') x.st.remaining = Number(rem);
+      if (r.status === 429) { x.st.blockedUntil = Date.now() + 30 * 60000; statsNote = 'cito rate limited'; continue; }
+      if (r.status === 401 || r.status === 403) { x.st.blockedUntil = Date.now() + 60 * 60000; statsNote = 'cito key rejected'; continue; }
+      if (!r.ok) { statsNote = 'cito ' + r.status; continue; }
+      statsNote = ''; return (await r.json()).items || [];
+    } catch (e) { statsNote = 'cito unreachable'; }
+  }
+  if (!order.length && !statsNote) statsNote = 'no cito budget';
+  return null;
+}
+async function attachStats(matches) {
+  const live = matches.filter((m) => m.status === 'live');
+  if (live.length && Date.now() - statsTriedAt >= 5 * 60000) {
+    statsTriedAt = Date.now();
+    const items = await citoLive();
+    (items || []).forEach((it) => {
+      if (!it.stats_available || !it.player1 || !it.player2) return;
+      const m = live.find((x) => pairKey(x.p1.name, x.p2.name) === pairKey(it.player1.name, it.player2.name));
+      if (!m) return;
+      const rows = statRows(it, lastName(it.player1.name) === lastName(m.p1.name));
+      if (rows.length) statsMemo[m.id] = { at: new Date().toISOString(), rows };
+    });
+  }
+  matches.forEach((m) => { if ((m.status === 'live' || (m.status === 'final' && !live.length)) && statsMemo[m.id]) m.stats = statsMemo[m.id]; });
+}
+
 async function overlayLive(matches) {
   const now = Date.now();
   const active = matches.some((m) => m.status === 'live' || (m.status === 'upcoming' && m.timeValid && now >= Date.parse(m.start) - 15 * 60000 && now <= Date.parse(m.start) + 5 * 3600000));
@@ -116,6 +172,7 @@ module.exports = async (req, res) => {
   matches.sort((a, b) => Date.parse(a.start) - Date.parse(b.start) || Number(a.id) - Number(b.id));
   let feed = 'espn';
   try { if (await overlayLive(matches)) feed = 'livetennis'; } catch (e) { /* ESPN alone is fine */ }
+  try { await attachStats(matches); } catch (e) { /* stats are optional */ }
   // Groups: players linked by round-robin matches (ESPN does not name the groups)
   const parent = {};
   const find = (x) => { while (parent[x] !== x) x = parent[x] = parent[parent[x]]; return x; };
@@ -131,5 +188,5 @@ module.exports = async (req, res) => {
     .map((players, i) => ({ name: 'Group ' + 'AB'[i], players }));
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + (matches.some((m) => m.status === 'live') ? 20 : 120) + ', stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.status(200).json({ updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, feedNote: lt.note || undefined, feedCalls: lt.calls, matches, groups });
+  res.status(200).json({ updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, feedNote: lt.note || undefined, feedCalls: lt.calls, statsNote: statsNote || undefined, matches, groups });
 };
