@@ -1242,15 +1242,15 @@
     {reg:'UAE &amp; Middle East (beIN holds the ATP Tour rights in the region, including the Nitto ATP Finals, through 2028)',name:'beIN SPORTS',url:'https://www.beinsports.com/en-mena/tennis'},
     {reg:'United States (match pages list &ldquo;Watch on Tennis Channel&rdquo;)',name:'Tennis Channel',url:'https://www.tennis.com/tournaments/nitto-atp-finals'},
     {reg:'United Kingdom',name:'Sky Sports Tennis',url:'https://www.skysports.com/tennis'},
-    {reg:'Italy (free-to-air)',name:'Mediaset',url:'https://www.mediasetinfinity.mediaset.it'},
-    {reg:'Extra footage and the daily TikTok LIVE show (ATP)',name:'ATP Unlocked',url:'https://www.atptour.com/en/news/nitto-atp-finals-2026-practice-atp-unlocked'}
+    {free:1,reg:'Italy (free-to-air TV, also in the Mediaset Infinity app)',name:'Mediaset Infinity',url:'https://www.mediasetinfinity.mediaset.it'},
+    {free:1,reg:'Free extra footage and the daily TikTok LIVE show (ATP), not full matches',name:'ATP Unlocked',url:'https://www.atptour.com/en/news/nitto-atp-finals-2026-practice-atp-unlocked'}
   ];
   function wwRender(d){
     var box=document.getElementById('whereToWatch'); if(!box) return;
     var live=(d.matches||[]).filter(function(m){return m.status==='live';})[0];
     box.innerHTML='<div class="ww-head"><span>&#128250; WHERE TO WATCH</span>'+(live?'<span class="ww-live">&#128308; LIVE NOW: '+esc(live.p1.name)+' v '+esc(live.p2.name)+'</span>':'')+'</div>'+
-      '<ul>'+BROADCASTERS.map(function(b){ return '<li><span class="reg">'+b.reg+'</span><a class="ww-btn" href="'+b.url+'" target="_blank" rel="noopener">'+b.name+' &rarr;</a></li>'; }).join('')+'</ul>'+
-      '<p class="ww-note">Broadcasters only. Rights and subscriptions differ by country and can change, so please check the ATP website, beIN SPORTS or your TV guide for exact channels and times in your country. This page does not stream any matches.</p>';
+      '<ul>'+BROADCASTERS.map(function(b){ return '<li><span class="reg">'+(b.free?'<b style="background:#1A6B3A;color:#fff;border-radius:4px;padding:1px 6px;margin-right:6px;font-size:11px;letter-spacing:1px;">FREE</b>':'')+b.reg+'</span><a class="ww-btn" href="'+b.url+'" target="_blank" rel="noopener">'+b.name+' &rarr;</a></li>'; }).join('')+'</ul>'+
+      '<p class="ww-note">Broadcasters only. Rights and subscriptions differ by country and can change, so please check the ATP website, beIN SPORTS or your TV guide for exact channels and times in your country. Full live matches are paid almost everywhere (Tennis TV needs a subscription); the free options marked FREE are the ones we could confirm. This page does not stream any matches.</p>';
   }
 
   var last='', FEED='/api/atp';
