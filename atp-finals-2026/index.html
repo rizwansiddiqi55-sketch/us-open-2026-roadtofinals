@@ -960,7 +960,7 @@
     <p class="photo-credits">Player photos (cropped, resized) from Wikimedia Commons, all CC BY-SA 4.0: Zverev &mdash; Rick Munroe; Alcaraz &mdash; Oleg Yunakov; Shelton &mdash; 350z33; Medvedev, Cobolli, Tiafoe &mdash; Hameltion; Fils &mdash; Kuberzog; J&oacute;dar &mdash; Crosscourt View. Full source links in <a href="/players/CREDITS.md">players/CREDITS.md</a>.</p>
     <p><button class="install-link" id="installLink" type="button">Install this page as a phone app</button></p>
     <p>&copy; 2026 Rizwan Siddiqi. All rights reserved.</p>
-    <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the ATP. Scores and the schedule come from ESPN&rsquo;s public scoreboard, with the point score and server from the Live Tennis API when available (checked about every 2 minutes), so they can run a minute or two behind the court.</p>
+    <p>This page is an independent fan recap and is not affiliated with, endorsed by, or sponsored by the ATP. Scores and the schedule come from ESPN&rsquo;s public scoreboard, with the game score and server from a live score feed when available (checked about every 2 minutes), so they can run a minute or two behind the court.</p>
   </div>
 </footer>
 
@@ -1258,10 +1258,13 @@
     if(!d||!d.matches) return;
     var rec=renderStandings(d); try{ wpRender(d); }catch(e){} try{ wwRender(d); }catch(e){}
     renderStrip(d); renderHero(d); renderPanels(d); try{ addPhotos(); }catch(e){} try{ statsRender(d); }catch(e){} renderSchedule(d); renderStories(d,rec);
-    var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'+(d.feed==='livetennis'?' \u00B7 live feed: Live Tennis API':' \u00B7 live feed: ESPN'); }
+    var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'; }
   }
-  function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return; last=t; render(JSON.parse(t)); }).catch(function(){ var h=document.getElementById('mainHeadline'); if(/Loading/.test(h.textContent)) h.textContent='Scores are temporarily unavailable'; }); }
-  document.getElementById('refreshBtn').addEventListener('click',function(){ last=''; load(); });
+  function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return true; last=t; render(JSON.parse(t)); return true; }).catch(function(e){ var h=document.getElementById('mainHeadline'); if(/Loading/.test(h.textContent)) h.textContent='Scores are temporarily unavailable'; return false; }); }
+  document.getElementById('refreshBtn').addEventListener('click',function(){
+    var b=this; if(b.disabled) return; b.disabled=true; b.textContent='\u21BB Refreshing\u2026'; last='';
+    load().then(function(ok){ b.textContent=ok?'\u2713 Updated':'Could not refresh'; setTimeout(function(){ b.textContent='\u21BB Refresh'; b.disabled=false; },1500); });
+  });
   document.getElementById('shareBtn').addEventListener('click',function(){
     var head=document.getElementById('mainHeadline').textContent, url=location.origin+location.pathname+'?v='+Date.now().toString(36), msg=document.getElementById('shareMsg');
     function say(t){ msg.textContent=t; setTimeout(function(){ msg.textContent=''; },3500); }
