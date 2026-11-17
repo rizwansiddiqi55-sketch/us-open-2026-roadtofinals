@@ -794,6 +794,14 @@
   .wx-day .wx-ic{font-size:24px; display:block; margin:4px 0;}
   .wx-day .wx-hi{color:var(--ink); font-weight:700;}
   .nmw{display:inline-block; min-width:8.6em;}
+  .lb{width:100%; border-collapse:collapse; margin:10px 0 4px; font-family:'Oswald',sans-serif;}
+  .lb th{white-space:nowrap; font-size:11px; letter-spacing:1.5px; color:#7a8399; font-weight:500; padding:2px 8px; text-align:center;}
+  .lb td{padding:6px 8px; text-align:center; font-size:22px; font-weight:600; border-top:1px solid rgba(15,35,80,.12);}
+  .lb td.nm{text-align:left; font-size:16px; letter-spacing:.5px; text-transform:uppercase; width:100%;}
+  .lb td.cur{color:var(--red-live);}
+  .lb td.pt{background:var(--court-blue-dark,#0F2350); color:#D4E34A; font-size:26px; min-width:64px; border-radius:6px;}
+  .lb th.pt{color:var(--red-live);}
+  .sb-card .lb th{color:#cfd8f0;} .sb-card .lb td{color:#fff; font-size:18px; border-top-color:rgba(255,255,255,.18);} .sb-card .lb td.nm{font-size:14px;} .sb-card .lb td.pt{background:rgba(0,0,0,.35); font-size:20px; min-width:48px;}
   .gms{display:inline-block; min-width:2.6em; letter-spacing:.5px;}
   .pt{display:inline-block; min-width:30px; text-align:center; border:1px solid rgba(255,255,255,.4); border-radius:5px; padding:0 6px; margin-left:10px; background:rgba(0,0,0,.25); color:#fff;}
   .refresh-btn{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.8px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:5px 12px; margin:6px 0 4px; cursor:pointer;}
@@ -981,6 +989,12 @@
   function won(m){ if(m.winner) return m.winner; var a=0,b=0; (m.sets||[]).forEach(function(x){ if(x.p1>x.p2)a++; else if(x.p2>x.p1)b++; }); return a>b?'p1':(b>a?'p2':null); }
   function other(w){ return w==='p1'?'p2':'p1'; }
   function setStr(x,flip){ var a=flip?x.p2:x.p1, b=flip?x.p1:x.p2; return a+'-'+b+(x.tb!=null?'('+x.tb+')':''); }
+  function liveBoard(m){
+    var ss=m.sets||[], n=ss.length, pts=m.points||null, tb=/^Tiebreak/.test(m.note||'');
+    function row(k){ var o=k==='p1'?'p2':'p1';
+      return '<tr><td class="nm">'+esc(nm(m[k]))+(m.server===k?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</td>'+ss.map(function(x,i){ return '<td'+(i===n-1?' class="cur"':'')+'>'+x[k]+(x.tb!=null&&x[k]<x[o]?'<sup>'+x.tb+'</sup>':'')+'</td>'; }).join('')+'<td class="pt">'+(pts?esc(pts[k==='p1'?0:1]):'&ndash;')+'</td></tr>'; }
+    return '<table class="lb" aria-label="Live score"><tr><th></th>'+ss.map(function(x,i){return '<th>SET '+(i+1)+'</th>';}).join('')+'<th class="pt">'+(tb?'TIEBREAK':'GAME')+'</th></tr>'+row('p1')+row('p2')+'</table>';
+  }
   function line(m,flip){ return (m.sets||[]).map(function(x){return setStr(x,flip);}).join(', '); }
   function pFlag(p){ return flag(p.ioc); }
 
@@ -1059,9 +1073,7 @@
   function card(m){
     var tour=m.court||'Inalpi Arena';
     if(m.status==='live') return '<div class="sb-card matchday"><div class="sb-tour">&#128308; LIVE &middot; '+roundName(m)+' &middot; '+esc(tour)+'</div>'+
-      '<div class="sb-name"><span><span class="nmw">'+pFlag(m.p1)+' '+esc(nm(m.p1))+(m.server==='p1'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+(m.sets||[]).map(function(x){return x.p1;}).join(' &nbsp; ')+'</strong></span></div>'+
-      '<div class="sb-name"><span><span class="nmw">'+pFlag(m.p2)+' '+esc(nm(m.p2))+(m.server==='p2'?' <span title="Serving" aria-label="Serving">&#127934;</span>':'')+'</span><strong class="gms">'+(m.sets||[]).map(function(x){return x.p2;}).join(' &nbsp; ')+'</strong></span></div>'+
-      '<div class="sb-status tonight">Live &mdash; '+line(m,false)+(m.note?' &middot; '+esc(m.note):'')+'</div></div>';
+      liveBoard(m)+'<div class="sb-status tonight">Live'+(m.server?' &mdash; '+esc(nm(m[m.server]))+' serving':'')+'</div></div>';
     if(m.status==='final'){ var w=won(m)||'p1', l=other(w); return '<div class="sb-card result"><div class="sb-tour">&#10003; FINAL &middot; '+roundName(m)+' &middot; '+esc(tour)+'</div>'+
       '<div class="sb-name"><span class="sb-winner">'+pFlag(m[w])+' '+esc(nm(m[w]))+' &#10003;</span></div><div class="sb-name"><span style="opacity:0.6;">'+pFlag(m[l])+' '+esc(nm(m[l]))+'</span></div><div class="sb-status completed">'+line(m,w==='p2')+'</div></div>'; }
     return '<div class="sb-card upcoming-sf"><div class="sb-tour">'+roundName(m)+(tour?' &middot; '+esc(tour):'')+'</div><div class="sb-name"><span>'+pFlag(m.p1)+' '+esc(nm(m.p1))+'</span></div><div class="sb-name"><span>'+pFlag(m.p2)+' '+esc(nm(m.p2))+'</span></div>'+
@@ -1144,7 +1156,7 @@
       return '<div class="sf-side"'+(right?' style="text-align:right;"':'')+'><div>'+(right?sd+' '+fl:fl+sd)+'</div><div class="sf-player">'+esc(p.name)+'</div>'+(p.rank?'<div class="sf-rank">ATP No. '+p.rank+'</div>':'')+'</div>';
     }
     var meta='<span>'+roundName(m)+' &middot; '+esc(m.court||'Inalpi Arena')+'</span><span'+(fin?' style="color:var(--green-result);font-weight:700;"':'')+'>'+(fin&&w?'FINAL &middot; '+esc(nm(m[w]))+' wins '+line(m,w==='p2'):(live?'LIVE &mdash; '+line(m,false)+(m.note?' &middot; '+esc(m.note):''):(m.timeValid?dayShort(u)+', '+clock(u)+' UAE':'time TBC')))+'</span>';
-    return '<div class="sf-preview-panel" data-match="'+esc(m.id)+'" style="border-left-color:'+color+';"><h2>'+badge+' &#127934; '+esc(title)+'</h2><p class="panel-sub">'+sub+'</p>'+strip+'<div class="sf-matchup-row">'+side(m.p1,false)+'<div class="sf-vs">VS</div>'+side(m.p2,true)+'<div class="sf-meta">'+meta+'</div></div></div>';
+    return '<div class="sf-preview-panel" data-match="'+esc(m.id)+'" style="border-left-color:'+color+';"><h2>'+badge+' &#127934; '+esc(title)+'</h2><p class="panel-sub">'+sub+'</p>'+strip+(live?liveBoard(m):'')+'<div class="sf-matchup-row">'+side(m.p1,false)+'<div class="sf-vs">VS</div>'+side(m.p2,true)+'<div class="sf-meta">'+meta+'</div></div></div>';
   }
   function renderPanels(d){
     var ms=d.matches, live=ms.filter(function(m){return m.status==='live';}), up=ms.filter(function(m){return m.status==='upcoming'&&m.timeValid&&m.p1.name!=='TBD';}).slice(0,6), fin=ms.filter(function(m){return m.status==='final';}).reverse();
