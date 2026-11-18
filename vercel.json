@@ -12,6 +12,16 @@
     },
     {
       "src": "^/$",
+      "has": [
+        {
+          "type": "host",
+          "value": "tennisbyte.com"
+        }
+      ],
+      "dest": "/api/atp-page"
+    },
+    {
+      "src": "^/$",
       "dest": "/api/page"
     },
     {
