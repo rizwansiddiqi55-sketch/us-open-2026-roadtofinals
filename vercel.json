@@ -43,6 +43,22 @@
       }
     },
     {
+      "src": "^/about/?$",
+      "dest": "/about.html"
+    },
+    {
+      "src": "^/privacy/?$",
+      "dest": "/privacy.html"
+    },
+    {
+      "src": "^/terms/?$",
+      "dest": "/terms.html"
+    },
+    {
+      "src": "^/contact/?$",
+      "dest": "/contact.html"
+    },
+    {
       "handle": "filesystem"
     }
   ]
