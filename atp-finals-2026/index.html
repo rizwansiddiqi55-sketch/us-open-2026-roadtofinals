@@ -1260,7 +1260,12 @@
     renderStrip(d); renderHero(d); renderPanels(d); try{ addPhotos(); }catch(e){} try{ statsRender(d); }catch(e){} renderSchedule(d); renderStories(d,rec);
     var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'; }
   }
-  function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return true; last=t; render(JSON.parse(t)); return true; }).catch(function(e){ var h=document.getElementById('mainHeadline'); if(/Loading/.test(h.textContent)) h.textContent='Scores are temporarily unavailable'; return false; }); }
+  function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return true; last=t; var d=JSON.parse(t); render(d); try{ localStorage.setItem('atpLastScores',t); }catch(e){} return true; }).catch(function(){
+    var h=document.getElementById('mainHeadline');
+    if(/Loading|unavailable/.test(h.textContent)){ var saved=null; try{ saved=localStorage.getItem('atpLastScores'); }catch(e){}
+      if(saved){ try{ render(JSON.parse(saved)); var st=document.getElementById('feedStamp'); if(st) st.textContent='Live feed unavailable \u00B7 showing last saved scores'; return false; }catch(e){} }
+      h.textContent='Scores are temporarily unavailable'; }
+    return false; }); }
   document.getElementById('refreshBtn').addEventListener('click',function(){
     var b=this; if(b.disabled) return; b.disabled=true; b.textContent='\u21BB Refreshing\u2026'; last='';
     load().then(function(ok){ b.textContent=ok?'\u2713 Updated':'Could not refresh'; setTimeout(function(){ b.textContent='\u21BB Refresh'; b.disabled=false; },1500); });

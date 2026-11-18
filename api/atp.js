@@ -141,16 +141,27 @@ async function overlayLive(matches) {
   return used;
 }
 
+let lastGood = null;   // last complete response, served if ESPN fails for a moment
+async function getScoreboard() {
+  let why = '';
+  for (let i = 0; i < 2; i++) {
+    try {
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 6000);
+      const r = await fetch(ESPN, { signal: ctl.signal, headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; tennis-fan-page)' } }); clearTimeout(t);
+      if (!r.ok) { why = 'espn http ' + r.status; continue; }
+      return { j: await r.json() };
+    } catch (e) { why = 'espn ' + ((e && (e.cause && e.cause.code || e.name)) || 'error'); }
+  }
+  return { why };
+}
+
 module.exports = async (req, res) => {
-  let j;
-  try {
-    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
-    const r = await fetch(ESPN, { signal: ctl.signal }); clearTimeout(t);
-    if (!r.ok) throw new Error('espn ' + r.status);
-    j = await r.json();
-  } catch (e) {
+  const got = await getScoreboard();
+  const j = got.j;
+  if (!j) {
     res.setHeader('Cache-Control', 'no-store');
-    return res.status(502).json({ error: 'scoreboard unavailable' });
+    if (lastGood) return res.status(200).json(Object.assign({}, lastGood, { stale: true, feedNote: got.why }));
+    return res.status(502).json({ error: 'scoreboard unavailable', reason: got.why });
   }
   const ev = (j.events || []).find((e) => /ATP Finals/i.test(e.name || ''));
   const grp = ev && (ev.groupings || []).find((g) => /singles/i.test((g.grouping && g.grouping.displayName) || ''));
@@ -188,5 +199,7 @@ module.exports = async (req, res) => {
     .map((players, i) => ({ name: 'Group ' + 'AB'[i], players }));
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + (matches.some((m) => m.status === 'live') ? 20 : 120) + ', stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.status(200).json({ updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, feedNote: lt.note || undefined, feedCalls: lt.calls, statsNote: statsNote || undefined, matches, groups });
+  const out = { updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, feedNote: lt.note || undefined, feedCalls: lt.calls, statsNote: statsNote || undefined, matches, groups };
+  lastGood = out;
+  res.status(200).json(out);
 };
