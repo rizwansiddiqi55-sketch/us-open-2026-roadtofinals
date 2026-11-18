@@ -170,7 +170,9 @@ module.exports = async (req, res) => {
     const cs = c.competitors || [];
     if (cs.length !== 2) return;
     const st = (c.status && c.status.type) || {};
-    const status = st.state === 'in' ? 'live' : (st.state === 'post' ? 'final' : 'upcoming');
+    // ESPN reports a halted match (suspended, delayed, medical timeout) as state 'post' with completed:false: it is still in progress
+    const halted = st.state === 'post' && st.completed === false && !(cs[0].winner || cs[1].winner);
+    const status = (st.state === 'in' || halted) ? 'live' : (st.state === 'post' ? 'final' : 'upcoming');
     const notes = ((c.notes || [])[0] || {}).text || '';
     const s = sets(cs[0], cs[1], notes);
     matches.push({
@@ -179,6 +181,7 @@ module.exports = async (req, res) => {
       p1: player(cs[0]), p2: player(cs[1]), sets: status === 'upcoming' ? [] : s,
       winner: cs[0].winner ? 'p1' : (cs[1].winner ? 'p2' : null), detail: st.detail || '',
     });
+    if (halted) matches[matches.length - 1].note = 'Play halted (' + (st.detail || 'suspended') + ')';
   });
   matches.sort((a, b) => Date.parse(a.start) - Date.parse(b.start) || Number(a.id) - Number(b.id));
   let feed = 'espn';
