@@ -1256,9 +1256,10 @@
   var last='', FEED='/api/atp';
   function render(d){
     if(!d||!d.matches) return;
+    liveNow=d.matches.some(function(m){return m.status==='live';});
     var rec=renderStandings(d); try{ wpRender(d); }catch(e){} try{ wwRender(d); }catch(e){}
     renderStrip(d); renderHero(d); renderPanels(d); try{ addPhotos(); }catch(e){} try{ statsRender(d); }catch(e){} renderSchedule(d); renderStories(d,rec);
-    var st=document.getElementById('feedStamp'); if(st){ st.textContent='Updated '+clock(shifted(new Date().toISOString(),4))+' UAE'; }
+    var st=document.getElementById('feedStamp'); if(st){ st.textContent='Scores as of '+clock(shifted(d.updated&&!isNaN(Date.parse(d.updated))?d.updated:new Date().toISOString(),4))+' UAE \u00B7 refreshes automatically'; }
   }
   function load(){ return fetch(FEED,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(function(t){ if(t===last) return true; last=t; var d=JSON.parse(t); render(d); try{ localStorage.setItem('atpLastScores',t); }catch(e){} return true; }).catch(function(){
     var h=document.getElementById('mainHeadline');
@@ -1277,7 +1278,15 @@
     if(navigator.share){ navigator.share(data).catch(function(){}); return; }
     if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(data.text+' '+url).then(function(){ say('Link copied. Paste it into a chat.'); },function(){ say(url); }); } else say(url);
   });
-  load(); setInterval(function(){ if(!document.hidden) load(); },30000);
+  // auto-refresh: every 20 s while a match is live (60 s otherwise), and straight away when the tab/app comes back to the front or the network returns
+  var lastLoad=0, liveNow=false;
+  function tick(force){ var now=Date.now(); if(document.hidden||now-lastLoad<(force?2000:(liveNow?19000:59000))) return; lastLoad=now; load(); }
+  setInterval(function(){ tick(false); },5000);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) tick(true); });
+  window.addEventListener('focus',function(){ tick(true); });
+  window.addEventListener('pageshow',function(){ tick(true); });
+  window.addEventListener('online',function(){ tick(true); });
+  tick(true);
   (function(){
     var banner=document.getElementById('installBanner'), msg=document.getElementById('ibMsg'),
         go=document.getElementById('ibGo'), x=document.getElementById('ibX'), deferred=null;

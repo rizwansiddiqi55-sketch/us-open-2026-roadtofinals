@@ -1,5 +1,5 @@
 // Network-first so live scores are never stale; cached copy only when offline.
-const CACHE = 'tennis-recap-v87';
+const CACHE = 'tennis-recap-v88';
 const PRECACHE = ['/', '/manifest.webmanifest', '/icons/icon-192.png'];
 
 self.addEventListener('install', e => {
@@ -16,7 +16,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
-  if (req.url.indexOf('/data/scores.json') !== -1 || req.url.indexOf('/api/scores') !== -1) return; // always live, never cached
+  if (req.url.indexOf('/data/scores.json') !== -1 || req.url.indexOf('/api/scores') !== -1 || req.url.indexOf('/api/atp') !== -1) return; // always live, never cached
   e.respondWith(
     fetch(req).then(res => {
       const copy = res.clone();
