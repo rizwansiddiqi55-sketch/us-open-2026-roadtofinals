@@ -87,7 +87,8 @@
     flex-wrap:wrap;
     gap:8px;
   }
-  .tb-mark{display:block;height:55px;width:auto;margin:0 0 8px;}
+  .tb-full{display:block; flex:0 0 100%; line-height:0; margin:0 0 6px;}
+  .tb-full img{width:300px; max-width:78vw; height:auto;}
   .masthead-title{
     font-size:26px;
     font-weight:700;
@@ -873,7 +874,7 @@
 
 <header class="masthead">
   <div class="wrap">
-    <a href="/" style="display:block;line-height:0"><img class="tb-mark" src="/icons/tennisbyte-infinity-mark.svg" alt="TennisByte" width="102" height="55"></a>
+    <a href="/" class="tb-full" aria-label="TennisByte home"><img src="/icons/tennisbyte-infinity.svg" alt="TennisByte" width="300" height="161"></a>
     <p class="masthead-title">WTA <span>FINALS 2026</span></p>
     <p class="masthead-sub">Indian Wells Tennis Garden, California &middot; Nov 8&ndash;15 &middot; Outdoor hard</p>
     <p class="masthead-sub" style="width:100%;margin-top:6px;"><span style="background:var(--ball);color:#0F2350;font-family:'Oswald',sans-serif;letter-spacing:.6px;padding:1px 8px;border-radius:3px;font-weight:700;">ARCHIVE</span> <span>WTA Finals 2026 is complete.</span> <a href="https://atp-finals-2026.vercel.app/" style="color:var(--ball);font-family:'Oswald',sans-serif;letter-spacing:.6px;text-decoration:none;">Now live: Nitto ATP Finals 2026 &rarr; atp-finals-2026.vercel.app</a></p>
