@@ -772,7 +772,7 @@
     color:var(--ink-soft);
     margin-top:1px;
   }
-  @supports(padding:max(0px)){ body{ padding-left:env(safe-area-inset-left); padding-right:env(safe-area-inset-right);} .masthead{ padding-top:max(0px, env(safe-area-inset-top)); } }
+  @supports(padding:max(0px)){ body{ padding-left:env(safe-area-inset-left); padding-right:env(safe-area-inset-right);}  }
   .install-banner{position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); z-index:50; background:var(--court-blue-dark); color:#fff; border:1px solid var(--ball); border-radius:14px; padding:12px 14px; display:none; box-shadow:0 8px 24px rgba(0,0,0,.35); font-family:'Source Serif 4',Georgia,serif; font-size:14px; line-height:1.4;}
   .install-banner.show{display:flex; gap:12px; align-items:center;}
   .install-banner .ib-text{flex:1;}
@@ -878,7 +878,7 @@
   .fsx .fx-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
 </style>
 <style id="tbnav-css">
-.tbnav{position:sticky;top:0;z-index:60;background:#0F2350;border-bottom:3px solid #D4E34A;font-family:Oswald,'Arial Narrow',Arial,sans-serif}
+.tbnav{position:sticky;top:0;z-index:60;padding-top:env(safe-area-inset-top,0px);background:#0F2350;border-bottom:3px solid #D4E34A;font-family:Oswald,'Arial Narrow',Arial,sans-serif}
 .tbnav .in{max-width:1100px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .tbnav .brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none}
 .tbnav .tbm{height:22px;width:auto;display:block}
@@ -888,7 +888,7 @@
 .tbnav nav::-webkit-scrollbar{display:none}
 .tbnav nav a{flex:none;color:#cfd8f0;text-decoration:none;font-weight:500;font-size:14px;letter-spacing:1.2px;padding:6px 12px;border-radius:999px;border:1px solid rgba(207,216,240,.35);white-space:nowrap}
 .tbnav nav a:hover,.tbnav nav a[aria-current=page]{background:#D4E34A;color:#0F2350;border-color:#D4E34A}
-@media(min-width:760px){.tbnav nav{flex:1 1 auto;justify-content:flex-end}}
+@media(min-width:760px){.tbnav nav{flex:1 1 auto;justify-content:flex-end}}@media(max-width:520px){.tbnav .in{padding:8px 12px 10px;gap:10px}.tbnav .tbm{height:19px}.tbnav .brand b{font-size:20px}}
 html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stories-sec]{scroll-margin-top:96px}
 </style>
 </head>
