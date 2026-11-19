@@ -190,7 +190,9 @@
   .sb-status.upcoming{color:var(--gold);}
   .sb-status.completed{color:#9DB018;}
 
-  .hero{padding:52px 0 36px; position:relative; overflow:hidden;}
+  .hero{padding:52px 0 36px; position:relative;}
+  .hero::before{content:''; position:absolute; top:0; bottom:0; left:50%; width:100vw; transform:translateX(-50%); background:url('/icons/bits-bg-light.svg') center top/720px 200px repeat; z-index:0; pointer-events:none;}
+  html,body{overflow-x:clip;}
   .hero .dateline, .hero .headline, .hero .dek{position:relative; z-index:1;}
   .court-graphic{
     position:absolute;
@@ -903,7 +905,6 @@ html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stori
   <div class="wrap">
     <p class="masthead-title">NITTO <span>ATP FINALS 2026</span></p>
     <p class="masthead-sub">Inalpi Arena, Turin, Italy &middot; Nov 15&ndash;22 &middot; Indoor hard</p>
-    <p class="masthead-sub" style="width:100%;margin-top:6px;"><a href="https://wta-finals-2026.vercel.app/" style="color:var(--ball);font-family:'Oswald',sans-serif;letter-spacing:.6px;text-decoration:none;">WTA Finals 2026 (archive) &middot; champion Andreeva &rarr;</a></p>
   </div>
 </header>
 
