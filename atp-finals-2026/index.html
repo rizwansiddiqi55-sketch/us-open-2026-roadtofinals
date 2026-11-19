@@ -803,6 +803,10 @@
   .lb td.pt{background:var(--court-blue-dark,#0F2350); color:#D4E34A; font-size:26px; min-width:64px; border-radius:6px;}
   .lb th.pt{color:var(--red-live);}
   .sb-card .lb th{color:#cfd8f0;} .sb-card .lb td{color:#fff; font-size:18px; border-top-color:rgba(255,255,255,.18);} .sb-card .lb td.nm{font-size:14px;} .sb-card .lb td.pt{background:rgba(0,0,0,.35); font-size:20px; min-width:48px;}
+  .qbadge{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;font:700 11px 'Oswald',sans-serif;letter-spacing:.8px;vertical-align:middle;white-space:nowrap}
+  .qbadge.adv{background:#1A6B3A;color:#fff}.qbadge.out{background:#B33A3A;color:#fff}.qbadge.mid{background:rgba(120,130,150,.25);color:var(--ink-soft)}
+  table.standings tr.q-adv td{background:rgba(26,107,58,.10)}table.standings tr.q-out td{opacity:.62}table.standings tr.q-out td:nth-child(2){text-decoration:line-through;text-decoration-thickness:1px}
+  @media(max-width:520px){.qbadge{display:block;margin:3px 0 0;width:max-content}}
   .gms{display:inline-block; min-width:2.6em; letter-spacing:.5px;}
   .pt{display:inline-block; min-width:30px; text-align:center; border:1px solid rgba(255,255,255,.4); border-radius:5px; padding:0 6px; margin-left:10px; background:rgba(0,0,0,.25); color:#fff;}
   .refresh-btn{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.8px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:5px 12px; margin:6px 0 4px; cursor:pointer;}
@@ -1025,16 +1029,40 @@ html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stori
     return rec;
   }
   function ranked(d,g,rec){ return g.players.map(function(n){ return {n:n,r:rec[n]}; }).sort(function(x,y){ return (y.r.w-x.r.w)||((y.r.sw-y.r.sl)-(x.r.sw-x.r.sl))||((y.r.gw-y.r.gl)-(x.r.gw-x.r.gl)); }); }
+  // who has advanced / is eliminated: top two of each four-player group reach the semifinals.
+  // Counted on wins only, over every possible result of the matches still to play; ties on wins are left open (not decided by us).
+  function qualify(d,g,rec,rows){
+    var st={}, names=g.players, ms=(d.matches||[]).filter(function(m){ return m.roundCode==='RR'&&names.indexOf(m.p1.name)>=0&&names.indexOf(m.p2.name)>=0; });
+    var open=ms.filter(function(m){ return m.status!=='final'; });
+    // semifinal line-up already published by the feed?
+    var sf=(d.matches||[]).filter(function(m){ return m.roundCode==='SF'; }), named=[]; sf.forEach(function(m){ [m.p1,m.p2].forEach(function(p){ if(p&&p.name&&p.name!=='TBD') named.push(p.name); }); });
+    var inSf=named.filter(function(n){ return names.indexOf(n)>=0; });
+    if(inSf.length>=2){ names.forEach(function(n){ st[n]=inSf.indexOf(n)>=0?'adv':'out'; }); return st; }
+    if(!open.length){ rows.forEach(function(x,i){ st[x.n]=i<2?'adv':'out'; }); return st; }
+    var base={}; names.forEach(function(n){ base[n]=rec[n].w; });
+    var always={}, never={}; names.forEach(function(n){ always[n]=true; never[n]=true; });
+    for(var mask=0;mask<(1<<open.length);mask++){
+      var w={}; names.forEach(function(n){ w[n]=base[n]; });
+      open.forEach(function(m,i){ w[(mask>>i)&1?m.p2.name:m.p1.name]++; });
+      names.forEach(function(n){
+        var geq=0, gt=0; names.forEach(function(o){ if(o===n) return; if(w[o]>=w[n]) geq++; if(w[o]>w[n]) gt++; });
+        if(geq>1) always[n]=false;      // could miss the top two (ties counted against)
+        if(gt<2) never[n]=false;        // could still finish in the top two
+      });
+    }
+    names.forEach(function(n){ st[n]=always[n]?'adv':(never[n]?'out':'mid'); });
+    return st;
+  }
   function pct(a,b){ return (a+b)?Math.round(a/(a+b)*100):0; }
   function renderStandings(d){
     var rec=standings(d), rk={}; (d.matches||[]).forEach(function(m){ rk[m.p1.name]=m.p1.rank; rk[m.p2.name]=m.p2.rank; });
     var done=(d.matches||[]).filter(function(m){return m.roundCode==='RR'&&m.status==='final';}).length, total=(d.matches||[]).filter(function(m){return m.roundCode==='RR';}).length;
     document.getElementById('standings').innerHTML=(d.groups||[]).map(function(g,gi){
-      var rows=ranked(d,g,rec);
+      var rows=ranked(d,g,rec), Q=qualify(d,g,rec,rows);
       return '<h3 class="panel-day" style="margin-top:'+(gi?22:14)+'px;">'+esc(g.name.toUpperCase())+' &mdash; AFTER '+done+' OF '+total+' ROUND-ROBIN MATCHES</h3>'+
         '<table class="full-sched standings"><thead><tr><th>#</th><th>Player</th><th>RR W&ndash;L</th><th>Set W&ndash;L</th><th>Game W&ndash;L</th></tr></thead><tbody>'+
-        rows.map(function(x,i){ var r=x.r; return '<tr><td>'+(i+1)+'</td><td>'+esc(x.n)+(rk[x.n]?' ('+rk[x.n]+')':'')+'</td><td>'+r.w+'&ndash;'+r.l+'</td><td>'+r.sw+'&ndash;'+r.sl+' ('+pct(r.sw,r.sl)+'%)</td><td>'+r.gw+'&ndash;'+r.gl+' ('+pct(r.gw,r.gl)+'%)</td></tr>'; }).join('')+'</tbody></table>';
-    }).join('')+'<p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">The top two in each group reach the semifinals. Ranked by round-robin record, then set and game record; head-to-head settles two-way ties on the official table. Rank in brackets is the ATP ranking on the scoreboard.</p>';
+        rows.map(function(x,i){ var r=x.r, q=Q[x.n]||'mid', lab=q==='adv'?'&#10003; ADVANCES TO SEMIFINAL':(q==='out'?'ELIMINATED':'STILL IN CONTENTION'); return '<tr class="q-'+q+'"><td>'+(i+1)+'</td><td>'+esc(x.n)+(rk[x.n]?' ('+rk[x.n]+')':'')+'<span class="qbadge '+q+'">'+lab+'</span></td><td>'+r.w+'&ndash;'+r.l+'</td><td>'+r.sw+'&ndash;'+r.sl+' ('+pct(r.sw,r.sl)+'%)</td><td>'+r.gw+'&ndash;'+r.gl+' ('+pct(r.gw,r.gl)+'%)</td></tr>'; }).join('')+'</tbody></table>';
+    }).join('')+'<p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; font-style:italic;">The top two in each group reach the semifinals. &ldquo;Advances&rdquo; and &ldquo;Eliminated&rdquo; are shown only when they are certain from wins alone, whatever happens in the remaining matches; when players finish level on wins the head-to-head and set and game record decide, so those stay &ldquo;in contention&rdquo; until then. Ranked by round-robin record, then set and game record; head-to-head settles two-way ties on the official table. Rank in brackets is the ATP ranking on the scoreboard.</p>';
     return rec;
   }
 
