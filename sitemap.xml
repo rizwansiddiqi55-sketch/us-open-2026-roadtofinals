@@ -8,4 +8,5 @@
   <url><loc>https://wta-finals-2026.vercel.app/privacy</loc></url>
   <url><loc>https://wta-finals-2026.vercel.app/terms</loc></url>
   <url><loc>https://wta-finals-2026.vercel.app/contact</loc></url>
+  <url><loc>https://wta-finals-2026.vercel.app/rankings</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
 </urlset>

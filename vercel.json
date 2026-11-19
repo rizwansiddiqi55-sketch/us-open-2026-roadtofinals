@@ -59,6 +59,10 @@
       "dest": "/contact.html"
     },
     {
+      "src": "^/rankings/?$",
+      "dest": "/rankings.html"
+    },
+    {
       "handle": "filesystem"
     }
   ]
