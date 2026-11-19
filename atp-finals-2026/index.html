@@ -877,12 +877,26 @@
   .fsx .fx-bar i{display:block; height:100%;} .fsx .fx-a{background:var(--ball);} .fsx .fx-b{background:#6FA0E8;}
   .fsx .fx-note{font-size:11.5px; line-height:1.4; opacity:.65; margin:10px 0 0; font-style:italic;}
 </style>
+<style id="tbnav-css">
+.tbnav{position:sticky;top:0;z-index:60;background:#0F2350;border-bottom:3px solid #D4E34A;font-family:Oswald,'Arial Narrow',Arial,sans-serif}
+.tbnav .in{max-width:1100px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tbnav .brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none}
+.tbnav .tbm{height:22px;width:auto;display:block}
+.tbnav .brand b{color:#fff;font-weight:700;font-size:22px;letter-spacing:2px;line-height:1}
+.tbnav .brand b span{color:#D4E34A}
+.tbnav nav{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1 1 100%}
+.tbnav nav::-webkit-scrollbar{display:none}
+.tbnav nav a{flex:none;color:#cfd8f0;text-decoration:none;font-weight:500;font-size:14px;letter-spacing:1.2px;padding:6px 12px;border-radius:999px;border:1px solid rgba(207,216,240,.35);white-space:nowrap}
+.tbnav nav a:hover,.tbnav nav a[aria-current=page]{background:#D4E34A;color:#0F2350;border-color:#D4E34A}
+@media(min-width:760px){.tbnav nav{flex:1 1 auto;justify-content:flex-end}}
+html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stories-sec]{scroll-margin-top:96px}
+</style>
 </head>
 <body>
 
+<div class="tbnav"><div class="in"><a class="brand" href="/" aria-label="TennisByte home"><svg class="tbm" height="22" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 608 80" role="img" aria-label="TennisByte logo: the byte 01010100, with 0 as a tennis ball and 1 as a racket"><g><circle cx="38" cy="34" r="26" fill="#D4E34A"/><path d="M17.7 17.9 Q35.4 34 17.7 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M58.3 17.9 Q40.6 34 58.3 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><g transform="translate(118 38) rotate(35)"><ellipse cx="0" cy="-8" rx="17" ry="23" fill="none" stroke="#9CC1FF" stroke-width="4"/><g stroke="#9CC1FF" stroke-width="1.4" opacity=".85"><line x1="-11" y1="-26" x2="-11" y2="10"/><line x1="-5" y1="-30" x2="-5" y2="14"/><line x1="1" y1="-31" x2="1" y2="15"/><line x1="7" y1="-30" x2="7" y2="14"/><line x1="12" y1="-26" x2="12" y2="10"/><line x1="-16" y1="-16" x2="16" y2="-16"/><line x1="-17" y1="-8" x2="17" y2="-8"/><line x1="-16" y1="0" x2="16" y2="0"/><line x1="-12" y1="8" x2="12" y2="8"/></g><path d="M-6 14 L0 22 L6 14" fill="none" stroke="#9CC1FF" stroke-width="3.5" stroke-linejoin="round"/><rect x="-3.5" y="22" width="7" height="14" rx="3" fill="#fff"/></g><g><circle cx="190" cy="34" r="26" fill="#D4E34A"/><path d="M169.7 17.9 Q187.4 34 169.7 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M210.3 17.9 Q192.6 34 210.3 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><g transform="translate(270 38) rotate(35)"><ellipse cx="0" cy="-8" rx="17" ry="23" fill="none" stroke="#9CC1FF" stroke-width="4"/><g stroke="#9CC1FF" stroke-width="1.4" opacity=".85"><line x1="-11" y1="-26" x2="-11" y2="10"/><line x1="-5" y1="-30" x2="-5" y2="14"/><line x1="1" y1="-31" x2="1" y2="15"/><line x1="7" y1="-30" x2="7" y2="14"/><line x1="12" y1="-26" x2="12" y2="10"/><line x1="-16" y1="-16" x2="16" y2="-16"/><line x1="-17" y1="-8" x2="17" y2="-8"/><line x1="-16" y1="0" x2="16" y2="0"/><line x1="-12" y1="8" x2="12" y2="8"/></g><path d="M-6 14 L0 22 L6 14" fill="none" stroke="#9CC1FF" stroke-width="3.5" stroke-linejoin="round"/><rect x="-3.5" y="22" width="7" height="14" rx="3" fill="#fff"/></g><g><circle cx="342" cy="34" r="26" fill="#D4E34A"/><path d="M321.7 17.9 Q339.4 34 321.7 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M362.3 17.9 Q344.6 34 362.3 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><g transform="translate(422 38) rotate(35)"><ellipse cx="0" cy="-8" rx="17" ry="23" fill="none" stroke="#9CC1FF" stroke-width="4"/><g stroke="#9CC1FF" stroke-width="1.4" opacity=".85"><line x1="-11" y1="-26" x2="-11" y2="10"/><line x1="-5" y1="-30" x2="-5" y2="14"/><line x1="1" y1="-31" x2="1" y2="15"/><line x1="7" y1="-30" x2="7" y2="14"/><line x1="12" y1="-26" x2="12" y2="10"/><line x1="-16" y1="-16" x2="16" y2="-16"/><line x1="-17" y1="-8" x2="17" y2="-8"/><line x1="-16" y1="0" x2="16" y2="0"/><line x1="-12" y1="8" x2="12" y2="8"/></g><path d="M-6 14 L0 22 L6 14" fill="none" stroke="#9CC1FF" stroke-width="3.5" stroke-linejoin="round"/><rect x="-3.5" y="22" width="7" height="14" rx="3" fill="#fff"/></g><g><circle cx="494" cy="34" r="26" fill="#D4E34A"/><path d="M473.7 17.9 Q491.4 34 473.7 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M514.3 17.9 Q496.6 34 514.3 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g><g><circle cx="570" cy="34" r="26" fill="#D4E34A"/><path d="M549.7 17.9 Q567.4 34 549.7 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M590.3 17.9 Q572.6 34 590.3 50.1" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g></svg><b>TENNIS<span>BYTE</span></b></a><nav aria-label="Site menu"><a href="#live">LIVE SCORE</a><a href="#schedule">SCHEDULE</a><a href="/rankings">RANKINGS</a><a href="#stories-sec">STORIES</a><a href="#standings-sec">STANDINGS</a></nav></div></div>
 <header class="masthead">
   <div class="wrap">
-    <a href="/" style="display:block;line-height:0"><img class="tb-mark" src="/icons/tennisbyte-mark.svg" alt="TennisByte" width="208" height="26"></a>
     <p class="masthead-title">NITTO <span>ATP FINALS 2026</span></p>
     <p class="masthead-sub">Inalpi Arena, Turin, Italy &middot; Nov 15&ndash;22 &middot; Indoor hard</p>
     <p class="masthead-sub" style="width:100%;margin-top:6px;"><a href="https://wta-finals-2026.vercel.app/" style="color:var(--ball);font-family:'Oswald',sans-serif;letter-spacing:.6px;text-decoration:none;">WTA Finals 2026 (archive) &middot; champion Andreeva &rarr;</a></p>
@@ -913,14 +927,15 @@
 
   <div id="whereToWatch" class="ww"></div>
 
+  <div id="live"></div>
   <div id="panels"></div>
 
-  <section>
+  <section id="standings-sec">
     <h2 class="section-title">Round-Robin Standings</h2>
     <div id="standings"></div>
   </section>
 
-  <section>
+  <section id="schedule">
     <h2 class="section-title">Schedule &mdash; Dubai Times</h2>
     <table class="full-sched">
       <thead><tr><th>UAE Date / Time</th><th>Turin (CET)</th><th>Match</th></tr></thead>
@@ -929,7 +944,7 @@
     <p style="font-size:12.5px; color:var(--ink-soft); margin-top:12px; font-style:italic;">UAE = Gulf Standard Time (UTC+4); Turin is on Central European Time (UTC+1) in November, so the UAE is 3 hours ahead. Times marked TBC are not confirmed yet and the order of play can change.</p>
   </section>
 
-  <section>
+  <section id="stories-sec">
     <h2 class="section-title">ATP Finals Storylines</h2>
     <div id="stories"></div>
   </section>
