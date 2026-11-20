@@ -141,29 +141,39 @@ async function overlayLive(matches) {
   return used;
 }
 
+const ESPN_URLS = [ESPN, 'https://site.web.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard', ESPN + '?lang=en&region=us'];
 let lastGood = null;   // last complete response, served if ESPN fails for a moment
 async function getScoreboard() {
-  let why = '';
-  for (let i = 0; i < 2; i++) {
+  const why = [];
+  for (const url of ESPN_URLS) {
     try {
-      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 6000);
-      const r = await fetch(ESPN, { signal: ctl.signal, headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; tennis-fan-page)' } }); clearTimeout(t);
-      if (!r.ok) { why = 'espn http ' + r.status; continue; }
-      return { j: await r.json() };
-    } catch (e) { why = 'espn ' + ((e && (e.cause && e.cause.code || e.name)) || 'error'); }
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 5000);
+      const r = await fetch(url, { signal: ctl.signal, headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; tennis-fan-page)' } }); clearTimeout(t);
+      if (!r.ok) { why.push(new URL(url).host + ' http ' + r.status); continue; }
+      const j = await r.json();
+      if (j && Array.isArray(j.events)) return { j };
+      why.push(new URL(url).host + ' no events');
+    } catch (e) { why.push(new URL(url).host + ' ' + ((e && (e.cause && e.cause.code || e.name)) || 'error')); }
   }
-  return { why };
+  return { why: why.join('; ') };
+}
+
+// Saved copy of the schedule and results (data/atp-snapshot.json), used only when ESPN cannot be reached from the server.
+function loadSnapshot() {
+  try { return JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'atp-snapshot.json'), 'utf8')); } catch (e) { return null; }
 }
 
 module.exports = async (req, res) => {
   const got = await getScoreboard();
   const j = got.j;
+  let snapMatches = null, snapNote = '';
   if (!j) {
-    res.setHeader('Cache-Control', 'no-store');
-    if (lastGood) return res.status(200).json(Object.assign({}, lastGood, { stale: true, feedNote: got.why }));
-    return res.status(502).json({ error: 'scoreboard unavailable', reason: got.why });
+    if (lastGood) { res.setHeader('Cache-Control', 'no-store'); return res.status(200).json(Object.assign({}, lastGood, { stale: true, feedNote: got.why })); }
+    const snap = loadSnapshot();
+    if (!snap || !Array.isArray(snap.matches)) { res.setHeader('Cache-Control', 'no-store'); return res.status(502).json({ error: 'scoreboard unavailable', reason: got.why }); }
+    snapMatches = snap.matches; snapNote = 'ESPN unreachable (' + got.why + '); showing saved schedule with live scores from the live feed';
   }
-  const ev = (j.events || []).find((e) => /ATP Finals/i.test(e.name || ''));
+  const ev = ((j && j.events) || []).find((e) => /ATP Finals/i.test(e.name || ''));
   const grp = ev && (ev.groupings || []).find((g) => /singles/i.test((g.grouping && g.grouping.displayName) || ''));
   const matches = [];
   ((grp && grp.competitions) || []).forEach((c) => {
@@ -183,8 +193,9 @@ module.exports = async (req, res) => {
     });
     if (halted) matches[matches.length - 1].note = 'Play halted (' + (st.detail || 'suspended') + ')';
   });
+  if (snapMatches) snapMatches.forEach((m) => matches.push(m));
   matches.sort((a, b) => Date.parse(a.start) - Date.parse(b.start) || Number(a.id) - Number(b.id));
-  let feed = 'espn';
+  let feed = snapMatches ? 'saved' : 'espn';
   try { if (await overlayLive(matches)) feed = 'livetennis'; } catch (e) { /* ESPN alone is fine */ }
   try { await attachStats(matches); } catch (e) { /* stats are optional */ }
   // Groups: players linked by round-robin matches (ESPN does not name the groups)
@@ -202,7 +213,7 @@ module.exports = async (req, res) => {
     .map((players, i) => ({ name: 'Group ' + 'AB'[i], players }));
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + (matches.some((m) => m.status === 'live') ? 20 : 120) + ', stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  const out = { updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, feedNote: lt.note || undefined, feedCalls: lt.calls, statsNote: statsNote || undefined, matches, groups };
+  const out = { updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, stale: snapMatches ? true : undefined, feedNote: snapNote || lt.note || undefined, feedCalls: lt.calls, statsNote: statsNote || undefined, matches, groups };
   lastGood = out;
   res.status(200).json(out);
 };

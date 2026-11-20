@@ -4,6 +4,7 @@ const URLS = {
   wta: 'https://site.api.espn.com/apis/site/v2/sports/tennis/wta/rankings',
 };
 let last = null;
+function snapshot() { try { return JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'rankings-snapshot.json'), 'utf8')); } catch (e) { return null; } }
 
 async function one(tour) {
   let why = '';
@@ -32,6 +33,7 @@ module.exports = async (req, res) => {
   const out = { fetched: new Date().toISOString(), atp: atp.players || null, wta: wta.players || null, atpUpdated: atp.updated || null, wtaUpdated: wta.updated || null };
   if (!out.atp && last && last.atp) { out.atp = last.atp; out.atpUpdated = last.atpUpdated; out.atpStale = true; }
   if (!out.wta && last && last.wta) { out.wta = last.wta; out.wtaUpdated = last.wtaUpdated; out.wtaStale = true; }
+  if ((!out.atp || !out.wta)) { const sn = snapshot(); if (sn) { if (!out.atp && sn.atp) { out.atp = sn.atp; out.atpUpdated = sn.atpUpdated; out.atpStale = true; } if (!out.wta && sn.wta) { out.wta = sn.wta; out.wtaUpdated = sn.wtaUpdated; out.wtaStale = true; } } }
   if (!out.atp && !out.wta) { res.setHeader('Cache-Control', 'no-store'); return res.status(502).json({ error: 'rankings unavailable', reason: atp.why || wta.why }); }
   if (!out.atpStale && !out.wtaStale) last = out;
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=1800, stale-while-revalidate=3600');

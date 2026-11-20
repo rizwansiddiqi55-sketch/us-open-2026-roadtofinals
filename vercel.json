@@ -65,5 +65,13 @@
     {
       "handle": "filesystem"
     }
-  ]
+  ],
+  "functions": {
+    "api/atp.js": {
+      "includeFiles": "data/atp-snapshot.json"
+    },
+    "api/rankings.js": {
+      "includeFiles": "data/rankings-snapshot.json"
+    }
+  }
 }
