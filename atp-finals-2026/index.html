@@ -808,6 +808,19 @@
   .qbadge.adv{background:#1A6B3A;color:#fff}.qbadge.out{background:#B33A3A;color:#fff}.qbadge.mid{background:rgba(120,130,150,.25);color:var(--ink-soft)}
   table.standings tr.q-adv td{background:rgba(26,107,58,.10)}table.standings tr.q-out td{opacity:.62}table.standings tr.q-out td:nth-child(2){text-decoration:line-through;text-decoration-thickness:1px}
   @media(max-width:520px){.qbadge{display:block;margin:3px 0 0;width:max-content}}
+  .wu-lead{font-size:17px;line-height:1.6;margin:0 0 16px;max-width:760px}
+  .wu-grid{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:860px){.wu-grid{grid-template-columns:1fr 1fr}}
+  .wu-card{border:2px solid var(--court-blue-dark);border-radius:14px;padding:18px 18px 12px;background:rgba(255,255,255,.55)}
+  .wu-card h3{margin:0 0 6px;font-size:22px;letter-spacing:.5px}.wu-card h3 span{font-size:13px;letter-spacing:1px;background:var(--ball);color:#0F2350;border-radius:999px;padding:2px 10px;margin-left:8px;vertical-align:middle;white-space:nowrap}
+  .wu-after{border-color:#1A6B3A}.wu-before{border-color:#C0392B}
+  .wu-note{font-size:14.5px;color:var(--ink-soft);margin:0 0 10px;font-style:italic}
+  .wu-card ol,.wu-card ul{margin:0;padding-left:22px}.wu-card li{margin:7px 0;font-size:16px;line-height:1.5}
+  .wu-sub{margin:26px 0 10px;font-size:22px}
+  .wu-inj{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:760px){.wu-inj{grid-template-columns:1fr 1fr 1fr}}
+  .wu-inj>div{border:1px solid rgba(15,35,80,.25);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.55)}
+  .wu-inj h4{margin:0 0 4px;font-size:18px}.wu-inj p{margin:0;font-size:15.5px;line-height:1.5}
+  .wu-warn{margin:16px 0 0;padding:12px 14px;border-left:5px solid #B33A3A;background:rgba(179,58,58,.08);font-size:15.5px;line-height:1.5}
   .gms{display:inline-block; min-width:2.6em; letter-spacing:.5px;}
   .pt{display:inline-block; min-width:30px; text-align:center; border:1px solid rgba(255,255,255,.4); border-radius:5px; padding:0 6px; margin-left:10px; background:rgba(0,0,0,.25); color:#fff;}
   .refresh-btn{font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:.8px; color:#0F2350; background:var(--ball); border:0; border-radius:999px; padding:5px 12px; margin:6px 0 4px; cursor:pointer;}
@@ -896,12 +909,12 @@
 .tbnav nav a{flex:none;color:#cfd8f0;text-decoration:none;font-weight:500;font-size:14px;letter-spacing:1.2px;padding:6px 12px;border-radius:999px;border:1px solid rgba(207,216,240,.35);white-space:nowrap}
 .tbnav nav a:hover,.tbnav nav a[aria-current=page]{background:#D4E34A;color:#0F2350;border-color:#D4E34A}
 @media(min-width:760px){.tbnav nav{flex:1 1 auto;justify-content:flex-end}}@media(max-width:520px){.tbnav .brand b.wm{font-size:23px}.tbnav .tblogo{height:52px}.tbnav .in{padding:8px 12px 10px;gap:10px}.tbnav .tbm{height:38px;width:auto}.tbnav .brand b{font-size:23px}}
-html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stories-sec]{scroll-margin-top:96px}
+html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stories-sec],[id=warmup]{scroll-margin-top:96px}
 </style>
 </head>
 <body>
 
-<div class="tbnav"><div class="in"><a class="brand" href="/" aria-label="TennisByte home"><img class="tblogo" src="/icons/tennisbyte-logo-concept1-loop.png" alt="TennisByte logo: an infinity tennis court with a serving player and LIVE ATP WTA" width="140" height="61"><b class="wm">Tennis<span>Byte</span>.com</b></a><nav aria-label="Site menu"><a href="#live">LIVE SCORE</a><a href="#schedule">SCHEDULE</a><a href="/rankings">RANKINGS</a><a href="#stories-sec">STORIES</a><a href="#standings-sec">STANDINGS</a></nav></div></div>
+<div class="tbnav"><div class="in"><a class="brand" href="/" aria-label="TennisByte home"><img class="tblogo" src="/icons/tennisbyte-logo-concept1-loop.png" alt="TennisByte logo: an infinity tennis court with a serving player and LIVE ATP WTA" width="140" height="61"><b class="wm">Tennis<span>Byte</span>.com</b></a><nav aria-label="Site menu"><a href="#live">LIVE SCORE</a><a href="#schedule">SCHEDULE</a><a href="/rankings">RANKINGS</a><a href="#stories-sec">STORIES</a><a href="#standings-sec">STANDINGS</a><a href="#warmup">WARM-UP</a></nav></div></div>
 <header class="masthead">
   <div class="wrap">
     <p class="masthead-title">NITTO <span>ATP FINALS 2026</span></p>
@@ -953,6 +966,59 @@ html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stori
   <section id="stories-sec">
     <h2 class="section-title">ATP Finals Storylines</h2>
     <div id="stories"></div>
+  </section>
+
+  <section id="warmup">
+    <h2 class="section-title">Warm-Up &amp; Injury Prevention</h2>
+    <p class="wu-lead">Tennis asks for sudden sprints, stops, twists and overhead hits. A few minutes of preparation before you play and some easy stretching afterwards lowers the chance of strains and overuse injuries. This is general fitness information, not medical advice.</p>
+
+    <div class="wu-grid">
+      <article class="wu-card wu-before">
+        <h3>&#9200; Before you play <span>8&ndash;10 min, dynamic</span></h3>
+        <p class="wu-note">Move through the motions you will use. Save long, held stretches for afterwards, since holding them for a long time right before play can leave muscles feeling flat.</p>
+        <ol>
+          <li><b>Easy jog or skipping</b> &mdash; 2 minutes, heart rate up gently.</li>
+          <li><b>Leg swings</b> &mdash; front to back, then side to side, 10 each leg.</li>
+          <li><b>Walking lunges with a twist</b> &mdash; 8 each side.</li>
+          <li><b>Arm circles</b> &mdash; small to big, 10 forward and 10 backward.</li>
+          <li><b>Shoulder opener</b> &mdash; band pull-aparts or arms-out squeezes, 12 reps.</li>
+          <li><b>Trunk rotations</b> &mdash; feet planted, turn your hips and shoulders, 10 each side.</li>
+          <li><b>Wrist and forearm circles</b> &mdash; open and close the hands, 10 each way.</li>
+          <li><b>Side shuffles and cross-steps</b> &mdash; 2 lengths of the baseline.</li>
+          <li><b>Mini-tennis</b> &mdash; easy rallies from the service line, then the baseline, 3&ndash;5 minutes.</li>
+          <li><b>Serve build-up</b> &mdash; shadow swings, half pace, then full pace.</li>
+        </ol>
+      </article>
+
+      <article class="wu-card wu-after">
+        <h3>&#128705; After you play <span>5&ndash;10 min, static</span></h3>
+        <p class="wu-note">Walk for 2&ndash;3 minutes first, then hold each stretch for 20&ndash;30 seconds, twice. It should feel like a gentle pull, never sharp pain.</p>
+        <ul>
+          <li><b>Cross-body shoulder</b> &mdash; pull one arm across the chest.</li>
+          <li><b>Overhead triceps</b> &mdash; hand behind the head, press the elbow back.</li>
+          <li><b>Doorway chest</b> &mdash; forearm on a frame, lean through gently.</li>
+          <li><b>Wrist flexors and extensors</b> &mdash; arm straight, bend the hand down, then up.</li>
+          <li><b>Standing quad</b> &mdash; heel towards the glute, knees together.</li>
+          <li><b>Hamstring</b> &mdash; heel on a low step, hinge forward with a flat back.</li>
+          <li><b>Calf</b> &mdash; hands on a wall, back heel pressed down.</li>
+          <li><b>Hip flexor lunge</b> &mdash; tuck the pelvis and lean forward slightly.</li>
+          <li><b>Glute &ldquo;figure-4&rdquo;</b> &mdash; lying down, ankle over the opposite knee.</li>
+          <li><b>Lower back and trunk</b> &mdash; child&rsquo;s pose or a lying knees-to-side twist.</li>
+        </ul>
+      </article>
+    </div>
+
+    <h3 class="wu-sub">Common tennis injuries and how to lower the risk</h3>
+    <div class="wu-inj">
+      <div><h4>&#128170; Tennis elbow</h4><p>Pain on the outside of the elbow. Strengthen the forearm with slow wrist extensions, check your grip size and string tension (softer strings are kinder), and avoid long sessions with heavy, wet balls.</p></div>
+      <div><h4>&#127934; Shoulder (serve)</h4><p>Overhead hitting loads the rotator cuff. Do band external rotations and shoulder-blade exercises twice a week, and build up the number of serves gradually instead of jumping from none to a hundred.</p></div>
+      <div><h4>&#129462; Ankle sprains</h4><p>Wear court shoes that still have grip and cushioning, practise single-leg balance, and replace worn shoes. Avoid playing on a wet or dusty court.</p></div>
+      <div><h4>&#129461; Calf, knee and Achilles</h4><p>Calf raises and lunges build strength; add playing time gradually and keep a rest day between hard sessions. Tight calves and sudden speed work are a common mix for strains.</p></div>
+      <div><h4>&#129455; Lower back</h4><p>Train the core and hip mobility, and keep the serve rhythmic instead of over-arching the back. Stretch the hip flexors after play.</p></div>
+      <div><h4>&#127774; Heat and dehydration</h4><p>In the UAE, play early or late in the day, drink water before and during play (add electrolytes for long sessions), wear a cap and sun protection, and stop if you feel dizzy.</p></div>
+    </div>
+
+    <p class="wu-warn"><b>Stop and get checked</b> if you have sharp or worsening pain, swelling, numbness, a joint that gives way, or pain that lingers for days. See a doctor or physiotherapist. Anyone with a medical condition should check with a doctor before starting a new routine.</p>
   </section>
 
   <section>
