@@ -63,6 +63,10 @@
       "dest": "/rankings.html"
     },
     {
+      "src": "^/warm-up/?$",
+      "dest": "/warm-up.html"
+    },
+    {
       "handle": "filesystem"
     }
   ],
