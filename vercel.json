@@ -43,6 +43,10 @@
       }
     },
     {
+      "src": "^/al-habtoor/?$",
+      "dest": "/al-habtoor.html"
+    },
+    {
       "src": "^/about/?$",
       "dest": "/about.html"
     },
