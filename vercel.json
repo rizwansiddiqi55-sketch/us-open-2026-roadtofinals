@@ -83,6 +83,10 @@
       "dest": "/h2h.html"
     },
     {
+      "src": "^/news/?$",
+      "dest": "/news.html"
+    },
+    {
       "handle": "filesystem"
     }
   ],
@@ -95,6 +99,9 @@
     },
     "api/tournaments.js": {
       "includeFiles": "data/tournaments-snapshot.json"
+    },
+    "api/news.js": {
+      "includeFiles": "data/news-snapshot.json"
     }
   }
 }
