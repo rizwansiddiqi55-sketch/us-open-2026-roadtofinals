@@ -7,7 +7,10 @@ const SOURCES = [
 ];
 let last = null;
 function snapshot() { try { return JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'news-snapshot.json'), 'utf8')); } catch (e) { return null; } }
-const clean = (s, n) => String(s || '').replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n || 240);
+const dec = (s) => String(s || '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&apos;|&#8217;/g, "'").replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
+const clean = (s, n) => dec(dec(String(s || '').replace(/<!\[CDATA\[|\]\]>/g, ''))).replace(/<[^>]+>/g, ' ').replace(/Continue reading\.\.\./gi, '').replace(/\s+/g, ' ').trim().slice(0, n || 240);
+const url = (u) => dec(String(u || '').replace(/<!\[CDATA\[|\]\]>/g, '')).trim().replace(/[?&]at_medium=RSS(&at_campaign=rss)?$/i, '');
+const TENNIS = /tennis|\batp\b|\bwta\b|wimbledon|grand slam|davis cup|billie jean|us open|french open|australian open|roland garros/i;
 const tag = (xml, t) => { const m = xml.match(new RegExp('<' + t + '(?:\\s[^>]*)?>([\\s\\S]*?)</' + t + '>', 'i')); return m ? m[1] : ''; };
 
 async function get(url, accept) {
@@ -25,8 +28,8 @@ async function fromRss(s) {
   return (xml.match(/<item[\s\S]*?<\/item>/gi) || []).slice(0, 25).map((it) => {
     const img = (it.match(/<media:thumbnail[^>]*url="([^"]+)"/i) || it.match(/<media:content[^>]*url="([^"]+)"/i) || it.match(/<enclosure[^>]*url="([^"]+)"/i) || [])[1];
     const d = Date.parse(clean(tag(it, 'pubDate')) || clean(tag(it, 'dc:date')));
-    return { title: clean(tag(it, 'title'), 200), desc: clean(tag(it, 'description'), 260), url: clean(tag(it, 'link'), 500) || clean(tag(it, 'guid'), 500), img, time: isNaN(d) ? null : new Date(d).toISOString(), source: s.name };
-  }).filter((x) => x.title && /^https?:/.test(x.url || ''));
+    return { title: clean(tag(it, 'title'), 200), desc: clean(tag(it, 'description'), 260), url: url(clean(tag(it, 'link'), 500) || clean(tag(it, 'guid'), 500)), img: img && dec(img), time: isNaN(d) ? null : new Date(d).toISOString(), source: s.name };
+  }).filter((x) => x.title && /^https?:/.test(x.url || '') && TENNIS.test(x.title + ' ' + x.desc) && !/quiz/i.test(x.title));
 }
 const kind = (x) => (x.tour ? [x.tour] : (/\b(wta|women|womens|women's)\b/i.test(x.title + ' ' + x.desc) ? ['WTA'] : (/\b(atp|men's|mens)\b/i.test(x.title + ' ' + x.desc) ? ['ATP'] : [])));
 
