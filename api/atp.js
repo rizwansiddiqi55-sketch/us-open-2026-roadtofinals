@@ -33,7 +33,7 @@ const ROUND = { 'group stage': 'RR', semifinal: 'SF', final: 'F' };
 // ---------------------------------------------------------------------------------------------
 const LT = 'https://api.livetennisapi.com/api/public/v1/matches?tour=atp&status=live&limit=50';
 const LT_LIMIT = Number(process.env.TENNIS_DAY_LIMIT) || 95;
-const lt = { memo: null, at: 0, ttl: 120000, day: -1, calls: 0, blockedUntil: 0, note: '' };
+const lt = { memo: null, at: 0, ttl: 90000, day: -1, calls: 0, blockedUntil: 0, note: '' };
 const norm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 const lastName = (n) => norm(n).split(/\s+/).pop();
 const pairKey = (a, b) => [lastName(a), lastName(b)].sort().join('|');
@@ -54,7 +54,7 @@ async function liveFeed() {
     if (r.status === 429) { let until = now + 15 * 60000; try { const j = await r.json(); if (j && j.resets_at) until = Math.max(until, Date.parse(j.resets_at) + 30000); } catch (e) { /* keep the default */ } lt.blockedUntil = until; lt.note = 'rate limited'; return null; }
     if (r.status === 401 || r.status === 403) { lt.blockedUntil = now + 10 * 60000; lt.note = 'key rejected ' + r.status; return null; }
     if (!r.ok) { lt.note = 'http ' + r.status; return null; }
-    lt.memo = await r.json(); lt.at = now; lt.ttl = lt.calls < 45 ? 120000 : 240000; lt.note = '';
+    lt.memo = await r.json(); lt.at = now; lt.ttl = lt.calls < 80 ? 90000 : 180000;   // every 90 s for the first 80 calls of the day, then every 3 min so the free 100/day lasts to the end of the match lt.note = '';
     return lt.memo;
   } catch (e) { lt.note = 'unreachable'; return null; }
 }
