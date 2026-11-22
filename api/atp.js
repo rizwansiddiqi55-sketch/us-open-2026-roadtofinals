@@ -132,6 +132,9 @@ async function overlayLive(matches) {
     const a = same ? g[0] : g[1], b = same ? g[1] : g[0], sets = [];
     for (let i = 0; i < Math.max(a.length, b.length); i++) sets.push({ p1: a[i] || 0, p2: b[i] || 0 });
     if (!sets.length) return;
+    // ESPN is authoritative for sets that are already finished; the live feed only supplies the set in progress (it can be a game out on earlier sets)
+    const finished = (x) => (x.p1 >= 6 && x.p1 - x.p2 >= 2) || x.p1 === 7 || (x.p2 >= 6 && x.p2 - x.p1 >= 2) || x.p2 === 7;
+    (m.sets || []).forEach((e, i) => { if (i < sets.length - 1 && finished(e)) sets[i] = { p1: e.p1, p2: e.p2, tb: e.tb }; });
     const total = (x) => x.reduce((t, y) => t + y.p1 + y.p2, 0);
     if (m.status === 'live' && (sets.length < m.sets.length || total(sets) < total(m.sets))) return;   // a score never goes backwards
     m.status = 'live'; m.sets = sets; m.feed = 'livetennis'; used = true;
