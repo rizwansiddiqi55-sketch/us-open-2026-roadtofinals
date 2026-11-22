@@ -1105,9 +1105,28 @@ html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stori
     if(w1===0&&w2===1) return pc*s;
     return w1>w2?1:(w2>w1?0:pc);
   }
+  // ---------- pre-match predictor (the next match, e.g. the final): ranking + how each player has played this week ----------
+  function wpForm(d){
+    var f={}; (d.matches||[]).forEach(function(m){ if(m.status!=='final'||!m.winner) return;
+      [['p1','p2'],['p2','p1']].forEach(function(k){ var n=m[k[0]].name; f[n]=f[n]||{gw:0,gl:0,w:0,l:0}; (m.sets||[]).forEach(function(x){ f[n].gw+=x[k[0]]; f[n].gl+=x[k[1]]; }); if(m.winner===k[0]) f[n].w++; else f[n].l++; }); });
+    return f;
+  }
+  function wpPreRender(d,box){
+    var now=Date.now(), nx=(d.matches||[]).filter(function(x){ return x.status==='upcoming'&&x.timeValid&&x.p1.name!=='TBD'&&x.p2.name!=='TBD'&&Date.parse(x.start)-now<36*3600000&&Date.parse(x.start)>now-6*3600000; }).sort(function(a,b){return Date.parse(a.start)-Date.parse(b.start);})[0];
+    if(!nx){ box.hidden=true; box.innerHTML=''; return; }
+    var F=wpForm(d), a=F[nx.p1.name], b=F[nx.p2.name], pr=wpPrior(nx), lr=Math.log(pr/(1-pr)), g1=a?a.gw/(a.gw+a.gl):0.5, g2=b?b.gw/(b.gw+b.gl):0.5, lf=(a&&b)?4*(g1-g2):0;
+    var p=1/(1+Math.exp(-(lr+lf))), A=Math.min(95,Math.max(5,Math.round(p*100))), B=100-A, rA=Math.round(pr*100);
+    function lab(x){ return esc(x.name)+(x.rank?' <small style="opacity:.7;font-size:12px;">(ATP #'+x.rank+')</small>':''); }
+    function rec(x,k){ return k?(k.w+'-'+k.l+' in matches, '+Math.round(k.gw/(k.gw+k.gl)*100)+'% of games won'):'no matches yet'; }
+    box.innerHTML='<div class="wp-head"><span>&#127919; WIN PREDICTOR &middot; '+(nx.roundCode==='F'?'FINAL':roundName(nx).toUpperCase())+'</span><span class="wp-score" style="color:var(--ball)">'+dayShort(uaeDate(nx))+' &middot; '+timeUAE(nx)+'</span></div>'+
+      '<div class="wp-row"><span>'+lab(nx.p1)+'</span><b>'+A+'%</b></div><div class="wp-bar"><i class="wp-a" style="width:'+A+'%"></i><i class="wp-b" style="width:'+B+'%"></i></div><div class="wp-row"><span>'+lab(nx.p2)+'</span><b>'+B+'%</b></div>'+
+      '<p class="wp-note" style="opacity:.85;font-style:normal">Ranking alone gives '+rA+'% to '+esc(nm(nx.p1))+' and '+(100-rA)+'% to '+esc(nm(nx.p2))+'. This week: '+esc(nm(nx.p1))+' '+rec(nx.p1,a)+'; '+esc(nm(nx.p2))+' '+rec(nx.p2,b)+'.</p>'+
+      '<p class="wp-note">Pre-match estimate from the ATP rankings and each player&rsquo;s results at this tournament. It switches to a live win probability once play starts. It is a statistical guide, not a betting tip.</p>';
+    box.hidden=false;
+  }
   function wpRender(d){
     var box=document.getElementById('winPredictor'), m=(d.matches||[]).filter(function(x){return x.status==='live';})[0];
-    if(!m){ box.hidden=true; box.innerHTML=''; return; }
+    if(!m){ wpPreRender(d,box); return; }
     var inf={}, p=wpWin(m,inf), a=Math.min(99,Math.max(1,Math.round(p*100))), b=100-a, ranked=!!(m.p1.rank&&m.p2.rank), pre=Math.round(inf.prior*100);
     function lab(x){ return esc(x.name)+(x.rank?' <small style="opacity:.7;font-size:12px;">(ATP #'+x.rank+')</small>':''); }
     var sc=(m.sets||[]).map(function(x){return x.p1+'-'+x.p2;}).join(', ');
