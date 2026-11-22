@@ -41,7 +41,7 @@ main.home{max-width:1100px;margin:0 auto;padding:18px 14px 40px}
 @media (prefers-color-scheme:dark){.tc,.rk,.wt{background:rgba(255,255,255,.04)}}
 a.tc:hover{border-color:#D4E34A}
 .tc .st{font:700 12px Oswald,Arial,sans-serif;letter-spacing:1.2px;color:var(--mut)}.tc .st.live{color:#fff;background:#C0392B;border-radius:5px;padding:1px 8px;align-self:flex-start}.tc .st.arch{color:#1A6B3A}
-.tc h3{margin:0;font:600 21px/1.2 Oswald,Arial,sans-serif}.tc .dt{font-size:15px;color:var(--mut)}.tc .ch{font-size:15px}
+.tc h3{margin:0;font:600 21px/1.2 Oswald,Arial,sans-serif}.tc .dt{font-size:15px;color:var(--mut)}.tc .ch{font-size:15px}.tc .ch b{font-weight:700}
 .tc .tg{font:600 11.5px Oswald,Arial,sans-serif;letter-spacing:1px;margin-top:4px}.tc .tg b{background:var(--blue);color:#D4E34A;border-radius:4px;padding:1px 7px;margin-right:4px}.tc .tg b.uae,.tc .tg b.cat{background:#D4E34A;color:#0F2350}
 .mo{font:700 14px Oswald,Arial,sans-serif;letter-spacing:1.5px;color:var(--mut);margin:16px 0 6px}
 .more{margin-top:14px;font:600 16px Oswald,Arial,sans-serif;letter-spacing:1px;background:transparent;border:2px solid var(--blue);color:var(--ink);border-radius:999px;padding:8px 20px;cursor:pointer}
@@ -69,11 +69,10 @@ a.tc:hover{border-color:#D4E34A}
 <div id="upList"></div>
 <button type="button" class="more" id="upMore" hidden>Show more</button>
 
-<div class="mo">FINISHED</div>
-<div class="hm-grid" id="archGrid">
-<a class="tc" href="https://wta-finals-2026.vercel.app/"><span class="st arch">&#10003; FINISHED</span><h3>WTA Finals 2026</h3><span class="dt">Indian Wells &middot; Nov 8&ndash;15</span><span class="ch">&#127942; Champion: Mirra Andreeva</span></a>
-<a class="tc" href="/archive/paris-masters-2026.html"><span class="st arch">&#10003; FINISHED</span><h3>Rolex Paris Masters 2026</h3><span class="dt">Paris &middot; early November</span><span class="ch">&#127942; Champion: Carlos Alcaraz</span></a>
-</div>
+<h2 class="hm-h2" id="archive">Tennis Tournaments 2026</h2>
+<p class="hm-sub">The finished 2026 events we cover, with the singles champions. Newest first.</p>
+<div class="hm-grid" id="archGrid"><p class="msg">Loading the 2026 results&hellip;</p></div>
+<button type="button" class="more" id="archMore" hidden>Show all</button>
 
 <h2 class="hm-h2" id="rankings">Rankings</h2>
 <p class="hm-sub">The top 10 on each tour. They change once a week.</p>
@@ -115,6 +114,18 @@ a.tc:hover{border-color:#D4E34A}
     function draw(){ var cur='', h=''; up.slice(0,shown).forEach(function(t){ var m=dd(t.start), key=MONL[m.m]+' '+m.y; if(key!==cur){ if(cur) h+='</div>'; cur=key; h+='<div class="mo">'+key+'</div><div class="hm-grid">'; } h+=card(t,false); }); box.innerHTML=h+'</div>'; btn.hidden=shown>=up.length; btn.textContent='Show more ('+(up.length-shown)+' left)'; }
     btn.onclick=function(){ shown+=12; draw(); }; draw();
   }).catch(function(){ document.getElementById('upMsg').textContent='The tournament calendar is temporarily unavailable.'; });
+  // 2026 results (saved list, champions of the finished events)
+  var LINK={'wta finals (indian wells)':'https://wta-finals-2026.vercel.app/','rolex paris masters':'/archive/paris-masters-2026.html','us open':'/archive/us-open-2026.html'};
+  fetch('/data/archive-2026.json').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+    var ev=(d.events||[]).slice(), box=document.getElementById('archGrid'), btn=document.getElementById('archMore'), shown=6;
+    // add the Nitto ATP Finals once its final has been played
+    fetch('/api/atp',{cache:'no-store'}).then(function(r){return r.json();}).then(function(a){ var f=(a.matches||[]).filter(function(m){return m.roundCode==='F'&&m.status==='final'&&m.winner;})[0]; if(f&&!ev.some(function(x){return /nitto atp finals/i.test(x.name);})){ var w=f[f.winner], l=f[f.winner==='p1'?'p2':'p1']; ev.unshift({name:'Nitto ATP Finals',cat:'SEASON FINALS',start:'2026-11-15',end:'2026-11-22',venue:'Turin',results:{men:{champion:w.name,runnerUp:l.name,score:(f.sets||[]).map(function(x){return (f.winner==='p1'?x.p1+'-'+x.p2:x.p2+'-'+x.p1);}).join(', ')}}}); LINK['nitto atp finals']='/atp-finals-2026/'; } draw(); }).catch(function(){ draw(); });
+    function acard(t){ var r=t.results||{}, lines=''; if(r.men) lines+='<span class="ch">&#127942; Men: <b>'+esc(r.men.champion)+'</b></span>'; if(r.women) lines+='<span class="ch">&#127942; Women: <b>'+esc(r.women.champion)+'</b></span>'; if(!lines) lines='<span class="ch">Finished</span>';
+      var inner='<span class="st arch">&#10003; FINISHED</span><h3>'+esc(t.name)+'</h3><span class="dt">'+range(t.start,t.end)+(t.venue?' &middot; '+esc(t.venue):'')+'</span>'+lines+'<div class="tg"><b class="'+(t.cat==='DUBAI'?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':t.cat)+'</b></div>';
+      var link=LINK[t.name.toLowerCase()]; return link?'<a class="tc" href="'+link+'">'+inner+'</a>':'<div class="tc">'+inner+'</div>'; }
+    function draw(){ ev.sort(function(a,b){ return b.end.localeCompare(a.end); }); box.innerHTML=ev.slice(0,shown).map(acard).join(''); btn.hidden=shown>=ev.length; btn.textContent='Show all 2026 results ('+(ev.length-shown)+' more)'; }
+    btn.onclick=function(){ shown=ev.length; draw(); }; draw();
+  }).catch(function(){ document.getElementById('archGrid').innerHTML='<p class="msg">The 2026 results are temporarily unavailable.</p>'; });
   // rankings top 10
   fetch('/api/rankings').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
     function mv(p){ var x=(p.prev||p.rank)-p.rank; return x>0?'<span class="up">▲'+x+'</span>':(x<0?'<span class="down">▼'+(-x)+'</span>':'–'); }
