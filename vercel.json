@@ -67,6 +67,10 @@
       "dest": "/warm-up.html"
     },
     {
+      "src": "^/home/?$",
+      "dest": "/home.html"
+    },
+    {
       "handle": "filesystem"
     }
   ],
@@ -76,6 +80,9 @@
     },
     "api/rankings.js": {
       "includeFiles": "data/rankings-snapshot.json"
+    },
+    "api/tournaments.js": {
+      "includeFiles": "data/tournaments-snapshot.json"
     }
   }
 }
