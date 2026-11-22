@@ -41,6 +41,7 @@ a.tc:hover{border-color:#D4E34A}
 .wt{border:2px solid var(--blue);border-radius:14px;padding:14px;background:rgba(255,255,255,.5)}.wt .ic{font-size:30px}.wt h3{margin:4px 0;font:600 18px/1.2 Oswald,Arial,sans-serif}.wt p{margin:0;font-size:15px;line-height:1.45}
 .wt-more{display:inline-block;margin-top:14px;font:600 17px Oswald,Arial,sans-serif;letter-spacing:1px;background:#D4E34A;color:#0F2350;border-radius:999px;padding:8px 22px;text-decoration:none}
 .msg{color:var(--mut);padding:10px 0}
+.tabs{display:flex;gap:8px;margin:0 0 14px}.tabs button{font:600 16px Oswald,Arial,sans-serif;letter-spacing:1px;border:2px solid #1fa35c;background:transparent;color:var(--ink);border-radius:999px;padding:7px 22px;cursor:pointer}.tabs button.on{background:#1fa35c;color:#fff}.kitf{--k:#e0a800}.kitf .tg b{background:#e0a800;color:#0F2350}
 /* colour pass */
 main.home{background:linear-gradient(180deg,rgba(212,227,74,.10),transparent 420px)}
 .hm-live{background:radial-gradient(700px 260px at 15% 0%,#2a5bd7 0%,#16367f 55%,#0b1d4d 100%);border-color:#D4E34A;box-shadow:0 8px 24px rgba(15,35,80,.25)}
@@ -49,7 +50,7 @@ main.home{background:linear-gradient(180deg,rgba(212,227,74,.10),transparent 420
 #tournaments{--ac:#1fa35c}#archive{--ac:#e0a800}#rankings{--ac:#7b3fe4}#warmup{--ac:#ef6c2f}
 .tc{border-width:0;border-top:6px solid var(--k,#0F2350);background:linear-gradient(180deg,color-mix(in srgb,var(--k,#0F2350) 10%,transparent),transparent 60%),rgba(255,255,255,.55);box-shadow:0 2px 10px rgba(0,0,0,.08)}
 .tc .tg b{background:var(--k,#0F2350);color:#fff}.tc .tg b.cat,.tc .tg b.uae{background:var(--k,#D4E34A);color:#fff}
-.kgrandslam{--k:#7b3fe4}.k1000{--k:#1f6feb}.kseasonfinals{--k:#d6336c}.kdubai{--k:#0d9f6e}.kabudhabi{--k:#0a9396}
+.kgrandslam{--k:#7b3fe4}.k1000{--k:#1f6feb}.kseasonfinals{--k:#d6336c}.kdubai{--k:#0d9f6e}.kabudhabi{--k:#0a9396}.kqatar{--k:#8a1538}
 .mo{color:#fff;background:#0F2350;display:inline-block;border-radius:999px;padding:3px 14px;font-size:13px}
 .rk{border-width:0;border-top:6px solid #1f6feb;box-shadow:0 2px 10px rgba(0,0,0,.08)}.rk-wrap .rk+.rk{border-top-color:#a23fe0}
 .rk td.r{color:#fff;background:#0F2350;border-radius:8px}.rk-wrap .rk:first-child td.r{background:#1f6feb}.rk-wrap .rk+.rk td.r{background:#a23fe0}
@@ -68,14 +69,16 @@ main.home{background:linear-gradient(180deg,rgba(212,227,74,.10),transparent 420
 <a class="champ" id="champ" href="/atp-finals-2026/" hidden><img id="champImg" src="/players/alcaraz-trophy.jpg" alt="Carlos Alcaraz with the Nitto ATP Finals trophy" width="120" height="150"><div><small>2026 NITTO ATP FINALS CHAMPION</small><b>Carlos Alcaraz</b><span>Beat Alexander Zverev 6-2, 7-6(7) in the Turin final</span></div></a>
 <script>fetch("/api/atp").then(function(r){return r.json()}).then(function(d){var f=(d.matches||[]).filter(function(m){return m.roundCode==="F"&&m.status==="final"&&m.winner})[0];if(!f)return;var w=f[f.winner],l=f[f.winner==="p1"?"p2":"p1"];var s=f.sets.map(function(x){var a=f.winner==="p1"?x.p1:x.p2,b=f.winner==="p1"?x.p2:x.p1;return a+"-"+b+(x.tb!=null?"("+x.tb+")":"")}).join(", ");var c=document.getElementById("champ");c.querySelector("b").textContent=w.name;c.querySelector("span").textContent="Beat "+l.name+" "+s+" in the Turin final";if(!/alcaraz/i.test(w.name))c.querySelector("img").src="/players/"+w.name.split(" ").pop().toLowerCase()+".jpg";c.hidden=false}).catch(function(){})</script>
 <h2 class="hm-h2" id="tournaments">Tournaments</h2>
-<p class="hm-sub">We cover the Grand Slams, ATP and WTA 1000 events, the season-ending finals every tournament in Dubai and the Mubadala Abu Dhabi Open.</p>
-<div class="hm-grid" id="nowGrid"></div>
-<p class="msg"><a href="/al-habtoor"><b>Coming soon:</b> Al Habtoor Tennis Challenge (ITF W100), Dubai, 26&ndash;31 Jan 2027 (provisional) &rarr;</a></p>
+<p class="hm-sub">We cover the Grand Slams, ATP and WTA 1000 events, the season-ending finals, every tournament in Dubai, the Mubadala Abu Dhabi Open and the Qatar Open.</p>
+<div class="tabs" role="tablist"><button type="button" role="tab" class="on" id="tabBtnMain" aria-selected="true">ATP &amp; WTA</button><button type="button" role="tab" id="tabBtnItf" aria-selected="false">ITF</button></div>
+<div id="tabMain"><div class="hm-grid" id="nowGrid"></div>
 
 <div class="mo">UPCOMING</div>
 <p class="msg" id="upMsg">Loading the calendar&hellip;</p>
 <div id="upList"></div>
-<button type="button" class="more" id="upMore" hidden>Show more</button>
+<button type="button" class="more" id="upMore" hidden>Show more</button></div>
+<div id="tabItf" hidden><div class="hm-grid"><a class="tc kitf" href="/al-habtoor"><span class="st">COMING SOON</span><h3>Al Habtoor Tennis Challenge</h3><span class="dt">26&ndash;31 Jan 2027 (provisional) &middot; Dubai &middot; Al Habtoor Grand Resort</span><div class="tg"><b>ITF</b><b>W100</b><b class="uae">IN DUBAI</b></div></a></div><p class="msg">ITF World Tennis Tour events in Dubai. Live scores will be added once the draw is out.</p></div>
+<script>(function(){var a=document.getElementById('tabBtnMain'),b=document.getElementById('tabBtnItf'),m=document.getElementById('tabMain'),i=document.getElementById('tabItf');function show(x){var itf=x==='itf';m.hidden=itf;i.hidden=!itf;a.className=itf?'':'on';b.className=itf?'on':'';a.setAttribute('aria-selected',!itf);b.setAttribute('aria-selected',itf)}a.onclick=function(){show('main')};b.onclick=function(){show('itf')};if(location.hash==='#itf'){show('itf')}})()</script>
 
 <h2 class="hm-h2" id="archive">Tennis Tournaments 2026</h2>
 <p class="hm-sub">The finished 2026 events we cover, with the singles champions. Newest first.</p>
@@ -103,7 +106,7 @@ main.home{background:linear-gradient(180deg,rgba(212,227,74,.10),transparent 420
   var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], MONL=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
   function dd(s){ var p=s.split('-'); return {y:+p[0],m:+p[1]-1,d:+p[2]}; }
   function range(a,b){ var x=dd(a), y=dd(b||a); if(a===b||!b) return x.d+' '+MON[x.m]; return x.m===y.m?x.d+'–'+y.d+' '+MON[x.m]:x.d+' '+MON[x.m]+' – '+y.d+' '+MON[y.m]; }
-  function tags(t){ var h=t.tours.map(function(x){return '<b>'+x+'</b>';}).join(''); if(t.cat) h+='<b class="'+((t.cat==='DUBAI'||t.cat==='ABU DHABI')?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':(t.cat==='1000'?'1000':t.cat))+'</b>'; return '<div class="tg">'+h+'</div>'; }
+  function tags(t){ var h=t.tours.map(function(x){return '<b>'+x+'</b>';}).join(''); if(t.cat) h+='<b class="'+((t.cat==='DUBAI'||t.cat==='ABU DHABI'||t.cat==='QATAR')?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':(t.cat==='1000'?'1000':t.cat))+'</b>'; return '<div class="tg">'+h+'</div>'; }
   function cc(t){ return 'k'+String(t.cat||'x').toLowerCase().replace(/[^a-z0-9]/g,''); }
   function card(t,live){ var isAtpF=/nitto atp finals/i.test(t.name); var inner='<span class="st'+(live?' live':'')+'">'+(live?'LIVE NOW':'UPCOMING')+'</span><h3>'+esc(t.name)+'</h3><span class="dt">'+range(t.start,t.end)+(t.venue?' &middot; '+esc(t.venue):'')+'</span>'+tags(t);
     var star=window.TB?TB.star({k:'t:'+t.name,t:'tournament',n:t.name,u:isAtpF?'/atp-finals-2026/':'/home#tournaments'}):'';
@@ -131,7 +134,7 @@ main.home{background:linear-gradient(180deg,rgba(212,227,74,.10),transparent 420
     // add the Nitto ATP Finals once its final has been played
     fetch('/api/atp',{cache:'no-store'}).then(function(r){return r.json();}).then(function(a){ var f=(a.matches||[]).filter(function(m){return m.roundCode==='F'&&m.status==='final'&&m.winner;})[0]; if(f&&!ev.some(function(x){return /nitto atp finals/i.test(x.name);})){ var w=f[f.winner], l=f[f.winner==='p1'?'p2':'p1']; ev.unshift({name:'Nitto ATP Finals',cat:'SEASON FINALS',start:'2026-11-15',end:'2026-11-22',venue:'Turin',results:{men:{champion:w.name,runnerUp:l.name,score:(f.sets||[]).map(function(x){return (f.winner==='p1'?x.p1+'-'+x.p2:x.p2+'-'+x.p1);}).join(', ')}}}); LINK['nitto atp finals']='/atp-finals-2026/'; } draw(); }).catch(function(){ draw(); });
     function acard(t){ var r=t.results||{}, lines=''; if(r.men) lines+='<span class="ch">&#127942; Men: <b>'+esc(r.men.champion)+'</b></span>'; if(r.women) lines+='<span class="ch">&#127942; Women: <b>'+esc(r.women.champion)+'</b></span>'; if(!lines) lines='<span class="ch">Finished</span>';
-      var inner='<span class="st arch">&#10003; FINISHED</span><h3>'+esc(t.name)+'</h3><span class="dt">'+range(t.start,t.end)+(t.venue?' &middot; '+esc(t.venue):'')+'</span>'+lines+'<div class="tg"><b class="'+((t.cat==='DUBAI'||t.cat==='ABU DHABI')?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':t.cat)+'</b></div>';
+      var inner='<span class="st arch">&#10003; FINISHED</span><h3>'+esc(t.name)+'</h3><span class="dt">'+range(t.start,t.end)+(t.venue?' &middot; '+esc(t.venue):'')+'</span>'+lines+'<div class="tg"><b class="'+((t.cat==='DUBAI'||t.cat==='ABU DHABI'||t.cat==='QATAR')?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':t.cat)+'</b></div>';
       var star=window.TB?TB.star({k:'t:'+t.name+' 2026',t:'tournament',n:t.name+' 2026',u:'/home#archive'}):''; var link=LINK[t.name.toLowerCase()]; return link?'<a class="tc '+cc(t)+'" href="'+link+'">'+inner+star+'</a>':'<div class="tc '+cc(t)+'">'+inner+star+'</div>'; }
     function draw(){ ev.sort(function(a,b){ return b.end.localeCompare(a.end); }); box.innerHTML=ev.slice(0,shown).map(acard).join(''); btn.hidden=shown>=ev.length; btn.textContent='Show all 2026 results ('+(ev.length-shown)+' more)'; }
     btn.onclick=function(){ shown=ev.length; draw(); }; draw();
