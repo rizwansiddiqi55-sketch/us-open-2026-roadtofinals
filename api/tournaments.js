@@ -1,7 +1,7 @@
 // Tournaments running now and coming up (ATP and WTA), from ESPN's public scoreboard date ranges. Falls back to a saved list.
 const BASE = (t) => 'https://site.api.espn.com/apis/site/v2/sports/tennis/' + t + '/scoreboard';
 const d8 = (d) => d.toISOString().slice(0, 10).replace(/-/g, '');
-// We cover only Grand Slams, ATP/WTA 1000 events, the season-ending finals, any tournament in Dubai and the Mubadala Abu Dhabi Open.
+// We cover only Grand Slams, ATP/WTA 1000 events, the season-ending finals, any tournament in Dubai the Mubadala Abu Dhabi Open and the Qatar Open.
 // ESPN does not label tournament levels, so this is a list of names (checked against the 2027 calendar). Edit it here to add or drop events.
 const RULES = [
   { re: /^(australian open|roland garros|french open|wimbledon|us open)$/i, cat: 'GRAND SLAM' },
@@ -10,6 +10,7 @@ const RULES = [
   { re: /^(nitto atp finals|.*wta finals.*)$/i, cat: 'SEASON FINALS' },
   { re: /dubai/i, cat: 'DUBAI' },
   { re: /abu dhabi/i, cat: 'ABU DHABI' },
+  { re: /^qatar /i, cat: 'QATAR' },
 ];
 function classify(t) {
   for (const r of RULES) {
