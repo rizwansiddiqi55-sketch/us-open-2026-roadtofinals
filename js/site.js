@@ -25,7 +25,7 @@
   // ---------- search ----------
   var idx=null, loading=false;
   function load(){ if(idx||loading) return; loading=true; idx=[
-    {g:'Pages',n:'Live scores (ATP Finals)',u:'/atp-finals-2026/#live'},{g:'Pages',n:'Schedule in Dubai time',u:'/atp-finals-2026/#schedule'},{g:'Pages',n:'Group standings',u:'/atp-finals-2026/#standings-sec'},{g:'Pages',n:'Match stories (in each tournament)',u:'/atp-finals-2026/#stories-sec'},{g:'Pages',n:'Tennis news',u:'/news'},{g:'Pages',n:'Rankings',u:'/rankings'},{g:'Pages',n:'Players',u:'/players'},{g:'Pages',n:'2026 stats',u:'/stats'},{g:'Pages',n:'Head to head',u:'/h2h'},{g:'Pages',n:'Tennis warm-up and injury prevention',u:'/warm-up'},{g:'Pages',n:'About',u:'/about'},{g:'Pages',n:'Contact',u:'/contact'}];
+    {g:'Pages',n:'ATP Finals scores',u:'/atp-finals-2026/#live'},{g:'Pages',n:'Schedule in Dubai time',u:'/atp-finals-2026/#schedule'},{g:'Pages',n:'Group standings',u:'/atp-finals-2026/#standings-sec'},{g:'Pages',n:'Match stories (in each tournament)',u:'/atp-finals-2026/#stories-sec'},{g:'Pages',n:'Tennis news',u:'/news'},{g:'Pages',n:'Rankings',u:'/rankings'},{g:'Pages',n:'Players',u:'/players'},{g:'Pages',n:'2026 stats',u:'/stats'},{g:'Pages',n:'Head to head',u:'/h2h'},{g:'Pages',n:'Tennis warm-up and injury prevention',u:'/warm-up'},{g:'Pages',n:'About',u:'/about'},{g:'Pages',n:'Contact',u:'/contact'}];
     fetch('/api/rankings').then(function(r){return r.json();}).then(function(d){ ['atp','wta'].forEach(function(t){ (d[t]||[]).forEach(function(p){ idx.push({g:'Players',n:p.name,s:(t==='atp'?'ATP':'WTA')+' #'+p.rank+' · '+(p.countryName||p.country),u:'/players?q='+encodeURIComponent(p.name),fav:{k:'p:'+p.name,t:'player',n:p.name,u:'/players?q='+encodeURIComponent(p.name)}}); }); }); render(); }).catch(function(){});
     fetch('/api/tournaments').then(function(r){return r.json();}).then(function(d){ (d.now||[]).concat(d.upcoming||[]).forEach(function(t){ var u=/nitto atp finals/i.test(t.name)?'/atp-finals-2026/':'/home#tournaments'; idx.push({g:'Tournaments',n:t.name,s:t.start,u:u,fav:{k:'t:'+t.name,t:'tournament',n:t.name,u:u}}); }); render(); }).catch(function(){});
     fetch('/data/archive-2026.json').then(function(r){return r.json();}).then(function(d){ (d.events||[]).forEach(function(t){ var ch=[t.results&&t.results.men&&t.results.men.champion,t.results&&t.results.women&&t.results.women.champion].filter(Boolean).join(' / '); idx.push({g:'Tournaments',n:t.name+' 2026',s:ch?'Champion: '+ch:'',u:'/home#archive',fav:{k:'t:'+t.name+' 2026',t:'tournament',n:t.name+' 2026',u:'/home#archive'}}); }); render(); }).catch(function(){}); }
@@ -49,4 +49,26 @@
     window.addEventListener('hashchange',paintFavs);
   }
   if(doc.readyState==='loading') doc.addEventListener('DOMContentLoaded',init); else init();
+})();
+
+/* After the ATP Finals final: drop the LIVE markers 6 hours after the match is over (match end is estimated as start + 3 h) */
+(function(){
+  var K='tbAtpEnd', HOLD=6*3600e3, LEN=3*3600e3;
+  function apply(end){
+    window.TB_ATP_OVER = end>0 && Date.now()>end+HOLD;
+    if(!window.TB_ATP_OVER) return;
+    document.documentElement.setAttribute('data-atp-over','1');
+    document.querySelectorAll('.tbnav nav a.live').forEach(function(a){ a.classList.remove('live'); a.textContent='ATP FINALS'; });
+    document.dispatchEvent(new Event('tb-atp-over'));
+  }
+  function run(){
+    var c=null; try{ c=JSON.parse(sessionStorage.getItem(K)||'null'); }catch(e){}
+    if(c&&Date.now()-c.t<600000) return apply(c.end);
+    fetch('/api/atp').then(function(r){return r.json();}).then(function(d){
+      var f=(d.matches||[]).filter(function(m){return m.roundCode==='F';})[0], end=(f&&f.status==='final'&&f.winner)?Date.parse(f.start)+LEN:0;
+      try{ sessionStorage.setItem(K,JSON.stringify({t:Date.now(),end:end})); }catch(e){}
+      apply(end);
+    }).catch(function(){});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
 })();
