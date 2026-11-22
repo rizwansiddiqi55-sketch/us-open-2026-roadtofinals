@@ -84,8 +84,10 @@ module.exports = async (req, res) => {
         '<meta property="og:title" content="' + esc(p.title) + '">\n' +
         '<meta property="og:description" content="' + esc(p.description) + '">\n' +
         '<meta property="og:url" content="' + esc(url) + '">\n' +
-        '<meta property="og:image" content="' + esc('https://' + host + '/icons/icon-512.png') + '">\n' +
-        '<meta name="twitter:card" content="summary">\n' +
+        '<meta property="og:image" content="' + esc('https://' + host + '/icons/og-tennisbyte.jpg') + '">\n' +
+        '<meta property="og:image:width" content="1200">\n' +
+        '<meta property="og:image:height" content="630">\n' +
+        '<meta name="twitter:card" content="summary_large_image">\n' +
         '<meta name="twitter:title" content="' + esc(p.title) + '">\n' +
         '<meta name="twitter:description" content="' + esc(p.description) + '">';
       const before = html;
