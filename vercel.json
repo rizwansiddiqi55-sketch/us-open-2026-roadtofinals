@@ -71,6 +71,18 @@
       "dest": "/home.html"
     },
     {
+      "src": "^/players/?$",
+      "dest": "/players.html"
+    },
+    {
+      "src": "^/stats/?$",
+      "dest": "/stats.html"
+    },
+    {
+      "src": "^/h2h/?$",
+      "dest": "/h2h.html"
+    },
+    {
       "handle": "filesystem"
     }
   ],

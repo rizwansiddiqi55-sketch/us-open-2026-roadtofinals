@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Players &middot; TennisByte</title><meta name="description" content="ATP and WTA top 100 players with rankings and points. Search and save favourites."><link rel="canonical" href="/players">
+<link rel="icon" href="/icons/atp-icon-192.png"><style>
+:root{--blue:#0F2350;--ball:#D4E34A;--ink:#14181f;--bg:#f5f5f3;--mut:#566074}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#e8ecf5;--bg:#0b1226;--mut:#9aa6c0}}:root[data-theme=dark]{--ink:#e8ecf5;--bg:#0b1226;--mut:#9aa6c0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 Georgia,'Source Serif 4',serif}
+header{background:var(--blue);padding:18px 16px}header a{display:flex;align-items:center;gap:12px;text-decoration:none;max-width:720px;margin:0 auto}.mark{height:22px;width:auto;flex:none}header b{color:#fff;font:700 22px/1 Oswald,'Arial Narrow',Arial,sans-serif;letter-spacing:2px}header b span{color:var(--ball)}
+main{max-width:720px;margin:0 auto;padding:28px 16px 48px}h1{font:700 34px/1.15 Oswald,'Arial Narrow',Arial,sans-serif;margin:0 0 6px}
+h2{font:600 22px/1.2 Oswald,'Arial Narrow',Arial,sans-serif;margin:30px 0 6px}p,li{margin:8px 0}.upd{color:var(--mut);font-size:14px}
+a{color:#2f5fb3}@media (prefers-color-scheme:dark){:where(:root:not([data-theme=light])) a{color:#8db4ff}}:where(:root[data-theme=dark]) a{color:#8db4ff}
+footer{border-top:1px solid rgba(128,128,128,.3);padding:18px 16px;text-align:center;font-size:14px;color:var(--mut)}footer a{margin:0 8px}
+</style>
+<style>main.wide{max-width:1000px}
+.pg-h1{font:700 34px/1.15 Oswald,'Arial Narrow',Arial,sans-serif;margin:0 0 4px}.pg-sub{color:var(--mut);margin:0 0 14px;font-size:15.5px}
+.tabs{display:flex;gap:8px;margin:0 0 12px}.tab{flex:1;font:600 17px Oswald,Arial,sans-serif;letter-spacing:1px;padding:10px;border:2px solid var(--blue);background:transparent;color:var(--ink);border-radius:10px;cursor:pointer}.tab[aria-selected=true]{background:var(--blue);color:#D4E34A}
+.q{width:100%;margin:0 0 12px;padding:10px 12px;font:16px Georgia,serif;border:1px solid rgba(128,128,128,.4);border-radius:10px;background:transparent;color:var(--ink)}
+.pl{display:grid;grid-template-columns:1fr;gap:8px}@media(min-width:760px){.pl{grid-template-columns:1fr 1fr}}
+.pc{display:flex;align-items:center;gap:10px;border:1px solid rgba(128,128,128,.35);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.5)}.pc.hl{border-color:#D4E34A;box-shadow:0 0 0 2px #D4E34A}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .pc,:root:not([data-theme=light]) .sc,:root:not([data-theme=light]) .card{background:rgba(255,255,255,.04)}}:root[data-theme=dark] .pc,:root[data-theme=dark] .sc,:root[data-theme=dark] .card{background:rgba(255,255,255,.04)}
+.pc .r{font:700 22px Oswald,Arial,sans-serif;width:38px;text-align:center}.pc .nm{flex:1;line-height:1.25}.pc .nm small{display:block;color:var(--mut);font-size:13px}.pc .pt{font-variant-numeric:tabular-nums;color:var(--mut)}
+.sc{border:1px solid rgba(128,128,128,.35);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.5);margin:0 0 10px}.sc h3{margin:0 0 6px;font:600 18px Oswald,Arial,sans-serif}.sc ol{margin:0;padding-left:22px}.sc li{margin:4px 0}.sc li small{color:var(--mut)}
+.two{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:760px){.two{grid-template-columns:1fr 1fr}}
+.card{border:1px solid rgba(128,128,128,.35);border-radius:12px;padding:14px;background:rgba(255,255,255,.5)}
+.sel{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px}.sel select{flex:1;min-width:140px;padding:10px;font:16px Georgia,serif;border:1px solid rgba(128,128,128,.4);border-radius:10px;background:transparent;color:var(--ink)}
+.mt{padding:10px 0;border-top:1px solid rgba(128,128,128,.3)}.mt b{font-family:Oswald,Arial,sans-serif}
+.note{color:var(--mut);font-size:14.5px;font-style:italic}
+</style><script>try{var t=localStorage.getItem("tbTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="/css/site.css"><script src="/js/site.js" defer></script>
+</head><body>
+<div class="tbnav"><div class="in"><a class="brand" href="/" aria-label="TennisByte home"><img class="tblogo" src="/icons/tennisbyte-logo-concept1-loop.png" alt="TennisByte logo" width="119" height="52"><b>Tennis<span>Byte</span>.com</b></a><nav aria-label="Site menu"><a href="/atp-finals-2026/#live" class="live">LIVE</a><a href="/atp-finals-2026/#schedule">MATCHES</a><a href="/home#tournaments">TOURNAMENTS</a><a href="/players">PLAYERS</a><a href="/rankings">RANKINGS</a><a href="/h2h">H2H</a><a href="/stats">STATS</a><a href="/atp-finals-2026/#stories-sec">NEWS</a></nav><div class="tools"><button type="button" id="tbSearch" aria-label="Search"><span class="ic">&#128269;</span><span class="lb">Search</span></button><button type="button" id="tbFav" aria-label="Favourites"><span class="ic">&#11088;</span><span class="lb">Favourites</span><span class="cnt"></span></button><button type="button" id="tbTheme" aria-label="Switch to dark mode"><span class="ic">&#127769;</span><span class="lb">Dark</span></button></div></div></div><main class="wide"><h1 class="pg-h1">Players</h1><p class="pg-sub">The top 100 on each tour. Tap the star to save a player to your favourites (kept on this device).</p>
+<div class="tabs" role="tablist"><button class="tab" id="tA" aria-selected="true">ATP &middot; MEN</button><button class="tab" id="tW" aria-selected="false">WTA &middot; WOMEN</button></div>
+<input class="q" id="q" type="search" placeholder="Search by name or country" aria-label="Search players"><div class="pl" id="pl"><p class="note">Loading&hellip;</p></div></main>
+<script>
+(function(){
+  var data=null,tour='atp',q=document.getElementById('q'),box=document.getElementById('pl');
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  var p=new URLSearchParams(location.search), want=(p.get('q')||'').trim(); if(want) q.value=want;
+  function draw(){ if(!data) return; var list=data[tour]||[], t=q.value.trim().toLowerCase(), f=t?list.filter(function(x){return (x.name+' '+x.country+' '+x.countryName).toLowerCase().indexOf(t)>=0;}):list;
+    box.innerHTML=f.length?f.map(function(x){ var k='p:'+x.name; return '<div class="pc'+(want&&x.name===want?' hl':'')+'"><span class="r">'+x.rank+'</span><span class="nm">'+esc(x.name)+'<small>'+esc(x.countryName||x.country)+(x.age?' \u00B7 age '+x.age:'')+'</small></span><span class="pt">'+Number(x.points).toLocaleString('en-US')+'</span>'+(window.TB?TB.star({k:k,t:'player',n:x.name,u:'/players?q='+encodeURIComponent(x.name)}):'')+'</div>'; }).join(''):'<p class="note">No players match.</p>'; if(window.TB) TB.paint(); }
+  function pick(t){ tour=t; document.getElementById('tA').setAttribute('aria-selected',t==='atp'); document.getElementById('tW').setAttribute('aria-selected',t==='wta'); draw(); }
+  document.getElementById('tA').onclick=function(){pick('atp');}; document.getElementById('tW').onclick=function(){pick('wta');}; q.addEventListener('input',function(){ want=''; draw(); });
+  fetch('/api/rankings').then(function(r){return r.json();}).then(function(d){ data=d; if(want&&!(d.atp||[]).some(function(x){return x.name===want;})&&(d.wta||[]).some(function(x){return x.name===want;})) tour='wta'; pick(tour); }).catch(function(){ box.innerHTML='<p class="note">Players are temporarily unavailable.</p>'; });
+})();
+</script><footer><a href="/rankings">Rankings</a><a href="/warm-up">Warm-up</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/contact">Contact</a><p>&copy; 2026 Rizwan Siddiqi. An independent fan site.</p></footer></body></html>
