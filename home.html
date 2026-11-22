@@ -41,6 +41,23 @@ a.tc:hover{border-color:#D4E34A}
 .wt{border:2px solid var(--blue);border-radius:14px;padding:14px;background:rgba(255,255,255,.5)}.wt .ic{font-size:30px}.wt h3{margin:4px 0;font:600 18px/1.2 Oswald,Arial,sans-serif}.wt p{margin:0;font-size:15px;line-height:1.45}
 .wt-more{display:inline-block;margin-top:14px;font:600 17px Oswald,Arial,sans-serif;letter-spacing:1px;background:#D4E34A;color:#0F2350;border-radius:999px;padding:8px 22px;text-decoration:none}
 .msg{color:var(--mut);padding:10px 0}
+/* colour pass */
+main.home{background:linear-gradient(180deg,rgba(212,227,74,.10),transparent 420px)}
+.hm-live{background:radial-gradient(700px 260px at 15% 0%,#2a5bd7 0%,#16367f 55%,#0b1d4d 100%);border-color:#D4E34A;box-shadow:0 8px 24px rgba(15,35,80,.25)}
+.champ{background:linear-gradient(120deg,#0F2350,#1b4fb0 60%,#0c8f8a);box-shadow:0 6px 18px rgba(15,35,80,.25)}
+.hm-h2{border-top:0;padding:8px 0 8px 14px;border-left:8px solid var(--ac,#2f6fed);border-radius:4px;background:linear-gradient(90deg,color-mix(in srgb,var(--ac,#2f6fed) 16%,transparent),transparent 70%)}
+#tournaments{--ac:#1fa35c}#archive{--ac:#e0a800}#rankings{--ac:#7b3fe4}#warmup{--ac:#ef6c2f}
+.tc{border-width:0;border-top:6px solid var(--k,#0F2350);background:linear-gradient(180deg,color-mix(in srgb,var(--k,#0F2350) 10%,transparent),transparent 60%),rgba(255,255,255,.55);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.tc .tg b{background:var(--k,#0F2350);color:#fff}.tc .tg b.cat,.tc .tg b.uae{background:var(--k,#D4E34A);color:#fff}
+.kgrandslam{--k:#7b3fe4}.k1000{--k:#1f6feb}.kseasonfinals{--k:#d6336c}.kdubai{--k:#0d9f6e}
+.mo{color:#fff;background:#0F2350;display:inline-block;border-radius:999px;padding:3px 14px;font-size:13px}
+.rk{border-width:0;border-top:6px solid #1f6feb;box-shadow:0 2px 10px rgba(0,0,0,.08)}.rk-wrap .rk+.rk{border-top-color:#a23fe0}
+.rk td.r{color:#fff;background:#0F2350;border-radius:8px}.rk-wrap .rk:first-child td.r{background:#1f6feb}.rk-wrap .rk+.rk td.r{background:#a23fe0}
+.wt{border-width:0;border-top:6px solid var(--w);background:linear-gradient(180deg,color-mix(in srgb,var(--w) 14%,transparent),transparent 70%),rgba(255,255,255,.55)}
+.wt-grid .wt:nth-child(1){--w:#1fa35c}.wt-grid .wt:nth-child(2){--w:#1f6feb}.wt-grid .wt:nth-child(3){--w:#ef6c2f}.wt-grid .wt:nth-child(4){--w:#e0a800}
+.wt-more{background:linear-gradient(90deg,#D4E34A,#7ed957)}
+.more{border-color:#1f6feb;color:#1f6feb}
+
 </style>
 <script>try{var t=localStorage.getItem("tbTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="stylesheet" href="/css/site.css"><script src="/js/site.js" defer></script>
@@ -87,9 +104,10 @@ a.tc:hover{border-color:#D4E34A}
   function dd(s){ var p=s.split('-'); return {y:+p[0],m:+p[1]-1,d:+p[2]}; }
   function range(a,b){ var x=dd(a), y=dd(b||a); if(a===b||!b) return x.d+' '+MON[x.m]; return x.m===y.m?x.d+'–'+y.d+' '+MON[x.m]:x.d+' '+MON[x.m]+' – '+y.d+' '+MON[y.m]; }
   function tags(t){ var h=t.tours.map(function(x){return '<b>'+x+'</b>';}).join(''); if(t.cat) h+='<b class="'+(t.cat==='DUBAI'?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':(t.cat==='1000'?'1000':t.cat))+'</b>'; return '<div class="tg">'+h+'</div>'; }
+  function cc(t){ return 'k'+String(t.cat||'x').toLowerCase().replace(/[^a-z0-9]/g,''); }
   function card(t,live){ var isAtpF=/nitto atp finals/i.test(t.name); var inner='<span class="st'+(live?' live':'')+'">'+(live?'LIVE NOW':'UPCOMING')+'</span><h3>'+esc(t.name)+'</h3><span class="dt">'+range(t.start,t.end)+(t.venue?' &middot; '+esc(t.venue):'')+'</span>'+tags(t);
     var star=window.TB?TB.star({k:'t:'+t.name,t:'tournament',n:t.name,u:isAtpF?'/atp-finals-2026/':'/home#tournaments'}):'';
-    return isAtpF?'<a class="tc" href="/atp-finals-2026/">'+inner+star+'</a>':'<div class="tc">'+inner+star+'</div>'; }
+    return isAtpF?'<a class="tc '+cc(t)+'" href="/atp-finals-2026/">'+inner+star+'</a>':'<div class="tc '+cc(t)+'">'+inner+star+'</div>'; }
   // live card from the ATP feed
   fetch('/api/atp',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
     var ms=d.matches||[], live=ms.filter(function(m){return m.status==='live';})[0], fin=ms.filter(function(m){return m.roundCode==='F';})[0], tag=document.getElementById('liveTag'), h=document.getElementById('liveHead'), s=document.getElementById('liveSub');
@@ -114,7 +132,7 @@ a.tc:hover{border-color:#D4E34A}
     fetch('/api/atp',{cache:'no-store'}).then(function(r){return r.json();}).then(function(a){ var f=(a.matches||[]).filter(function(m){return m.roundCode==='F'&&m.status==='final'&&m.winner;})[0]; if(f&&!ev.some(function(x){return /nitto atp finals/i.test(x.name);})){ var w=f[f.winner], l=f[f.winner==='p1'?'p2':'p1']; ev.unshift({name:'Nitto ATP Finals',cat:'SEASON FINALS',start:'2026-11-15',end:'2026-11-22',venue:'Turin',results:{men:{champion:w.name,runnerUp:l.name,score:(f.sets||[]).map(function(x){return (f.winner==='p1'?x.p1+'-'+x.p2:x.p2+'-'+x.p1);}).join(', ')}}}); LINK['nitto atp finals']='/atp-finals-2026/'; } draw(); }).catch(function(){ draw(); });
     function acard(t){ var r=t.results||{}, lines=''; if(r.men) lines+='<span class="ch">&#127942; Men: <b>'+esc(r.men.champion)+'</b></span>'; if(r.women) lines+='<span class="ch">&#127942; Women: <b>'+esc(r.women.champion)+'</b></span>'; if(!lines) lines='<span class="ch">Finished</span>';
       var inner='<span class="st arch">&#10003; FINISHED</span><h3>'+esc(t.name)+'</h3><span class="dt">'+range(t.start,t.end)+(t.venue?' &middot; '+esc(t.venue):'')+'</span>'+lines+'<div class="tg"><b class="'+(t.cat==='DUBAI'?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':t.cat)+'</b></div>';
-      var star=window.TB?TB.star({k:'t:'+t.name+' 2026',t:'tournament',n:t.name+' 2026',u:'/home#archive'}):''; var link=LINK[t.name.toLowerCase()]; return link?'<a class="tc" href="'+link+'">'+inner+star+'</a>':'<div class="tc">'+inner+star+'</div>'; }
+      var star=window.TB?TB.star({k:'t:'+t.name+' 2026',t:'tournament',n:t.name+' 2026',u:'/home#archive'}):''; var link=LINK[t.name.toLowerCase()]; return link?'<a class="tc '+cc(t)+'" href="'+link+'">'+inner+star+'</a>':'<div class="tc '+cc(t)+'">'+inner+star+'</div>'; }
     function draw(){ ev.sort(function(a,b){ return b.end.localeCompare(a.end); }); box.innerHTML=ev.slice(0,shown).map(acard).join(''); btn.hidden=shown>=ev.length; btn.textContent='Show all 2026 results ('+(ev.length-shown)+' more)'; }
     btn.onclick=function(){ shown=ev.length; draw(); }; draw();
   }).catch(function(){ document.getElementById('archGrid').innerHTML='<p class="msg">The 2026 results are temporarily unavailable.</p>'; });
