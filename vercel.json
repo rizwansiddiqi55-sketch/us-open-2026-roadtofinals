@@ -18,7 +18,7 @@
           "value": "tennisbyte.com"
         }
       ],
-      "dest": "/api/atp-page"
+      "dest": "/home.html"
     },
     {
       "src": "^/$",
@@ -41,6 +41,10 @@
       "headers": {
         "Location": "/"
       }
+    },
+    {
+      "src": "^/al-habtoor/?$",
+      "dest": "/al-habtoor.html"
     },
     {
       "src": "^/about/?$",
@@ -67,6 +71,26 @@
       "dest": "/warm-up.html"
     },
     {
+      "src": "^/home/?$",
+      "dest": "/home.html"
+    },
+    {
+      "src": "^/players/?$",
+      "dest": "/players.html"
+    },
+    {
+      "src": "^/stats/?$",
+      "dest": "/stats.html"
+    },
+    {
+      "src": "^/h2h/?$",
+      "dest": "/h2h.html"
+    },
+    {
+      "src": "^/news/?$",
+      "dest": "/news.html"
+    },
+    {
       "handle": "filesystem"
     }
   ],
@@ -76,6 +100,12 @@
     },
     "api/rankings.js": {
       "includeFiles": "data/rankings-snapshot.json"
+    },
+    "api/tournaments.js": {
+      "includeFiles": "data/tournaments-snapshot.json"
+    },
+    "api/news.js": {
+      "includeFiles": "data/news-snapshot.json"
     }
   }
 }
