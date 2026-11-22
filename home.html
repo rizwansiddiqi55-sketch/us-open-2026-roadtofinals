@@ -119,9 +119,12 @@ main.home{background:linear-gradient(180deg,rgba(212,227,74,.10),transparent 420
     else if(live){ tag.className='tag'; tag.textContent='LIVE NOW'; h.textContent=nm(live.p1)+' v '+nm(live.p2); s.textContent=(live.sets||[]).map(function(x){return x.p1+'-'+x.p2;}).join(', ')+(live.note?' · '+live.note:'')+' · Nitto ATP Finals, '+live.round; }
     else if(fin&&fin.status==='upcoming'&&fin.p1.name!=='TBD'&&fin.p2.name!=='TBD'){ tag.textContent='THE FINAL'; h.textContent=nm(fin.p1)+' v '+nm(fin.p2); var t=new Date(Date.parse(fin.start)+4*3600000), hr=t.getUTCHours(), mn=t.getUTCMinutes(); s.textContent='Nitto ATP Finals · '+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][t.getUTCDay()]+' '+t.getUTCDate()+' '+MON[t.getUTCMonth()]+', '+((hr%12)||12)+':'+(mn<10?'0':'')+mn+' '+(hr<12?'AM':'PM')+' UAE'; }
   }).catch(function(){});
+  // 6 hours after the final: no LIVE markers
+  function over(){ document.querySelectorAll('#nowGrid .st.live').forEach(function(e){ e.className='st arch'; e.innerHTML='&#10003; FINISHED'; }); var g=document.querySelector('#liveCard .go'); if(g) g.innerHTML='SEE ALL RESULTS &rarr;'; }
+  document.addEventListener('tb-atp-over',over); if(window.TB_ATP_OVER) over();
   // tournaments
   fetch('/api/tournaments').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
-    var now=(d.now||[]).slice().sort(function(a,b){ return (/nitto atp finals/i.test(b.name)?1:0)-(/nitto atp finals/i.test(a.name)?1:0); }); document.getElementById('nowGrid').innerHTML=now.length?now.map(function(t){ return card(t,true); }).join(''):'<p class="msg">No tournaments in progress.</p>';
+    var now=(d.now||[]).slice().sort(function(a,b){ return (/nitto atp finals/i.test(b.name)?1:0)-(/nitto atp finals/i.test(a.name)?1:0); }); document.getElementById('nowGrid').innerHTML=now.length?now.map(function(t){ return card(t,true); }).join(''):'<p class="msg">No tournaments in progress.</p>'; if(window.TB_ATP_OVER) over();
     var up=d.upcoming||[], box=document.getElementById('upList'), btn=document.getElementById('upMore'), shown=8;
     document.getElementById('upMsg').hidden=true; if(window.TB) setTimeout(TB.paint,0);
     function draw(){ var cur='', h=''; up.slice(0,shown).forEach(function(t){ var m=dd(t.start), key=MONL[m.m]+' '+m.y; if(key!==cur){ if(cur) h+='</div>'; cur=key; h+='<div class="mo">'+key+'</div><div class="hm-grid">'; } h+=card(t,false); }); box.innerHTML=h+'</div>'; btn.hidden=shown>=up.length; btn.textContent='Show more ('+(up.length-shown)+' left)'; }
