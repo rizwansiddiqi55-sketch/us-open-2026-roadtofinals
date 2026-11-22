@@ -1191,6 +1191,7 @@ html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stori
     function res(m){ var w=m.winner, l=other(w); return nm(m[w])+' Beats '+nm(m[l])+' '+line(m,w==='p2'); }
     if(final&&final.status==='final'&&final.winner) head='CHAMPION · '+final[final.winner].name.toUpperCase()+' WINS THE TITLE';
     else if(live.length){ head=liveHead(live[0]); }
+    else if(final&&final.status==='upcoming'&&final.p1.name!=='TBD'&&final.p2.name!=='TBD') head='Final: '+nm(final.p1)+' v '+nm(final.p2)+(final.timeValid?' at '+timeUAE(final):'');
     else if(lastF) head=res(lastF)+(up[0]&&up[0].timeValid?'; '+nm(up[0].p1)+' v '+nm(up[0].p2)+' Next':'');
     else head='Nitto ATP Finals 2026 Starts in Turin';
     document.getElementById('mainHeadline').textContent=head;
