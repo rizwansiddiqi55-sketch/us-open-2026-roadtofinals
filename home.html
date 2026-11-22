@@ -42,7 +42,7 @@ main.home{max-width:1100px;margin:0 auto;padding:18px 14px 40px}
 a.tc:hover{border-color:#D4E34A}
 .tc .st{font:700 12px Oswald,Arial,sans-serif;letter-spacing:1.2px;color:var(--mut)}.tc .st.live{color:#fff;background:#C0392B;border-radius:5px;padding:1px 8px;align-self:flex-start}.tc .st.arch{color:#1A6B3A}
 .tc h3{margin:0;font:600 21px/1.2 Oswald,Arial,sans-serif}.tc .dt{font-size:15px;color:var(--mut)}.tc .ch{font-size:15px}
-.tc .tg{font:600 11.5px Oswald,Arial,sans-serif;letter-spacing:1px;margin-top:4px}.tc .tg b{background:var(--blue);color:#D4E34A;border-radius:4px;padding:1px 7px;margin-right:4px}.tc .tg b.uae{background:#D4E34A;color:#0F2350}
+.tc .tg{font:600 11.5px Oswald,Arial,sans-serif;letter-spacing:1px;margin-top:4px}.tc .tg b{background:var(--blue);color:#D4E34A;border-radius:4px;padding:1px 7px;margin-right:4px}.tc .tg b.uae,.tc .tg b.cat{background:#D4E34A;color:#0F2350}
 .mo{font:700 14px Oswald,Arial,sans-serif;letter-spacing:1.5px;color:var(--mut);margin:16px 0 6px}
 .more{margin-top:14px;font:600 16px Oswald,Arial,sans-serif;letter-spacing:1px;background:transparent;border:2px solid var(--blue);color:var(--ink);border-radius:999px;padding:8px 20px;cursor:pointer}
 .rk-wrap{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:760px){.rk-wrap{grid-template-columns:1fr 1fr}}
@@ -61,7 +61,7 @@ a.tc:hover{border-color:#D4E34A}
 <a class="hm-live" id="liveCard" href="/atp-finals-2026/"><span class="tag mid" id="liveTag">NITTO ATP FINALS</span><h1 id="liveHead">Nitto ATP Finals 2026</h1><p id="liveSub">Inalpi Arena, Turin &middot; Nov 15&ndash;22</p><span class="go">OPEN LIVE SCORES &rarr;</span></a>
 
 <h2 class="hm-h2" id="tournaments">Tournaments</h2>
-<p class="hm-sub">Live now, finished events and what is coming up next.</p>
+<p class="hm-sub">We cover the Grand Slams, ATP and WTA 1000 events, the season-ending finals and every tournament in Dubai.</p>
 <div class="hm-grid" id="nowGrid"></div>
 
 <div class="mo">UPCOMING</div>
@@ -96,7 +96,7 @@ a.tc:hover{border-color:#D4E34A}
   var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], MONL=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
   function dd(s){ var p=s.split('-'); return {y:+p[0],m:+p[1]-1,d:+p[2]}; }
   function range(a,b){ var x=dd(a), y=dd(b||a); if(a===b||!b) return x.d+' '+MON[x.m]; return x.m===y.m?x.d+'–'+y.d+' '+MON[x.m]:x.d+' '+MON[x.m]+' – '+y.d+' '+MON[y.m]; }
-  function tags(t){ var h=t.tours.map(function(x){return '<b>'+x+'</b>';}).join(''); if(/dubai|abu dhabi/i.test(t.name)) h+='<b class="uae">IN THE UAE</b>'; return '<div class="tg">'+h+'</div>'; }
+  function tags(t){ var h=t.tours.map(function(x){return '<b>'+x+'</b>';}).join(''); if(t.cat) h+='<b class="'+(t.cat==='DUBAI'?'uae':'cat')+'">'+(t.cat==='DUBAI'?'IN DUBAI':(t.cat==='1000'?'1000':t.cat))+'</b>'; return '<div class="tg">'+h+'</div>'; }
   function card(t,live){ var isAtpF=/nitto atp finals/i.test(t.name); var inner='<span class="st'+(live?' live':'')+'">'+(live?'LIVE NOW':'UPCOMING')+'</span><h3>'+esc(t.name)+'</h3><span class="dt">'+range(t.start,t.end)+(t.venue?' &middot; '+esc(t.venue):'')+'</span>'+tags(t);
     return isAtpF?'<a class="tc" href="/atp-finals-2026/">'+inner+'</a>':'<div class="tc">'+inner+'</div>'; }
   // live card from the ATP feed
