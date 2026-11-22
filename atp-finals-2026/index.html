@@ -1156,9 +1156,15 @@
   function liveHead(m){
     var trouble='';
     var sets=m.sets||[], A=nm(m.p1), B=nm(m.p2); if(!sets.length) return A+' v '+B+' Under Way';
-    // world No. 1 in trouble: behind on sets, or three or more games down in the first set
-    (function(){ var one=m.p1.rank===1?'p1':(m.p2.rank===1?'p2':null); if(!one) return; var o=other(one), s1=0, s2=0; sets.forEach(function(x){ if(setDone(x)){ if(x.p1>x.p2) s1++; else s2++; } }); var mine=one==='p1'?s1:s2, theirs=one==='p1'?s2:s1, c=sets[sets.length-1], gm=one==='p1'?c.p1:c.p2, go=one==='p1'?c.p2:c.p1;
-      if(theirs>mine||(sets.length===1&&!setDone(c)&&go-gm>=3)) trouble='World No. 1 '+nm(m[one])+' Struggling Against '+nm(m[o])+' in ATP Finals, Down '+line(m,one==='p2'); })();
+    // momentum headlines once a set has been won: a comeback, a level set, one game from the title, or the world No. 1 struggling
+    (function(){ var s1=0, s2=0; sets.forEach(function(x){ if(setDone(x)){ if(x.p1>x.p2) s1++; else s2++; } }); var c=sets[sets.length-1]; if(s1===s2||setDone(c)) { /* first-set trouble for the world No. 1 */
+        var one=m.p1.rank===1?'p1':(m.p2.rank===1?'p2':null); if(one&&sets.length===1&&!setDone(c)){ var gm=one==='p1'?c.p1:c.p2, go=one==='p1'?c.p2:c.p1; if(go-gm>=3) trouble='World No. 1 '+nm(m[one])+' Struggling Against '+nm(m[other(one)])+(m.roundCode==='F'?' in ATP Finals':'')+', Down '+line(m,one==='p2'); } return; }
+      var L=s1>s2?'p1':'p2', T=other(L), gL=L==='p1'?c.p1:c.p2, gT=L==='p1'?c.p2:c.p1, fin=m.roundCode==='F', pre=m[T].rank===1?'World No. 1 ':'', done=sets.filter(setDone).map(function(x){ return T==='p1'?x.p1+'-'+x.p2:x.p2+'-'+x.p1; }).join(', '), ordn=['First','Second','Third'][sets.length-1]||'Set '+sets.length;
+      if(gT>gL) trouble=pre+nm(m[T])+' Fights Back Against '+nm(m[L])+(fin?' in ATP Finals':'')+', Leads '+gT+'-'+gL+' in the '+ordn+' Set, Down a Set ('+done+')';
+      else if(gT===gL&&gT===0) { if(m[T].rank===1) trouble='World No. 1 '+nm(m[T])+' Struggling Against '+nm(m[L])+(fin?' in ATP Finals':'')+', Down '+done; }
+      else if(gT===gL) trouble=pre+nm(m[T])+' Draws Level With '+nm(m[L])+' at '+gT+'-'+gL+' in the '+ordn+' Set'+(fin?' of ATP Finals':'')+', Still Down a Set ('+done+')';
+      else if((gL===5&&gT<=4)||(gL===6&&gT===5)) trouble=nm(m[L])+' One Game From '+(fin?'the ATP Finals Title':'Victory')+' Against '+nm(m[T])+' ('+sets.map(function(x){ return L==='p1'?x.p1+'-'+x.p2:x.p2+'-'+x.p1; }).join(', ')+')';
+      else if(m[T].rank===1) trouble='World No. 1 '+nm(m[T])+' Struggling Against '+nm(m[L])+(fin?' in ATP Finals':'')+', Down '+line(m,T==='p2'); })();
     if(trouble) return trouble;
     var cur=sets[sets.length-1], n=sets.length, ord=['First','Second','Deciding'][n-1]||('Set '+n), w1=0, w2=0;
     sets.forEach(function(x){ if(setDone(x)){ if(x.p1>x.p2) w1++; else w2++; } });
