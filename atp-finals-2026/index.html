@@ -1168,7 +1168,12 @@ html{scroll-behavior:smooth}[id=live],[id=schedule],[id=standings-sec],[id=stori
   // ---------- headline for a live match ----------
   function setDone(x){ return (x.p1>=6&&x.p1-x.p2>=2)||x.p1===7||(x.p2>=6&&x.p2-x.p1>=2)||x.p2===7; }
   function liveHead(m){
+    var trouble='';
     var sets=m.sets||[], A=nm(m.p1), B=nm(m.p2); if(!sets.length) return A+' v '+B+' Under Way';
+    // world No. 1 in trouble: behind on sets, or three or more games down in the first set
+    (function(){ var one=m.p1.rank===1?'p1':(m.p2.rank===1?'p2':null); if(!one) return; var o=other(one), s1=0, s2=0; sets.forEach(function(x){ if(setDone(x)){ if(x.p1>x.p2) s1++; else s2++; } }); var mine=one==='p1'?s1:s2, theirs=one==='p1'?s2:s1, c=sets[sets.length-1], gm=one==='p1'?c.p1:c.p2, go=one==='p1'?c.p2:c.p1;
+      if(theirs>mine||(sets.length===1&&!setDone(c)&&go-gm>=3)) trouble='World No. 1 '+nm(m[one])+' Struggling Against '+nm(m[o])+' in ATP Finals, Down '+line(m,one==='p2'); })();
+    if(trouble) return trouble;
     var cur=sets[sets.length-1], n=sets.length, ord=['First','Second','Deciding'][n-1]||('Set '+n), w1=0, w2=0;
     sets.forEach(function(x){ if(setDone(x)){ if(x.p1>x.p2) w1++; else w2++; } });
     if(setDone(cur)){
