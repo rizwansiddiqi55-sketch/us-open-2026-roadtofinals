@@ -3,7 +3,7 @@
 Run from the repo root:  python3 tools/apply_nav.py   (idempotent)."""
 import re,sys
 PAGES=['atp-finals-2026/index.html','home.html','rankings.html','warm-up.html','about.html','al-habtoor.html','privacy.html','terms.html','contact.html','players.html','stats.html','h2h.html','news.html']
-LINKS=[('HOME','/home',False),('LIVE','/atp-finals-2026/#live',True),('MATCHES','/atp-finals-2026/#schedule',False),('TOURNAMENTS','/home#tournaments',False),('PLAYERS','/players',False),('RANKINGS','/rankings',False),('H2H','/h2h',False),('STATS','/stats',False),('NEWS','/news',False)]
+LINKS=[('HOME','/home',False),('LIVE','/atp-finals-2026/#live',True),('MATCHES','/atp-finals-2026/#schedule',False),('TOURNAMENTS','/home#tournaments',False),('PLAYERS','/players',False),('RANKINGS','/rankings',False),('H2H','/h2h',False),('STATS','/stats',False),('NEWS','/news',False),('FITNESS','/warm-up',False)]
 NAV=('<div class="tbnav"><div class="in"><a class="brand" href="/" aria-label="TennisByte home"><img class="tblogo" src="/icons/tennisbyte-logo-concept1-loop.png" alt="TennisByte logo" width="119" height="52"><b>Tennis<span>Byte</span>.com</b></a>'
  '<nav aria-label="Site menu">'+''.join('<a href="%s"%s>%s</a>'%(u,' class="live"' if live else '',n) for n,u,live in LINKS)+'</nav>'
  '<div class="tools"><button type="button" id="tbSearch" aria-label="Search"><span class="ic">&#128269;</span><span class="lb">Search</span></button>'
