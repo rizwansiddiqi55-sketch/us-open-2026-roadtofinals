@@ -18,7 +18,7 @@
           "value": "tennisbyte.com"
         }
       ],
-      "dest": "/api/atp-page"
+      "dest": "/home.html"
     },
     {
       "src": "^/$",
