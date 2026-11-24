@@ -18,3 +18,5 @@ Photos are cropped and resized from Wikimedia Commons images, supplied with thei
 - **Flavio Cobolli** — Hameltion (CC BY-SA 4.0). Source: https://commons.wikimedia.org/wiki/File:Flavio_Cobolli_(Roland_Garros_2023)_01_(cropped).jpg
 - **Frances Tiafoe** — Hameltion (CC BY-SA 4.0). Source: https://commons.wikimedia.org/wiki/File:Frances_Tiafoe_(2024_DC_Open)_01_(cropped).jpg
 - **Rafael Jódar** — Crosscourt View (CC BY-SA 4.0). Source: https://commons.wikimedia.org/wiki/File:Rafael_Jódar_Roland_Garros_2026_(cropped).jpg
+- **Jannik Sinner** (players/sinner-wimbledon.jpg) — Daniel Cooper (CC BY-SA 4.0). Source: https://commons.wikimedia.org/wiki/File:Jannik_Sinner_Wimbledon_2026_trophy_(cropped).jpg
+- **Elena Rybakina** (players/rybakina-no1.jpg) — screenshot of her Instagram story, supplied by the site owner. Temporary; to be replaced with a licensed photo.
