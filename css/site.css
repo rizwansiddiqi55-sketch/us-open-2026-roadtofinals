@@ -43,3 +43,5 @@ html{scroll-behavior:smooth}
 .tbfavs{padding:0 8px 16px}
 .tbfavs p{margin:8px 12px;color:var(--tb-mut)}
 [id=live],[id=schedule],[id=standings-sec],[id=stories-sec],[id=tournaments],[id=archive],[id=rankings]{scroll-margin-top:110px}
+
+.tbquote{background:linear-gradient(90deg,#D4E34A,#7ed957);color:#0F2350;text-align:center;font:600 15px/1.3 Oswald,'Arial Narrow',Arial,sans-serif;letter-spacing:.6px;padding:7px 12px}.tbquote b{font-weight:700}

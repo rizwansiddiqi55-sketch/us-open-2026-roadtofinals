@@ -1,5 +1,5 @@
 // Network-first so live scores are never stale; cached copy only when offline.
-const CACHE = 'tennis-recap-v143';
+const CACHE = 'tennis-recap-v144';
 const PRECACHE = ['/', '/manifest.webmanifest', '/icons/icon-192.png'];
 
 self.addEventListener('install', e => {
