@@ -38,7 +38,7 @@
   function openFavs(){ var o=overlay('tbFavOv','Favourites','<div class="tbfavs" id="tbFavBox"></div>'); o.classList.add('show'); drawFavs(); }
   // ---------- wire up ----------
   function init(){
-    if(!doc.querySelector('.tbquote')){ var q=doc.createElement('div'); q.className='tbquote'; q.innerHTML='&#127934; Tennis is as much a <b>mental game</b> as a physical one.'; var nv=doc.querySelector('.tbnav'); if(nv) nv.parentNode.insertBefore(q,nv); }
+    if(!doc.querySelector('.tbquote')){ var q=doc.createElement('div'); q.className='tbquote'; q.innerHTML='&#127934; Tennis is as much a <b>mental game</b> as a physical one.'; var nv=doc.querySelector('.tbnav'); if(nv) nv.parentNode.insertBefore(q,nv.nextSibling); }
     var s=doc.getElementById('tbSearch'), f=doc.getElementById('tbFav'), t=doc.getElementById('tbTheme');
     if(s) s.addEventListener('click',openSearch); if(f) f.addEventListener('click',openFavs);
     if(t) t.addEventListener('click',function(){ var n=isDark()?'light':'dark'; root.setAttribute('data-theme',n); ls('tbTheme',n); paintTheme(); });
