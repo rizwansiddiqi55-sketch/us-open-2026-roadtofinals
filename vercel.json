@@ -43,6 +43,10 @@
       }
     },
     {
+      "src": "^/season-2026/?$",
+      "dest": "/season-2026.html"
+    },
+    {
       "src": "^/al-habtoor/?$",
       "dest": "/al-habtoor.html"
     },
