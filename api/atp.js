@@ -171,7 +171,7 @@ module.exports = async (req, res) => {
   // Once the tournament is over ESPN's default scoreboard moves on to other events (e.g. the Next Gen ATP Finals), so ask for the event's own dates
   const isNitto = (x) => x && Array.isArray(x.events) && x.events.some((e) => /nitto atp finals/i.test(e.name || ''));
   if (got.j && !isNitto(got.j)) {
-    const win = await getScoreboard(ESPN_URLS.map((u) => u + (u.indexOf('?') < 0 ? '?' : '&') + 'dates=20261115-20261123'));
+    const win = await getScoreboard(ESPN_URLS.map((u) => u + (u.indexOf('?') < 0 ? '?' : '&') + 'dates=' + new Date().getUTCFullYear() + '1108-' + new Date().getUTCFullYear() + '1130'));
     if (win.j && isNitto(win.j)) got = win;
   }
   const j = got.j;
@@ -222,7 +222,7 @@ module.exports = async (req, res) => {
     .map((players, i) => ({ name: 'Group ' + 'AB'[i], players }));
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=' + (matches.some((m) => m.status === 'live') ? 20 : 120) + ', stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  const out = { updated: new Date().toISOString(), tournament: 'Nitto ATP Finals 2026', venue: 'Inalpi Arena, Turin', feed, stale: snapMatches ? true : undefined, feedNote: snapNote || lt.note || undefined, feedCalls: lt.calls, statsNote: statsNote || undefined, matches, groups };
+  const out = { updated: new Date().toISOString(), tournament: 'Nitto ATP Finals ' + new Date().getUTCFullYear(), venue: 'Inalpi Arena, Turin', feed, stale: snapMatches ? true : undefined, feedNote: snapNote || lt.note || undefined, feedCalls: lt.calls, statsNote: statsNote || undefined, matches, groups };
   lastGood = out;
   res.status(200).json(out);
 };
