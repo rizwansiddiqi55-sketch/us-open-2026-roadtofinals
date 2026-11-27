@@ -146,9 +146,9 @@ async function overlayLive(matches) {
 
 const ESPN_URLS = [ESPN, 'https://site.web.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard', ESPN + '?lang=en&region=us'];
 let lastGood = null;   // last complete response, served if ESPN fails for a moment
-async function getScoreboard() {
+async function getScoreboard(urls) {
   const why = [];
-  for (const url of ESPN_URLS) {
+  for (const url of (urls || ESPN_URLS)) {
     try {
       const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 5000);
       const r = await fetch(url, { signal: ctl.signal, headers: { accept: 'application/json', 'user-agent': 'Mozilla/5.0 (compatible; tennis-fan-page)' } }); clearTimeout(t);
@@ -167,7 +167,13 @@ function loadSnapshot() {
 }
 
 module.exports = async (req, res) => {
-  const got = await getScoreboard();
+  let got = await getScoreboard();
+  // Once the tournament is over ESPN's default scoreboard moves on to other events (e.g. the Next Gen ATP Finals), so ask for the event's own dates
+  const isNitto = (x) => x && Array.isArray(x.events) && x.events.some((e) => /nitto atp finals/i.test(e.name || ''));
+  if (got.j && !isNitto(got.j)) {
+    const win = await getScoreboard(ESPN_URLS.map((u) => u + (u.indexOf('?') < 0 ? '?' : '&') + 'dates=20261115-20261123'));
+    if (win.j && isNitto(win.j)) got = win;
+  }
   const j = got.j;
   let snapMatches = null, snapNote = '';
   if (!j) {
@@ -176,7 +182,7 @@ module.exports = async (req, res) => {
     if (!snap || !Array.isArray(snap.matches)) { res.setHeader('Cache-Control', 'no-store'); return res.status(502).json({ error: 'scoreboard unavailable', reason: got.why }); }
     snapMatches = snap.matches; snapNote = 'ESPN unreachable (' + got.why + '); showing saved schedule with live scores from the live feed';
   }
-  const ev = ((j && j.events) || []).find((e) => /ATP Finals/i.test(e.name || ''));
+  const ev = ((j && j.events) || []).find((e) => /nitto atp finals/i.test(e.name || ''));
   const grp = ev && (ev.groupings || []).find((g) => /singles/i.test((g.grouping && g.grouping.displayName) || ''));
   const matches = [];
   ((grp && grp.competitions) || []).forEach((c) => {
